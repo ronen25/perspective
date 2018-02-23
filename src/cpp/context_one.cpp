@@ -378,6 +378,93 @@ t_ctx1::get_trees() {
     return rval;
 }
 
+t_uindex
+t_ctx1::get_leaf_count(const t_depth depth) const
+{
+    PSP_TRACE_SENTINEL();
+    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    return m_tree->get_num_leaves(depth);
+}
+
+t_tscalvec
+t_ctx1::get_leaf_data(t_uindex depth,
+                      t_uindex start_row,
+                      t_uindex end_row,
+                      t_uindex start_col,
+                      t_uindex end_col) const
+{
+    PSP_TRACE_SENTINEL();
+    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    t_uindex nrows = end_row - start_row;
+    t_uindex stride = end_col - start_col;
+
+    t_tscalvec values((nrows) * stride);
+    t_uindex ridx = 0;
+
+    t_depth last_depth = -1;
+
+    // Iterate by depth
+    std::deque<t_stnode> dft;
+    dft.push_front(m_tree->get_node(0));
+
+    t_uindex naggs = m_config.get_num_aggregates();
+
+    static const char unit_sep = 0x1F;
+
+    std::vector<t_str> plabels;
+    while (!dft.empty())
+    {
+        t_stnode node = dft.front();
+        dft.pop_front();
+
+        t_str value = node.m_value.to_string();
+
+        if (node.m_depth < depth)
+        {
+            if (node.m_depth < last_depth &&
+                last_depth != t_depth(-1))
+            {
+                for (t_uindex i = 0; i < last_depth - node.m_depth;
+                     ++i)
+                {
+                    plabels.pop_back();
+                }
+            }
+
+            if (node.m_depth != 0)
+                plabels.push_back(value);
+
+            t_stnode_vec nodes;
+            m_tree->get_child_nodes(node.m_idx, nodes);
+            std::copy(nodes.rbegin(),
+                      nodes.rend(),
+                      std::front_inserter(dft));
+        }
+        else if (node.m_depth == depth)
+        {
+            std::stringstream label;
+            for (auto lit = plabels.begin(); lit != plabels.end();
+                 ++lit)
+            {
+                label << *lit << unit_sep;
+            }
+            label << value;
+
+            values[(ridx - start_row) * stride].set(
+                get_interned_tscalar(label.str().c_str()));
+
+            for (t_uindex aggidx = 0; aggidx < naggs; ++aggidx)
+            {
+                values[(ridx - start_row) * stride + 1 + aggidx].set(
+                    m_tree->get_aggregate(node.m_idx, aggidx));
+            }
+            ridx++;
+        }
+        last_depth = node.m_depth;
+    }
+    return values;
+}
+
 t_bool
 t_ctx1::has_deltas() const {
     PSP_TRACE_SENTINEL();

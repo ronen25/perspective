@@ -1005,7 +1005,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info, t_uindex src_r
                         }
 
                         std::stringstream ss;
-                        for (t_tscalset::const_iterator iter = vset.begin(); iter != vset.end();
+                        for (std::set<t_tscalar>::const_iterator iter = vset.begin(); iter != vset.end();
                              ++iter) {
                             ss << *iter << ", ";
                         }
@@ -1809,6 +1809,40 @@ t_stree::node_exists(t_uindex idx) {
 t_table*
 t_stree::get_aggtable() {
     return m_aggregates.get();
+}
+
+t_uindex
+t_stree::get_num_leaves(t_uindex depth) const
+{
+    t_uint8 d8(depth);
+    auto iterators = m_nodes->get<by_depth>().equal_range(d8);
+    return std::distance(iterators.first, iterators.second);
+}
+
+t_idxvec
+t_stree::get_indices_for_depth(t_uindex depth) const
+ {
+    t_idxvec indices;
+    std::deque<t_tnode> dft;
+    dft.push_front(get_node(0));
+     while (!dft.empty())
+    {
+        t_tnode node = dft.front();
+        dft.pop_front();
+         if (node.m_depth < depth)
+        {
+            t_stnode_vec nodes;
+            get_child_nodes(node.m_idx, nodes);
+            std::copy(nodes.rbegin(),
+                      nodes.rend(),
+                      std::front_inserter(dft));
+        }
+        else if (node.m_depth == depth)
+        {
+            indices.push_back(node.m_idx);
+        }
+    }
+    return indices;
 }
 
 std::pair<iter_by_idx, t_bool>
