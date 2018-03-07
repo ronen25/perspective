@@ -608,13 +608,15 @@ module.exports = function(Module) {
             for (let c = 0; c < stride; c++) {
                 let val = slice[r*stride + c];
                 if (c === 0) {
+                    let span_reset = false;
                     val = val.split(unit_sep);
                     for (let i = 0; i < val.length; i++) {
                         let span = spans[i];
                         let curr = span[span.length - 1];
-                        if (!curr || curr[0] !== val[i]) {
+                        if (span_reset || !curr || curr[0] !== val[i]) {
                             curr = [val[i], 0];
                             span.push(curr);
+                            span_reset = true;
                         }
                         curr[1] += 1;
                     }
