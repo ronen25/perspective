@@ -58,13 +58,15 @@ src/cpp/aggspec.cpp
 src/cpp/arg_sort.cpp
 src/cpp/base.cpp
 src/cpp/base_impl_linux.cpp
+src/cpp/base_impl_osx.cpp
 src/cpp/base_impl_win.cpp
 src/cpp/build_filter.cpp
-src/cpp/calc_agg_dtype.cpp
+#src/cpp/calc_agg_dtype.cpp
 src/cpp/column.cpp
 src/cpp/comparators.cpp
 src/cpp/compat.cpp
 src/cpp/compat_impl_linux.cpp
+src/cpp/compat_impl_osx.cpp
 src/cpp/compat_impl_win.cpp
 src/cpp/config.cpp
 src/cpp/context_base.cpp
@@ -94,9 +96,9 @@ src/cpp/path.cpp
 src/cpp/pivot.cpp
 src/cpp/pool.cpp
 src/cpp/port.cpp
-src/cpp/query.cpp
 src/cpp/raii.cpp
 src/cpp/raii_impl_linux.cpp
+src/cpp/raii_impl_osx.cpp
 src/cpp/raii_impl_win.cpp
 src/cpp/range.cpp
 src/cpp/rlookup.cpp
@@ -110,6 +112,7 @@ src/cpp/sparse_tree_node.cpp
 src/cpp/step_delta.cpp
 src/cpp/storage.cpp
 src/cpp/storage_impl_linux.cpp
+src/cpp/storage_impl_osx.cpp
 src/cpp/storage_impl_win.cpp
 src/cpp/sym_table.cpp
 src/cpp/table.cpp
@@ -146,4 +149,3 @@ set_target_properties(perspective.asm PROPERTIES COMPILE_FLAGS "${ASMJS_MODE_FLA
 set_target_properties(perspective.asm PROPERTIES RUNTIME_OUTPUT_DIRECTORY "../build/asmjs/")
 set_target_properties(perspective.asm PROPERTIES OUTPUT_NAME "psp")
 add_dependencies(perspective.asm perspective.sync)
-
