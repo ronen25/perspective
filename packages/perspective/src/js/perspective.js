@@ -25,10 +25,11 @@ if (typeof self !== "undefined" && self.performance === undefined) {
     self.performance = {now: Date.now};
 }
 
-let __MODULE__;
-
 const CHUNKED_THRESHOLD = 100000
 
+module.exports = function (Module) {
+    let __MODULE__ = Module;
+ 
 /******************************************************************************
  *
  * Private
@@ -183,10 +184,15 @@ function parse_data(data, names, types) {
                     continue;
                 };
                 if (inferredType.value === __MODULE__.t_dtype.DTYPE_FLOAT64.value) {
-                    col.push(Number(data[x][name]));
+                    let val = data[x][name];
+                    if (val !== null) {
+                        val = Number(val);
+                    }
+                    col.push(val);
                 } else if (inferredType.value === __MODULE__.t_dtype.DTYPE_INT32.value) {
-                    const val = Number(data[x][name]);
-                        col.push(val);
+                    let val = data[x][name];
+                    if (val !== null) val = Number(val);
+                    col.push(val);
                     if (val > 2147483647 || val < -2147483648) {
                         types[n] = __MODULE__.t_dtype.DTYPE_FLOAT64;
                     }
@@ -1713,6 +1719,8 @@ if (typeof self !== "undefined" && self.addEventListener) {
 
 const perspective = {
 
+    __module__: __MODULE__,
+
     Host: Host,
 
     TYPE_AGGREGATES: TYPE_AGGREGATES,
@@ -1824,10 +1832,7 @@ const perspective = {
             }
         }
     }
-}
-
-module.exports = function (Module) {
-    __MODULE__ = Module;
+};
     return perspective;
 };
 
