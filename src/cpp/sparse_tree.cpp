@@ -728,7 +728,7 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         agg_update_info.m_aggspecs.push_back(ctx.get_aggspec(colname));
     }
 
-    auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
+    /*auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
         int agg_type = agg_update_info.m_aggspecs[col_idx].agg();
 
         return agg_type == AGGTYPE_SCALED_DIV || agg_type == AGGTYPE_SCALED_ADD
@@ -774,7 +774,7 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         for (size_t i = 0; i < col_cnt; ++i) {
             push_column(i);
         }
-    }
+    }*/
 
     for (const auto& r : m_tree_unification_records) {
         if (!node_exists(r.m_sptidx)) {
@@ -850,7 +850,10 @@ void
 t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info, t_uindex src_ridx,
     t_uindex dst_ridx, t_index nstrands, const t_gstate& gstate) {
     static bool const enable_sticky_nan_fix = true;
-    for (t_uindex idx : info.m_dst_topo_sorted) {
+    t_uindex nentries = info.m_src.size();
+
+    for (t_uindex idx = 0; idx < nentries; ++idx)
+    {
         const t_column* src = info.m_src[idx];
         t_column* dst = info.m_dst[idx];
         const t_aggspec& spec = info.m_aggspecs[idx];
@@ -996,10 +999,9 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info, t_uindex src_r
             case AGGTYPE_JOIN: {
                 old_value.set(dst->get_scalar(dst_ridx));
                 auto pkeys = get_pkeys(nidx);
-
                 new_value.set(gstate.reduce<std::function<t_tscalar(t_tscalvec&)>>(
                     pkeys, spec.get_dependencies()[0].name(), [this](t_tscalvec& values) {
-                        t_tscalset vset;
+                        std::set<t_tscalar> vset;
                         for (const auto& v : values) {
                             vset.insert(v);
                         }

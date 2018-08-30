@@ -525,44 +525,73 @@ module.exports = function(Module) {
      * @returns {Promise<Object>} A Promise of this {@link view}'s schema.
      */
     view.prototype.schema = async function() {
+        let new_schema = {};
+
         // get type mapping
         let schema = this.gnode.get_tblschema();
-        let _types = schema.types();
-        let names = schema.columns();
+        let aggs = this.ctx.get_column_names();
+
+        let col_names = [];
+        let typemap = {};
+
+        if (this.sides() === 0) {
+            let types = schema.types();
+            let names = schema.columns();
+            for (let i = 0; i < names.size(); i ++) {
+                typemap[names.get(i)] = types.get(i).value
+            }
+            for (let key = 0; key < aggs.size(); key++) {
+                let col_name = aggs.get(key);
+                if (col_name === "psp_okey") {
+                    continue;
+                }
+                col_names.push(col_name);
+            }
+            types.delete();
+            names.delete(); 
+        } else {
+            for (let key = 0; key < aggs.size(); key++) {
+                let agg = aggs.get(key);
+
+                let col_name_types = agg.get_output_specs(schema);
+                // Only 1 supported for now, until we support UDFs
+                let col_name_type = col_name_types.get(0);
+
+                let col_name = col_name_type.name;
+
+                if (col_name === "psp_okey") {
+                    continue;
+                }
+                typemap[col_name] = col_name_type.type.value;
+
+                col_name_types.delete();
+                agg.delete();
+
+                col_names.push(col_name);
+            }
+        }
+
+        aggs.delete();
         schema.delete();
 
-        let types = {};
-        for (let i = 0; i < names.size(); i++) {
-            types[names.get(i)] = _types.get(i).value;
-        }
-        let new_schema = {};
-        let col_names = this._column_names();
         for (let col_name of col_names) {
-            col_name = col_name.split(COLUMN_SEPARATOR_STRING);
-            col_name = col_name[col_name.length - 1];
-            if (types[col_name] === 1 || types[col_name] === 2) {
+            let type = typemap[col_name];
+            if (type === 1 || type === 2) {
                 new_schema[col_name] = "integer";
-            } else if (types[col_name] === 19) {
+            } else if (type === 19) {
                 new_schema[col_name] = "string";
-            } else if (types[col_name] === 9 || types[col_name] === 10) {
+            } else if (type === 9 || type === 10 || type === 17) {
                 new_schema[col_name] = "float";
-            } else if (types[col_name] === 11) {
+            } else if (type === 11) {
                 new_schema[col_name] = "boolean";
-            } else if (types[col_name] === 12) {
+            } else if (type === 12) {
                 new_schema[col_name] = "datetime";
-            } else if (types[col_name] === 13) {
+            } else if (type === 13) {
                 new_schema[col_name] = "date";
             }
-            if (this.sides() > 0 && this.config.row_pivot.length > 0) {
-                new_schema[col_name] = map_aggregate_types(col_name, new_schema[col_name], this.config.aggregate);
-            }
         }
-
-        _types.delete();
-        names.delete();
-
         return new_schema;
-    };
+    }
 
     /**
      * Serializes this view to JSON data in a standard format.
@@ -585,49 +614,95 @@ module.exports = function(Module) {
     view.prototype.to_flat = async function(options) {
 
         options = options || {};
-        let depth = this.config.row_pivot.length;
+        let row_depth = options.row_depth || this.config.row_pivot.length;
+        let col_depth = options.col_depth || this.config.column_pivot.length;
         let viewport = this.config.viewport ? this.config.viewport : {};
         let start_row = options.start_row || (viewport.top ? viewport.top : 0);
-        let end_row = options.end_row || (viewport.height ? start_row + viewport.height : this.ctx.get_leaf_count(depth));
+        let end_row;
+
         let start_col = options.start_col || (viewport.left ? viewport.left : 0);
-        let end_col = options.end_col || (viewport.width ? start_row + viewport.width : this.ctx.unity_get_column_count() + (this.sides() === 0 ? 0 : 1));
-        let slice = [];
-        if (this.sides() === 1) {
-            slice = __MODULE__.get_leaf_data_one(this.ctx, start_row, end_row, start_col, end_col);
+        let end_col;
+        if (this.sides() !== 2) {
+            end_row = this.ctx.get_leaf_count(row_depth);
+        } else {
+            end_row = this.ctx.get_leaf_count(__MODULE__.t_header.HEADER_ROW, row_depth);
         }
-        let unit_sep = String.fromCharCode(31);
+        end_col = this.ctx.unity_get_column_count() + row_depth;
+
+        let slice = [];
+
+        if (this.sides() === 1) {
+            slice = __MODULE__.get_leaf_data_one(this.ctx, row_depth, start_row, end_row, start_col, end_col);
+        } else if (this.sides() === 2) {
+            slice = __MODULE__.get_leaf_data_two(this.ctx, row_depth, col_depth, start_row, end_row, start_col, end_col);        
+        }
 
         let data = [];
-        let spans = [];
-        for (let d = 0; d < depth; d++) {
-            spans.push([]);
-        }
+        let row_spans = [];
+        let col_spans = [];
         let stride = end_col - start_col;
-        for (let r = 0; r < end_row-start_row; r++) {
-            let row = [];
-            for (let c = 0; c < stride; c++) {
-                let val = slice[r*stride + c];
-                if (c === 0) {
-                    let span_reset = false;
-                    val = val.split(unit_sep);
-                    for (let i = 0; i < val.length; i++) {
-                        let span = spans[i];
-                        let curr = span[span.length - 1];
-                        if (span_reset || !curr || curr[0] !== val[i]) {
-                            curr = [val[i], 0];
-                            span.push(curr);
-                            span_reset = true;
-                        }
-                        curr[1] += 1;
+
+        let start = 0;
+        if (col_depth > 0) {
+            let unit_sep = String.fromCharCode(31);
+            for (let d = 0; d < col_depth; d++) {
+                col_spans.push([]);
+            }
+            for (let c = row_depth; c < stride; c++) {
+                let val = slice[c];
+                let span_reset = false;
+                val = val.split(unit_sep);
+                for (let i = 0; i < val.length; i++) {
+                    let span = col_spans[i];
+                    let curr = span[span.length - 1];
+                    if (span_reset || !curr || curr[0] !== val[i]) {
+                        curr = [val[i], 0];
+                        span.push(curr);
+                        span_reset = true;
                     }
-                } else {
-                    row.push(val);
+                    curr[1] += 1;
                 }
             }
-            data.push(row);
+            start += 1;
         }
-        return {spans: spans, data: data};
-    };
+
+        if (row_depth > 0) {
+            for (let d = 0; d < row_depth; d++) {
+                row_spans.push([]);
+            }
+
+            for (let r = start; r < end_row+start; r++) {
+                let row = [];
+                let header = [];
+                for (let c = 0; c < stride; c++) {
+                    let val = slice[r*stride + c];
+
+                    if (c < row_depth - 1) {
+                        header.push(val);
+                    } else if (c === row_depth - 1) {
+                        header.push(val);
+
+                        let span_reset = false;
+                        for (let i = 0; i < header.length; i++) {
+                            let span = row_spans[i];
+                            let curr = span[span.length - 1];
+                            if (span_reset || !curr || curr[0] !== header[i]) {
+                                curr = [header[i], 0];
+                                span.push(curr);
+                                span_reset = true;
+                            }
+                            curr[1] += 1;
+                        }
+                    } else {
+                        row.push(val);
+                    }
+                }
+                data.push(row);
+            }
+        }
+
+        return {row_spans: row_spans, col_spans: col_spans, data: data};
+    }
 
     const map_aggregate_types = function(col_name, orig_type, aggregate) {
         const INTEGER_AGGS = ["distinct count", "distinctcount", "distinct", "count"];
@@ -1331,7 +1406,6 @@ module.exports = function(Module) {
                         new_sort.push([s[0] + z * aggregates.length, s[1]]);
                     }
                 }
-
                 if (sort.length > 0) {
                     __MODULE__.sort(context, new_sort);
                 }

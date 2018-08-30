@@ -748,15 +748,15 @@ t_ctx2::get_leaf_data(t_uindex row_depth,
 
     t_idxvec cidxvec = m_trees[0]->get_indices_for_depth(col_depth);
 
-    for (t_uindex cidx = 1; cidx < end_col; ++cidx)
+    for (t_uindex cidx = 0; cidx < end_col - row_depth; ++cidx)
     {
-        t_index translated_idx = (cidx - 1) / n_aggs;
+        t_index translated_idx = cidx / n_aggs;
         t_ptidx c_ptidx = cidxvec[translated_idx];
-        col_paths[cidx - 1].reserve(m_config.get_num_cpivots());
-        m_trees[0]->get_path(c_ptidx, col_paths[cidx - 1]);
+        col_paths[cidx].reserve(m_config.get_num_cpivots());
+        m_trees[0]->get_path(c_ptidx, col_paths[cidx]);
 
         std::stringstream label;
-        t_tscalvec& plabels = col_paths[cidx - 1];
+        t_tscalvec& plabels = col_paths[cidx];
         if (!plabels.empty())
         {
             auto last = plabels.rend() - 1;
@@ -766,20 +766,20 @@ t_ctx2::get_leaf_data(t_uindex row_depth,
             }
             label << last->to_string();
         }
-        retval[cidx].set(get_interned_tscalar(label.str().c_str()));
+        retval[cidx+row_depth].set(get_interned_tscalar(label.str().c_str()));
     }
 
     // Iterate by depth
-    std::deque<t_stnode> dft;
-    dft.push_front(tree->get_node(0));
+    std::deque<t_uindex> dft;
+    dft.push_front(0);
 
-    std::vector<t_str> plabels;
+    std::vector<t_tscalar> pheader;
     while (!dft.empty())
     {
-        t_stnode node = dft.front();
+        auto nidx = dft.front();
         dft.pop_front();
 
-        t_str value = node.m_value.to_string();
+        t_stnode node = tree->get_node(nidx);
 
         if (node.m_depth < row_depth)
         {
@@ -788,15 +788,15 @@ t_ctx2::get_leaf_data(t_uindex row_depth,
                 for (t_uindex i = 0; i < last_depth - node.m_depth;
                      ++i)
                 {
-                    plabels.pop_back();
+                    pheader.pop_back();
                 }
             }
 
-            if (node.m_depth != 0)
-                plabels.push_back(value);
+            if (node.m_depth != 0) {
+                pheader.push_back(node.m_value);
+            }
 
-            t_stnode_vec nodes;
-            tree->get_child_nodes(node.m_idx, nodes);
+            t_uidxvec nodes = tree->get_child_idx(nidx);
             std::copy(nodes.rbegin(),
                       nodes.rend(),
                       std::front_inserter(dft));
@@ -804,29 +804,24 @@ t_ctx2::get_leaf_data(t_uindex row_depth,
         else if (node.m_depth == row_depth)
         {
             ridx++;
-            std::stringstream label;
-            for (auto lit = plabels.begin(); lit != plabels.end();
-                 ++lit)
-            {
-                label << *lit << unit_sep;
+
+            t_uindex r_start = (ridx - start_row) * stride;
+            for (t_uindex hidx = 0; hidx < row_depth; ++hidx) {
+                retval[r_start + hidx].set(pheader[hidx]);
             }
-            label << value;
+            retval[r_start + row_depth - 1].set(node.m_value);
 
             t_ptidx r_ptidx = node.m_idx;
             tree->get_path(r_ptidx, r_path);
             t_depth r_depth = node.m_depth;
 
-            retval[(ridx - start_row) * stride].set(
-                get_interned_tscalar(label.str().c_str()));
-
-            for (t_uindex cidx = 1; cidx < end_col; ++cidx)
+            for (t_uindex cidx = 0; cidx < end_col - row_depth; ++cidx)
             {
-                t_index translated_cidx = cidx - 1;
                 t_index insert_idx =
-                    (ridx - start_row) * stride + cidx;
-                const t_tscalvec& c_path = col_paths[translated_cidx];
+                    (ridx - start_row) * stride + row_depth + cidx;
+                const t_tscalvec& c_path = col_paths[cidx];
 
-                t_index agg_idx = translated_cidx % n_aggs;
+                t_index agg_idx = cidx % n_aggs;
                 t_ptidx query_ptidx = INVALID_INDEX;
 
                 if (c_path.size() == 0)
