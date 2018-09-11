@@ -78,6 +78,20 @@ declare module '@jpmorganchase/perspective' {
         [ key: string ]: TypeNames ;
     }
 
+    /**** Flat result ****/
+    export type FlatOptions = {
+        row_depth?: number;
+        col_depth?: number;
+        start_row?: number;
+        start_col?: number;
+    }
+
+    export type FlatResult = {
+        row_spans: any[][];
+        col_spans: any[][];
+        data: any[][];
+    }
+
     /**** View ****/
     export type View = {
         delete(): Promise<void>;
@@ -87,6 +101,7 @@ declare module '@jpmorganchase/perspective' {
         on_delete(callback: Function): void;
         schema(): Promise<Schema>;
         to_json(): Promise<Array<object>>;
+        to_flat(options: FlatOptions): Promise<object>;
         to_csv(): Promise<string>;
     }
 
@@ -101,8 +116,8 @@ declare module '@jpmorganchase/perspective' {
 
     export type AggregateConfig = {
         column: string | Array<string>;
+        op: string; //NUMBER_AGGREGATES | STRING_AGGREGATES | BOOLEAN_AGGREGATES;
         name?: string;
-        op: NUMBER_AGGREGATES | STRING_AGGREGATES | BOOLEAN_AGGREGATES;
     };
 
     export type ViewConfig = {
@@ -110,7 +125,7 @@ declare module '@jpmorganchase/perspective' {
         column_pivot?: Array<string>;
         sort?: Array<string>;
         filter?: Array<Array<string>>;
-        aggregate: Array<AggregateConfig>;
+        aggregate?: Array<AggregateConfig>;
     };
 
     export type Table = {
