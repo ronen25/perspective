@@ -940,10 +940,14 @@ module.exports = function(Module) {
      * Expand the tree down to `depth`.
      *
      */
-    view.prototype.expand_to_depth = async function(depth) {
+    view.prototype.expand_to_depth = async function (depth, column) {
         if (this.config.row_pivot.length >= depth) {
             if (this.nsides === 2) {
-                return this.ctx.expand_to_depth(__MODULE__.t_header.HEADER_ROW, depth);
+                if (column) {
+                    return this.ctx.expand_to_depth(__MODULE__.t_header.HEADER_COLUMN, depth);
+                } else {
+                    return this.ctx.expand_to_depth(__MODULE__.t_header.HEADER_ROW, depth);
+                }
             } else {
                 return this.ctx.expand_to_depth(depth);
             }
@@ -956,10 +960,14 @@ module.exports = function(Module) {
      * Collapse the tree down to `depth`.
      *
      */
-    view.prototype.collapse_to_depth = async function(depth) {
+    view.prototype.collapse_to_depth = async function(depth, column) {
         if (this.config.row_pivot.length >= depth) {
             if (this.nsides === 2) {
-                return this.ctx.collapse_to_depth(__MODULE__.t_header.HEADER_ROW, depth);
+                if (column) {
+                    return this.ctx.collapse_to_depth(__MODULE__.t_header.HEADER_COLUMN, depth);
+                } else {
+                    return this.ctx.collapse_to_depth(__MODULE__.t_header.HEADER_ROW, depth);
+                }
             } else {
                 return this.ctx.collapse_to_depth(depth);
             }

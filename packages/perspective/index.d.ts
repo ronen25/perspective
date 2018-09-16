@@ -96,8 +96,8 @@ declare module '@jpmorganchase/perspective' {
     export type View = {
         delete(): Promise<void>;
         num_columns(): Promise<number>;
-        expand_to_depth(depth: number): void;
-        collapse_to_depth(depth: number): void;
+        expand_to_depth(depth: number, column: boolean | undefined): void;
+        collapse_to_depth(depth: number, column: boolean | undefined): void;
         num_rows(): Promise<number>;
         on_update(callback: UpdateCallback): void;
         on_delete(callback: Function): void;
