@@ -985,28 +985,25 @@ module.exports = function(Module) {
      * parameter to this callback shares a structure with the return type of
      * {@link view#to_json}.
      */
-    view.prototype.on_update = function(callback) {
+    view.prototype.on_update = function (callback) {
         this.callbacks.push({
             view: this,
             callback: () => {
-                if (this.ctx.get_step_delta) {
-                    let delta = this.ctx.get_step_delta(0, 2147483647);
-                    if (delta.cells.size() === 0) {
+                let delta = this.ctx.get_step_delta(0, 2147483647);
+                //console.log(delta.rows_changed, delta.columns_changed);
+                if (delta.cells.size() > 0) {
+                    let size = delta.cells.size();
+                    let total = this.ctx.unity_get_row_count() * this.ctx.unity_get_column_count();
+                    let log = `updating (${size}/${total}) for ${this.name} with ${this.nsides} sides at ${new Date()}`;
+                    //console.log(log);
+                    if (this.nsides == 0) {
                         this.to_json().then(callback);
                     } else {
-                        let rows = {};
-                        for (let x = 0; x < delta.cells.size(); x++) {
-                            rows[delta.cells.get(x).row] = true;
+                        for (let i = 0; i < delta.cells.size(); ++i) {
+                            let cell = delta.cells.get(i);
+                            console.log(cell);
                         }
-                        rows = Object.keys(rows);
-                        Promise.all(
-                            rows.map(row =>
-                                this.to_json({
-                                    start_row: Number.parseInt(row),
-                                    end_row: Number.parseInt(row) + 1
-                                })
-                            )
-                        ).then(results => callback([].concat.apply([], results)));
+                        this.to_flat().then(callback);
                     }
                     delta.cells.delete();
                 } else {
@@ -1014,7 +1011,7 @@ module.exports = function(Module) {
                 }
             }
         });
-    };
+    }
 
     /**
      * Register a callback with this {@link view}.  Whenever the {@link view}
@@ -1061,11 +1058,19 @@ module.exports = function(Module) {
         bindall(this);
     }
 
-    table.prototype._update_callback = function() {
+    table.prototype._update_callback = function () {
+        let contexts = this.gnode.get_contexts_last_updated();
+        let updated = [];
+        for (let i = 0; i < contexts.size(); i++) {
+            updated.push(contexts.get(i));
+        }
+        contexts.delete();
+        //console.log("Pool update: ", updated, this.views.length);
+
         for (let e in this.callbacks) {
             this.callbacks[e].callback();
         }
-    };
+    }
 
     table.prototype._calculate_computed = function(tbl, computed_defs) {
         // tbl is the pointer to the C++ t_table

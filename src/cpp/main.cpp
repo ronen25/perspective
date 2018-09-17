@@ -1088,6 +1088,7 @@ EMSCRIPTEN_BINDINGS(perspective) {
         .function<t_uindex>(
             "get_id", reinterpret_cast<t_uindex (t_gnode::*)() const>(&t_gnode::get_id))
         .function<t_schema>("get_tblschema", &t_gnode::get_tblschema)
+        .function<t_svec>("get_contexts_last_updated", &t_gnode::get_contexts_last_updated)
         .function<t_table*>("get_table", &t_gnode::get_table, allow_raw_pointers());
 
     class_<t_ctx0>("t_ctx0")
