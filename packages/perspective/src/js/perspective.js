@@ -1345,7 +1345,7 @@ module.exports = function(Module) {
                 if (!Array.isArray(x)) {
                     return [config.aggregate.map(agg => agg.column).indexOf(x), 1];
                 } else {
-                    return [config.aggregate.map(agg => agg.column).indexOf(x[0]), SORT_ORDERS.indexOf(x[1])];
+                    return [x[0], SORT_ORDERS.indexOf(x[1])];
                 }
             });
             if (config.column_pivot.length > 0 && config.row_pivot.length > 0) {
