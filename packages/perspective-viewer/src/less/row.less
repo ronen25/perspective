@@ -50,7 +50,6 @@ perspective-row {
 }
 
 #side_panel perspective-row {
-
     #row_close {
         display: none;
         cursor: pointer;
@@ -70,19 +69,17 @@ perspective-row {
 
         #row_edit {
             color: @darkgray;
-           
+
             font-size: 9px;
             margin-left: 5px;
 
             &:before {
-                content: "\01F527"
+                //content: "\01F527"
             }
         }
-
     }
 
     &.computed {
-
         // #psp_row .row_draggable {
         //     height: 35px !important;
         // }
@@ -150,7 +147,8 @@ perspective-row #sort_order {
 }
 
 perspective-row {
-    #filter_operand, #filter_operator {
+    #filter_operand,
+    #filter_operator {
         display: none;
         margin: 0;
     }
@@ -166,8 +164,6 @@ perspective-row {
     }
 }
 
-
-
 #filters perspective-row {
     margin-right: 24px;
 
@@ -180,10 +176,12 @@ perspective-row {
         padding-right: 15px;
         cursor: pointer;
     }
+
     #filter_operator {
         display: inline-block;
         height: 17px;
     }
+
     #filter_operand {
         display: inline-block;
     }
@@ -202,19 +200,15 @@ perspective-row {
     min-width: 18px;
 }
 
-#side_panel {
-    padding-top: 5px;
-    flex: 0 1 auto;
-}
-
 #side_panel perspective-row .column_name {
     overflow: hidden;
     max-width: 180px;
     white-space: nowrap;
-    text-overflow: ellipsis; 
+    text-overflow: ellipsis;
 }
 
-#side_panel perspective-row .integer::before, #side_panel perspective-row .float::before {
+#side_panel perspective-row .integer::before,
+#side_panel perspective-row .float::before {
     .column_row();
     content: "123";
 }
@@ -261,14 +255,19 @@ perspective-row .row_draggable select {
     margin: 0px 0px 0px 26px;
 }
 
-perspective-viewer:not([row-pivots='[]']) #side_panel #active_columns perspective-row #column_aggregate {
+perspective-viewer:not([row-pivots="[]"])
+    #side_panel
+    #active_columns
+    perspective-row
+    #column_aggregate {
     display: inline-block;
 }
 
-perspective-viewer:not([row-pivots='[]']) #side_panel {
+perspective-viewer:not([row-pivots="[]"]) #side_panel {
     #active_columns perspective-row .row_draggable {
         height: 41px;
     }
+
     #inactive_columns perspective-row .row_draggable {
         height: 21px;
     }

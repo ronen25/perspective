@@ -11,7 +11,6 @@
 @import "material";
 
 perspective-viewer {
-    
     ::-webkit-scrollbar {
         width: 6px;
     }
@@ -31,29 +30,34 @@ perspective-viewer {
             color: white !important;
         }
 
-        #side_panel #columns_container #active_columns perspective-row[drop-target] .row_draggable {
+        #side_panel
+            #columns_container
+            #active_columns
+            perspective-row[drop-target]
+            .row_draggable {
             background-color: @blue900 !important;
             color: white !important;
         }
     }
 
-    &[view=treemap], &[view=heatmap] {
+    &[view="treemap"],
+    &[view="heatmap"] {
         rect {
             stroke: @coolgrey700 !important;
         }
     }
 
-    &[view=heatmap] image.highcharts-boost-canvas {
+    &[view="heatmap"] image.highcharts-boost-canvas {
         opacity: 0.8 !important;
     }
 
-    &[view=treemap] {
+    &[view="treemap"] {
         rect {
             stroke: @coolgrey700 !important;
         }
     }
 
-    &[view=sunburst] {
+    &[view="sunburst"] {
         path {
             stroke: @coolgrey700 !important;
         }
@@ -67,7 +71,10 @@ perspective-viewer {
         background-color: @coolgrey800;
         border-top-color: @coolgrey900 !important;
 
-        input, select, ul, #filters {
+        input,
+        select,
+        ul,
+        #filters {
             border-right: 0px;
             background-color: @coolgrey800;
             color: @coolgrey200;
@@ -75,7 +82,8 @@ perspective-viewer {
         }
 
         select {
-            background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9Ii0xNzcgMTc2IDQuOSAxMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAtMTc3IDE3NiA0LjkgMTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjx0aXRsZT5hcnJvd3M8L3RpdGxlPg0KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSItMTc1LjYsMTgwLjcgLTE3NC41LDE3OS4yIC0xNzMuNSwxODAuNyAiLz4NCjxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iLTE3My41LDE4MS4zIC0xNzQuNSwxODIuOCAtMTc1LjYsMTgxLjMgIi8+DQo8L3N2Zz4=) no-repeat 95% 50% !important;
+            background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxOS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjxzdmcgdmVyc2lvbj0iMS4xIiBpZD0iTGF5ZXJfMSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIiB4bWxuczp4bGluaz0iaHR0cDovL3d3dy53My5vcmcvMTk5OS94bGluayIgeD0iMHB4IiB5PSIwcHgiDQoJIHZpZXdCb3g9Ii0xNzcgMTc2IDQuOSAxMCIgc3R5bGU9ImVuYWJsZS1iYWNrZ3JvdW5kOm5ldyAtMTc3IDE3NiA0LjkgMTA7IiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxzdHlsZSB0eXBlPSJ0ZXh0L2NzcyI+DQoJLnN0MHtmaWxsOiNGRkZGRkY7fQ0KPC9zdHlsZT4NCjx0aXRsZT5hcnJvd3M8L3RpdGxlPg0KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSItMTc1LjYsMTgwLjcgLTE3NC41LDE3OS4yIC0xNzMuNSwxODAuNyAiLz4NCjxwb2x5Z29uIGNsYXNzPSJzdDAiIHBvaW50cz0iLTE3My41LDE4MS4zIC0xNzQuNSwxODIuOCAtMTc1LjYsMTgxLjMgIi8+DQo8L3N2Zz4=)
+                no-repeat 95% 50% !important;
 
             &:focus {
                 color: @coolgrey200 !important;
@@ -92,7 +100,7 @@ perspective-viewer {
 
         svg {
             .highcharts-axis tspan {
-                fill: #AAA !important;
+                fill: #aaa !important;
             }
 
             .highcharts-button-box {
@@ -117,17 +125,34 @@ perspective-viewer {
         }
 
         .highcharts-heatmap-gradient-full {
-            background: linear-gradient(#feeb65 0%, #e4521b 22.5%, #4D342F 42.5%, #222222 50%, #1a237e 57.5%, #42b3d5 67.5%, #dcedc8 100%);
+            background: linear-gradient(
+                #feeb65 0%,
+                #e4521b 22.5%,
+                #4d342f 42.5%,
+                #222222 50%,
+                #1a237e 57.5%,
+                #42b3d5 67.5%,
+                #dcedc8 100%
+            );
         }
 
         .highcharts-heatmap-gradient-positive {
-            background: linear-gradient(#222222 0%, #1a237e 35%, #42b3d5 70%, #dcedc8 100%);
+            background: linear-gradient(
+                #222222 0%,
+                #1a237e 35%,
+                #42b3d5 70%,
+                #dcedc8 100%
+            );
         }
 
         .highcharts-heatmap-gradient-negative {
-            background: linear-gradient(#feeb65 0%, #e4521b 35%, #4D342F 70%, #222222 100%);
+            background: linear-gradient(
+                #feeb65 0%,
+                #e4521b 35%,
+                #4d342f 70%,
+                #222222 100%
+            );
         }
-
 
         .highcharts-yaxis-grid path.highcharts-grid-line {
             stroke: @coolgrey600;
@@ -140,11 +165,13 @@ perspective-viewer {
         #pivot_chart {
             background-color: @coolgrey700;
 
-            tspan, text {
+            tspan,
+            text {
                 fill: @coolgrey200 !important;
             }
 
-            rect, image {
+            rect,
+            image {
                 opacity: 0.85;
             }
         }
@@ -154,7 +181,7 @@ perspective-viewer {
         }
 
         #filters {
-            color: #666
+            color: #666;
         }
 
         perspective-row {
@@ -164,13 +191,12 @@ perspective-viewer {
         }
 
         #side_panel {
-
             #columns_container {
-
-                #active_columns, #inactive_columns {
-
+                #active_columns,
+                #inactive_columns {
                     perspective-row {
-                        .float:before, .integer:before {
+                        .float:before,
+                        .integer:before {
                             color: @lightblue600;
                         }
 
@@ -182,7 +208,6 @@ perspective-viewer {
                 }
 
                 #active_columns {
-
                     perspective-row {
                         .is_visible:before {
                             color: @lightblue600;
@@ -259,7 +284,8 @@ perspective-viewer {
                     }
 
                     #psp-cc-computation__type {
-                        span.integer, span.float {
+                        span.integer,
+                        span.float {
                             color: @lightblue600;
                         }
 
@@ -269,6 +295,7 @@ perspective-viewer {
                     }
 
                     #psp-cc-computation__input-column {
+                        background: none;
                         border-bottom-color: @coolgrey600;
 
                         &.dropping {

@@ -19,25 +19,25 @@
     min-height: 24px;
 }
 
-.dragging .psp-text-field.dropping{
-    border-bottom: 2px solid #22A0CE;
+.dragging .psp-text-field.dropping {
+    border-bottom: 2px solid #22a0ce;
 }
 
-.dragging  .psp-text-field{
-    border-bottom: 1px solid #22A0CE;
+.dragging .psp-text-field {
+    border-bottom: 1px solid #22a0ce;
 }
 
-.psp-text-field > .psp-text-field__input{
+.psp-text-field > .psp-text-field__input {
     border: 0px;
     line-height: 20px;
     vertical-align: bottom;
     padding-bottom: 0px;
-    display:none;
+    display: none;
 }
 
-.psp-text-field__input + label{
-    line-height:17px;
-    box-sizing:border-box;
+.psp-text-field__input + label {
+    line-height: 17px;
+    box-sizing: border-box;
     color: rgb(204, 204, 204);
     font-weight: 400;
     white-space: nowrap;
@@ -46,23 +46,24 @@
     display: inline-block;
 }
 
-.dropping .psp-text-field__input, .psp-text-field__input:not(:empty){
+.dropping .psp-text-field__input,
+.psp-text-field__input:not(:empty) {
     display: initial;
 }
 
-.dropping .psp-text-field__input::after{
-    content:'|';
+.dropping .psp-text-field__input::after {
+    content: "|";
     width: 0px;
-    overflow:visible;
+    overflow: visible;
     margin-top: -2px;
 }
-
 
 .dropping * {
     pointer-events: none;
 }
 
-.dropping  .psp-text-field label, .psp-text-field__input:not(:empty) + label{
+.dropping .psp-text-field label,
+.psp-text-field__input:not(:empty) + label {
     position: absolute;
     top: 0px;
     line-height: 10px;
@@ -83,15 +84,14 @@
 }
 
 .dropping perspective-row.inserting {
-    border-top: 25px solid rgba(0,0,0,0);
+    border-top: 25px solid rgba(0, 0, 0, 0);
 }
 
 .dropping perspective-row.postserting {
-    border-bottom: 25px solid rgba(0,0,0,0);
+    border-bottom: 25px solid rgba(0, 0, 0, 0);
 }
 
 perspective-viewer {
-
     font-family: @sans-serif-fonts;
 
     .awesomplete > ul {
@@ -106,7 +106,7 @@ perspective-viewer {
         content: none;
     }
 
-    .awesomplete > input{
+    .awesomplete > input {
         background-color: transparent;
     }
 
@@ -124,13 +124,28 @@ perspective-viewer {
         #columns_container {
             flex-direction: row-reverse;
         }
-        #active_columns, #inactive_columns {
+
+        #active_columns,
+        #inactive_columns {
             display: flex;
             flex-direction: column;
-            flex: 1 !important;
+            flex: 0 1 auto;
+            width: 100%;
         }
+
+        #sub_columns {
+            flex-shrink: 1;
+
+            perspective-row {
+                span#name {
+                    margin-right: 25px;
+                }
+            }
+        }
+
         #active_columns {
-            padding-right: 8px;
+            margin-right: 8px;
+
             perspective-row {
                 div#psp_row {
                     margin-right: 2px;
@@ -144,14 +159,19 @@ perspective-viewer {
 
         perspective-computed-column {
             max-height: none;
-
         }
     }
 
     #columns_container {
         flex-direction: column;
+        height: 100%;
 
-        #active_columns, #inactive_columns {
+        #active_columns {
+            flex: 0 1 auto;
+        }
+
+        #active_columns,
+        #inactive_columns {
             border: none !important;
         }
 
@@ -177,7 +197,7 @@ perspective-viewer {
         color: #999;
     }
 
-    #side_panel perspective-row [settings=true] #app {
+    #side_panel perspective-row [settings="true"] #app {
         border-top: 1px solid #ccc;
     }
 
@@ -186,7 +206,6 @@ perspective-viewer {
     }
 
     #filters perspective-row {
-
         select {
             -webkit-appearance: none;
             -moz-appearance: none;
@@ -204,13 +223,14 @@ perspective-viewer {
     }
 
     perspective-row {
-        border: 0px solid rgba(0,0,0,0);
+        border: 0px solid rgba(0, 0, 0, 0);
 
         #row_close {
-            color:#999;
-            font-family:Arial;
-            font-size:10px;
+            color: #999;
+            font-family: Arial;
+            font-size: 10px;
         }
+
         #column_aggregate {
             font-family: Arial;
         }
@@ -225,12 +245,12 @@ perspective-viewer {
     }
 
     #side_panel perspective-row {
-
         .is_visible::before {
             content: "\25CF";
         }
 
-        .integer::before, .float::before {
+        .integer::before,
+        .float::before {
             .column_row();
             content: "123";
             color: #016bc6;
@@ -264,7 +284,7 @@ perspective-viewer {
         position: relative;
         overflow-y: auto;
         width: 100%;
-        margin-top:36px;
+        margin-top: 36px;
         min-height: 36px;
 
         button.side_panel-action {
@@ -293,21 +313,29 @@ perspective-viewer {
     }
 
     .noselect {
-        -webkit-touch-callout: none; /* iOS Safari */
-        -webkit-user-select: none; /* Safari */
-        -khtml-user-select: none; /* Konqueror HTML */
-        -moz-user-select: none; /* Firefox */
-        -ms-user-select: none; /* Internet Explorer/Edge */
-        user-select: none; /* Non-prefixed version, currently supported by Chrome and Opera */
+        -webkit-touch-callout: none;
+        /* iOS Safari */
+        -webkit-user-select: none;
+        /* Safari */
+        -khtml-user-select: none;
+        /* Konqueror HTML */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* Internet Explorer/Edge */
+        user-select: none;
+        /* Non-prefixed version, currently supported by Chrome and Opera */
     }
 
     svg text {
         font-family: @sans-serif-fonts !important;
     }
 
-    svg .highcharts-axis-title, svg .highcharts-axis-title {
+    svg .highcharts-axis-title,
+    svg .highcharts-axis-title {
         font-family: @sans-serif-fonts !important;
     }
+
     svg .highcharts-legend-box {
         fill: none;
     }
@@ -326,10 +354,12 @@ perspective-viewer {
     #drop_target {
         background: white;
     }
+
     #drop_target_inner h3 {
         color: #aaa;
         font-weight: 300;
     }
+
     #config_button {
         font-weight: normal;
         font-family: Arial;
@@ -339,7 +369,7 @@ perspective-viewer {
     }
 
     #config_button:before {
-        content: '\1f527';
+        content: "\1f527";
     }
 
     ul {
@@ -347,30 +377,39 @@ perspective-viewer {
         font-size: 12px;
         padding: 0px 10px 0px 10px;
     }
+
     select {
         border-radius: 0;
         background-color: white;
         .bordered();
     }
+
     select:focus {
         outline: none;
     }
+
     input {
         .bordered();
     }
+
     input::placeholder {
         color: #ccc;
     }
-    rect, svg image {
+
+    rect,
+    svg image {
         opacity: 0.5;
     }
-    path, circle {
+
+    path,
+    circle {
         opacity: 0.8;
     }
-    
+
     option[value=""] {
         color: white !important;
     }
+
     select:focus {
         color: #000 !important;
     }
@@ -383,16 +422,18 @@ perspective-viewer {
         color: #666;
     }
 
-    ::-webkit-scrollbar, ::shadow ::-webkit-scrollbar {
+    ::-webkit-scrollbar,
+    ::shadow ::-webkit-scrollbar {
         width: 12px;
     }
 
-    ::-webkit-scrollbar-thumb, ::shadow ::-webkit-scrollbar-thumb {
+    ::-webkit-scrollbar-thumb,
+    ::shadow ::-webkit-scrollbar-thumb {
         background: #ccc;
     }
 
-    ::-webkit-scrollbar-track, ::shadow ::-webkit-scrollbar-track {
+    ::-webkit-scrollbar-track,
+    ::shadow ::-webkit-scrollbar-track {
         background: none;
     }
-
 }

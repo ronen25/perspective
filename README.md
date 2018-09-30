@@ -1,6 +1,9 @@
 # Perspective
 
 [![Build Status](https://travis-ci.org/jpmorganchase/perspective.svg?branch=master)](https://travis-ci.org/jpmorganchase/perspective)
+[![Gitter](https://img.shields.io/gitter/room/nwjs/nw.js.svg)](https://gitter.im/jpmorganchase/perspective)
+[![npm](https://img.shields.io/npm/v/@jpmorganchase/perspective.svg?style=flat-square)](https://www.npmjs.com/package/@jpmorganchase/perspective)
+[![code style: prettier](https://img.shields.io/badge/code_style-prettier-ff69b4.svg?style=flat-square)](https://github.com/prettier/prettier)
 
 A streaming data visualization engine for Javascript, Perspective makes it 
 simple to build real-time & user configurable analytics entirely in the browser.
@@ -25,12 +28,10 @@ simple to build real-time & user configurable analytics entirely in the browser.
 
 ## Examples
 
-* [superstore.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/superstore-arrow.html) A static `superstore.csv` demo.
-* [citibike.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/citibike.html) NYC Citibike availability map.
-* [streaming.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/streaming.html) A streaming random data demo.
-* [coincap.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/coincap.html) Streaming crypto currency prices via [Coincap.io](http://coincap.io/).
-* [theme-material.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/theme-material.html) Material theme example.
-* [csv.html](https://unpkg.com/@jpmorganchase/perspective-examples/build/csv.html) Upload a CSV of your own.
+* [Superstore](https://jsfiddle.net/texodus/gsoybtrp/) A static `superstore.arrow` demo.
+* [Olympics](https://jsfiddle.net/texodus/eax9tqbm/) An example of sharing a single `perspective.table` among multiple `<perspective-viewer>`s.
+* [Streaming](https://jsfiddle.net/texodus/84u926L1/) A streaming random data demo.
+* [CSV](https://jsfiddle.net/texodus/pcrnd4jg/) Upload a CSV of your own.
 
 ## Documentation
 

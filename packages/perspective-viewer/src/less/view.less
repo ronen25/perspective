@@ -7,7 +7,7 @@
  *
  */
 
- @import "./column_labels.less";
+@import "./column_labels.less";
 
 perspective-viewer:hover #config_button {
     opacity: 1;
@@ -18,13 +18,11 @@ perspective-viewer:hover #config_button {
     opacity: 1 !important;
 }
 
-[settings=true] #config_button {
+[settings="true"] #config_button {
     opacity: 1 !important;
 }
 
-
 perspective-viewer {
-
     position: relative;
     display: inline-block;
 
@@ -41,7 +39,7 @@ perspective-viewer {
 
     #app.hide_message {
         #drop_target {
-            display:none;
+            display: none;
         }
     }
 
@@ -70,7 +68,10 @@ perspective-viewer {
         display: flex;
     }
 
-    #row_pivots #psp_row, #column_pivots #psp_row, #sort #psp_row, #filters #psp_row {
+    #row_pivots #psp_row,
+    #column_pivots #psp_row,
+    #sort #psp_row,
+    #filters #psp_row {
         display: inline;
     }
 
@@ -78,21 +79,42 @@ perspective-viewer {
         min-height: 20px;
     }
 
-    #active_columns, #inactive_columns {
+    #active_columns,
+    #inactive_columns {
         list-style: none;
         padding: 5px;
         width: 100%;
         margin-top: 8px;
         overflow-y: auto;
+        overflow-x: hidden;
         position: relative;
     }
 
     #inactive_columns {
-        min-height: 33.3%;
-        flex-shrink: 1000;
-
         .active {
             display: none;
+        }
+    }
+
+    .columns_horizontal #sub_columns.collapse #side_panel__actions {
+        margin-top: 0px;
+    }
+
+    #sub_columns {
+        min-height: 33.3%;
+        flex-shrink: 100000;
+        display: flex;
+        flex-direction: column;
+        overflow-x: hidden;
+        width: 100%;
+
+        &.collapse {
+            #inactive_columns {
+                display: none;
+            }
+
+            flex-shrink: 0;
+            min-height: 64px;
         }
     }
 
@@ -102,6 +124,7 @@ perspective-viewer {
         margin: 15px 13px 15px 13px;
         margin-bottom: 5px;
     }
+
     .column {
         display: flex;
         list-style: none;
@@ -121,7 +144,7 @@ perspective-viewer {
     }
 
     .rrow > div {
-        display:flex;
+        display: flex;
         min-height: 24px;
         flex-direction: column;
         justify-content: flex-end;
@@ -145,7 +168,6 @@ perspective-viewer {
         display: inline-block;
         vertical-align: middle;
         margin-bottom: 0px;
-        
     }
 
     #drop_target {
@@ -156,16 +178,19 @@ perspective-viewer {
         bottom: 0px;
         padding: 30px;
     }
+
     #drop_target_inner {
         width: 100%;
         height: 100%;
         display: flex;
         align-items: center;
-        justify-content: center
+        justify-content: center;
     }
+
     #drop_target_inner h3 {
         font-weight: 300;
     }
+
     #config_button {
         position: absolute;
         top: 0;
@@ -183,25 +208,28 @@ perspective-viewer {
     }
 
     #config_button:before {
-        content: '\1f527';
+        content: "\1f527";
     }
-    
+
     ul {
         padding: 0px;
         margin: 0;
         font-size: 12px;
     }
+
     select {
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIwLjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM0NDQ0NDQ7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+Cg==) no-repeat 95% 50%;
+        background: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4KPCEtLSBHZW5lcmF0b3I6IEFkb2JlIElsbHVzdHJhdG9yIDIwLjAuMCwgU1ZHIEV4cG9ydCBQbHVnLUluIC4gU1ZHIFZlcnNpb246IDYuMDAgQnVpbGQgMCkgIC0tPgo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4IgoJIHZpZXdCb3g9IjAgMCA0LjkgMTAiIHN0eWxlPSJlbmFibGUtYmFja2dyb3VuZDpuZXcgMCAwIDQuOSAxMDsiIHhtbDpzcGFjZT0icHJlc2VydmUiPgo8c3R5bGUgdHlwZT0idGV4dC9jc3MiPgoJLnN0MHtmaWxsOiM0NDQ0NDQ7fQo8L3N0eWxlPgo8dGl0bGU+YXJyb3dzPC90aXRsZT4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIxLjQsNC43IDIuNSwzLjIgMy41LDQuNyAiLz4KPHBvbHlnb24gY2xhc3M9InN0MCIgcG9pbnRzPSIzLjUsNS4zIDIuNSw2LjggMS40LDUuMyAiLz4KPC9zdmc+Cg==)
+            no-repeat 95% 50%;
         background-color: #fff;
         border-radius: 5px;
         height: 24px;
         padding: 0px 0px 0px 6px;
         font-size: 12px;
     }
+
     input {
         padding: 0 10px 0 10px;
     }
@@ -211,6 +239,7 @@ perspective-viewer {
         align-items: center;
         justify-content: center;
     }
+
     #top_panel {
         display: flex;
         flex-wrap: wrap;
@@ -218,6 +247,11 @@ perspective-viewer {
         padding-bottom: 10px;
         padding-top: 5px;
         max-width: 1000px;
+    }
+
+    #side_panel {
+        padding-top: 5px;
+        flex: 0 0 auto;
     }
 
     #side_panel > div {
@@ -241,18 +275,17 @@ perspective-viewer {
 
     #transpose_button {
         cursor: pointer;
-        min-width:5px;
-        max-width:5px;
-        flex-grow:0;
-        color:#999;
-        font-family:Arial;
-        font-size:12px
+        min-width: 5px;
+        max-width: 5px;
+        flex-grow: 0;
+        color: #999;
+        font-family: Arial;
+        font-size: 12px;
     }
-
 }
 
-perspective-viewer[view=treemap]:not([column-pivots="[]"]), perspective-viewer[view=sunburst]:not([column-pivots="[]"]) {
-
+perspective-viewer[view="treemap"]:not([column-pivots="[]"]),
+perspective-viewer[view="sunburst"]:not([column-pivots="[]"]) {
     .chart {
         position: relative !important;
     }
