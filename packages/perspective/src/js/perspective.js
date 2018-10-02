@@ -999,10 +999,12 @@ module.exports = function(Module) {
                     if (this.nsides == 0) {
                         this.to_json().then(callback);
                     } else {
-                        for (let i = 0; i < delta.cells.size(); ++i) {
+                        /*for (let i = 0; i < delta.cells.size(); ++i) {
                             let cell = delta.cells.get(i);
+                            cell.old_value = __MODULE__.scalar_to_val(cell.old_value);
+                            cell.new_value = __MODULE__.scalar_to_val(cell.new_value);
                             console.log(cell);
-                        }
+                        }*/
                         this.to_flat().then(callback);
                     }
                     delta.cells.delete();
