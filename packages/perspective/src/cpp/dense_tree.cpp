@@ -340,4 +340,12 @@ t_dtree::get_pivots() const {
     return m_pivots;
 }
 
+void t_dtree::get_child_indices(t_ptidx nidx, t_ptivec& v) const {
+  auto nptr = get_node_ptr(nidx);
+  for (t_index idx = nptr->m_fcidx + nptr->m_nchild - 1, loop_end = nptr->m_fcidx;
+       idx >= loop_end; --idx) {
+    v.push_back(idx);
+  }
+}
+  
 } // end namespace perspective

@@ -18,14 +18,6 @@
 #include <perspective/node_processor_types.h>
 #include <perspective/partition.h>
 #include <perspective/mask.h>
-#ifdef PSP_PARALLEL_FOR
-#include <tbb/tbb.h>
-#include <tbb/parallel_for.h>
-#include <tbb/blocked_range.h>
-#include <tbb/atomic.h>
-#include <tbb/concurrent_vector.h>
-#include <tbb/mutex.h>
-#endif
 #include <csignal>
 #include <cmath>
 #include <map>
@@ -36,15 +28,11 @@ template <typename DATA_T, int DTYPE_T>
 struct t_chunk_processor_sstate {
     t_chunk_processor_sstate() {}
 
-    typedef t_chunk_value_span<DATA_T> t_spans;
+    typedef t_chunk_value_span<t_tscalar> t_spans;
     typedef std::vector<t_spans> t_spanvec;
     typedef std::vector<t_spanvec> t_spanvvec;
 
     t_spanvvec m_spanvec;
-#ifdef PSP_PARALLEL_FOR
-    tbb::mutex m_spanvec_mutex;
-    tbb::mutex m_tbbmut;
-#endif
     PSP_NON_COPYABLE(t_chunk_processor_sstate);
 };
 
@@ -57,9 +45,6 @@ struct t_chunk_processor {
 
     t_chunk_processor(const t_column* data, t_column* nodes, t_column* values, t_column* leaves,
         t_sstate* state);
-#ifdef PSP_PARALLEL_FOR
-    void operator()(const tbb::blocked_range<t_uindex>& rng) const;
-#endif
     const t_column* m_data;
     t_column* m_nodes;
     t_column* m_values;
@@ -76,29 +61,12 @@ t_chunk_processor<DATA_T, DTYPE_T>::t_chunk_processor(const t_column* PSP_RESTRI
     , m_values(values)
     , m_leaves(leaves)
     , m_sstate(sstate) {}
-#ifdef PSP_PARALLEL_FOR
-template <typename DATA_T, int DTYPE_T>
-void
-t_chunk_processor<DATA_T, DTYPE_T>::operator()(const tbb::blocked_range<t_uindex>& rng) const {
-    t_uindex bidx = rng.begin();
-    t_uindex eidx = rng.end();
-
-    t_spanvec spans;
-    partition<DATA_T, DTYPE_T, DEFAULT_CHUNK_SIZE>(
-        m_data, m_leaves, bidx, eidx, spans, m_sstate->m_tbbmut);
-    tbb::mutex::scoped_lock slock(m_sstate->m_spanvec_mutex);
-    m_sstate->m_spanvec.push_back(spans);
-}
-#endif
 
 template <typename DATA_T, int DTYPE_T>
 struct t_pivot_processor {
-    typedef std::map<DATA_T, t_uindex, t_comparator<DATA_T, DTYPE_T>> t_map;
+    typedef std::map<t_tscalar, t_uindex, t_comparator<DATA_T, DTYPE_T>> t_map;
     typedef t_chunk_processor<DATA_T, DTYPE_T> t_cp;
     typedef typename t_cp::t_spanvec t_spanvec;
-#ifdef PSP_PARALLEL_FOR
-    typedef tbb::blocked_range<t_uindex> t_range;
-#endif
     typedef typename t_cp::t_spans t_spans;
     typedef typename t_cp::t_sstate t_sstate;
 
@@ -118,51 +86,35 @@ template <typename DATA_T, int DTYPE_T>
 t_uindex
 t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* nodes,
     t_column* values, t_column* leaves, t_uindex nbidx, t_uindex neidx, const t_mask* mask) {
-    typedef std::map<DATA_T, t_uindex, t_comparator<DATA_T, DTYPE_T>> t_map;
+    typedef std::map<t_tscalar, t_uindex, t_comparator<t_tscalar, DTYPE_T>> t_map;
     t_lstore lcopy(leaves->data_lstore(), t_lstore_tmp_init_tag());
 
     // add accessor api and move these to that
     t_uindex* leaves_ptr = leaves->get_nth<t_uindex>(0);
     t_uindex* lcopy_ptr = lcopy.get_nth<t_uindex>(0);
-
     t_uindex lvl_nidx = neidx;
-
     t_uindex offset = 0;
 
     for (t_uindex nidx = nbidx; nidx < neidx; ++nidx) {
         t_dense_tnode* pnode = nodes->get_nth<t_dense_tnode>(nidx);
-
         t_uindex cbidx = pnode->m_flidx;
         t_uindex ceidx = pnode->m_flidx + pnode->m_nleaves;
         t_uindex parent_idx = pnode->m_idx;
-
         t_sstate sstate;
-
-#ifdef PSP_PARALLEL_FOR
-        t_cp cproc(data, nodes, values, leaves, &sstate);
-        tbb::parallel_for(
-            t_range(cbidx, ceidx, DEFAULT_CHUNK_SIZE), cproc, tbb::simple_partitioner());
-#else
         {
             t_spanvec spans;
-#ifdef PSP_ENABLE_WASM
-            partition<DATA_T, DTYPE_T, DEFAULT_CHUNK_SIZE>(data, leaves, cbidx, ceidx, spans);
-#else
-            partition<DATA_T, DTYPE_T, DEFAULT_CHUNK_SIZE>(
-                data, leaves, cbidx, ceidx, spans, sstate.m_tbbmut);
-            tbb::mutex::scoped_lock slock(sstate.m_spanvec_mutex);
-#endif
+            partition<DATA_T, DTYPE_T>(data, leaves, cbidx, ceidx, spans);
             sstate.m_spanvec.push_back(spans);
         }
-#endif
 
         // map value to number of rows with value
-        t_map globcount((t_comparator<DATA_T, DTYPE_T>(data)));
+        t_map globcount((t_comparator<t_tscalar, DTYPE_T>(data)));
 
         for (t_index idx = 0, loop_end = sstate.m_spanvec.size(); idx < loop_end; ++idx) {
             const t_spanvec& sp = sstate.m_spanvec[idx];
             for (t_uindex spidx = 0, sp_loop_end = sp.size(); spidx < sp_loop_end; ++spidx) {
                 const t_spans& vsp = sp[spidx];
+		std::cout << "value: " << vsp.m_value << std::endl;
                 typename t_map::iterator miter = globcount.find(vsp.m_value);
 
                 if (miter == globcount.end()) {
@@ -174,7 +126,7 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
         }
 
         // map value to leaf offset
-        t_map globcursor((t_comparator<DATA_T, DTYPE_T>(data)));
+        t_map globcursor((t_comparator<t_tscalar, DTYPE_T>(data)));
 
         for (typename t_map::const_iterator miter = globcount.begin(),
                                             loop_end = globcount.end();
@@ -184,13 +136,11 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
         }
 
         auto running_cursor = globcursor;
-
         for (t_index idx = 0, loop_end = sstate.m_spanvec.size(); idx < loop_end; ++idx) {
             const t_spanvec& sp = sstate.m_spanvec[idx];
             for (t_index spidx = 0, sp_loop_end = sp.size(); spidx < sp_loop_end; ++spidx) {
-                const t_chunk_value_span<DATA_T>& cvs = sp[spidx];
+                const auto& cvs = sp[spidx];
                 t_uindex voff = running_cursor[cvs.m_value];
-
                 memcpy(lcopy_ptr + voff, leaves_ptr + cvs.m_bidx,
                     sizeof(t_uindex) * (cvs.m_eidx - cvs.m_bidx));
 
@@ -211,7 +161,7 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
                 cn, lvl_nidx, parent_idx, 0, 0, miter->second, globcount[miter->first]);
             lvl_nidx += 1;
             cn = cn + 1;
-            values->push_back<DATA_T>(miter->first);
+            values->push_back<t_tscalar>(miter->first);
         }
     }
 

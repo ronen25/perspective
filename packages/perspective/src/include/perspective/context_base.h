@@ -77,7 +77,6 @@ public:
     t_slice unity_get_data(const t_range& rng, const t_fetchvec& fvec) const;
 
     t_tscalvec get_data() const;
-
 protected:
     t_schema m_schema;
     t_config m_config;

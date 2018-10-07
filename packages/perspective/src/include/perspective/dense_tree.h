@@ -65,7 +65,8 @@ public:
     t_dfs_iter<t_dtree> dfs() const;
     t_ptidx get_parent(t_ptidx idx) const;
     const t_pivotvec& get_pivots() const;
-
+    void get_child_indices(t_ptidx idx, t_ptivec& out_data) const;
+  
 private:
     t_str m_dirname;
     t_uindex m_levels_pivoted;
@@ -75,6 +76,7 @@ private:
     t_column m_leaves;
     t_column m_nodes;
     t_colvec m_values;
+    t_colvec m_valid;
     t_uindex m_nidx;
     t_backing_store m_backing_store;
     t_bool m_init;

@@ -1844,4 +1844,14 @@ t_stree::set_has_deltas(t_bool v) {
     m_has_delta = v;
 }
 
+  t_bfs_iter<t_stree>
+t_stree::bfs() const {
+    return t_bfs_iter<t_stree>(this);
+}
+
+t_dfs_iter<t_stree>
+t_stree::dfs() const {
+    return t_dfs_iter<t_stree>(this);
+}
+
 } // end namespace perspective

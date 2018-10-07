@@ -61,6 +61,31 @@ t_table::t_table(const t_schema& s, t_uindex init_cap)
     set_capacity(init_cap);
 }
 
+  // THIS CONSTRUCTOR INITS. Do not use in production.
+  t_table::t_table(const t_schema& s, const std::vector<t_tscalvec>& v)
+      : m_name("")
+    , m_dirname("")
+    , m_schema(s)
+    , m_size(0)
+    , m_backing_store(BACKING_STORE_MEMORY)
+    , m_init(false)
+    , m_from_recipe(false) {
+    PSP_TRACE_SENTINEL();
+    LOG_CONSTRUCTOR("t_table");
+    auto ncols = s.size();
+    PSP_VERBOSE_ASSERT(std::all_of(v.begin(), v.end(), [ncols] (const t_scalvec& vec) { return vec.size() == ncols;} ), "Mismatched row size found");
+    set_capacity(v.size());
+    init();
+    extend(v.size());
+    t_colptrvec cols = get_columns();
+    for (t_uindex cidx = 0; cidx < ncols; ++cidx) {
+      auto col = cols[cidx];
+      for (t_uindex ridx = 0, loop_end = v.size(); ridx < loop_end; ++ridx) {
+	col->set_scalar(ridx, v[ridx][cidx]);
+      }
+    }
+  }
+  
 t_table::t_table(const t_str& name, const t_str& dirname, const t_schema& s, t_uindex init_cap,
     t_backing_store backing_store)
     : m_name(name)
@@ -513,6 +538,21 @@ t_table::clone_(const t_mask& mask) const {
 }
 
 t_table_sptr
+t_table::clone() const {
+    PSP_TRACE_SENTINEL();
+    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    t_schema schema = m_schema;
+    auto rval = std::make_shared<t_table>("", "", schema, 5, BACKING_STORE_MEMORY);
+    rval->init();
+
+    for (const auto& cname : schema.m_columns) {
+        rval->set_column(cname, get_const_column(cname)->clone());
+    }
+    rval->set_size(size());
+    return rval;
+}
+  
+t_table_sptr
 t_table::clone(const t_mask& mask) const {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -600,4 +640,5 @@ t_table::reset() {
     init();
 }
 
+  
 } // end namespace perspective
