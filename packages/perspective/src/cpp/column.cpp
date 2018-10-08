@@ -31,7 +31,7 @@ t_column::t_column()
     , m_vocab(nullptr)
     , m_status(nullptr)
     , m_size(0)
-    , m_status_enabled(false)
+    , m_status_enabled(true)
     , m_from_recipe(false)
 
 {

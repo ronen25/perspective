@@ -66,7 +66,7 @@ public:
     t_ptidx get_parent(t_ptidx idx) const;
     const t_pivotvec& get_pivots() const;
     void get_child_indices(t_ptidx idx, t_ptivec& out_data) const;
-  
+
 private:
     t_str m_dirname;
     t_uindex m_levels_pivoted;

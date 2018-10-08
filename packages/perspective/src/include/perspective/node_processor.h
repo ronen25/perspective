@@ -114,7 +114,6 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
             const t_spanvec& sp = sstate.m_spanvec[idx];
             for (t_uindex spidx = 0, sp_loop_end = sp.size(); spidx < sp_loop_end; ++spidx) {
                 const t_spans& vsp = sp[spidx];
-		std::cout << "value: " << vsp.m_value << std::endl;
                 typename t_map::iterator miter = globcount.find(vsp.m_value);
 
                 if (miter == globcount.end()) {

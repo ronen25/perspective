@@ -17,7 +17,6 @@
 #include <algorithm>
 #include <csignal>
 
-
 /*
 TODO improvements
 
@@ -55,12 +54,11 @@ argsort(const DATA_T* b, t_uidxvec& output) {
     t_argsort_cmp<DATA_T> cmp(const_cast<DATA_T*>(b));
     std::sort(output.begin(), output.end(), cmp);
 }
-  
+
 template <typename DATA_T, int DTYPE_T>
 void
 partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_uindex bidx,
-    t_uindex eidx, std::vector<t_chunk_value_span<t_tscalar>>& out_spans)
-{
+    t_uindex eidx, std::vector<t_chunk_value_span<t_tscalar>>& out_spans) {
     t_uindex* leaves = leaves_->get_nth<t_uindex>(0);
 
     typedef t_chunk_value_span<t_tscalar> t_cvs;
@@ -76,7 +74,7 @@ partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_
         default: {
             t_tscalvec buf(nelems);
             for (t_uindex idx = 0; idx < nelems; ++idx) {
-	      buf[idx] = data_->get_scalar(leaves[bidx + idx]);
+                buf[idx] = data_->get_scalar(leaves[bidx + idx]);
             }
 
             t_uidxvec order(nelems);

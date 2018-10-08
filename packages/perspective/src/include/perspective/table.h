@@ -66,7 +66,7 @@ public:
     PSP_NON_COPYABLE(t_table);
     t_table(const t_table_recipe& recipe);
     t_table(const t_schema& s, t_uindex capacity = DEFAULT_EMPTY_CAPACITY);
-// Only use in tests, it inits the table unlike other constructors
+    // Only use in tests, it inits the table unlike other constructors
     t_table(const t_schema& s, const std::vector<t_tscalvec>& v);
     t_table(const t_str& name, const t_str& dirname, const t_schema& s, t_uindex init_cap,
         t_backing_store backing_store);
@@ -131,6 +131,7 @@ public:
     void verify() const;
     void set_capacity(t_uindex idx);
     t_tscalvec get_scalvec() const;
+
 protected:
     template <typename FLATTENED_T>
     void flatten_body(FLATTENED_T flattened) const;

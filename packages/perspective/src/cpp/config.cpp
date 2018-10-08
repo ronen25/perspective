@@ -146,7 +146,7 @@ t_config::t_config(const t_svec& row_pivots, const t_aggspecvec& aggregates)
 
 // t_ctx1
 t_config::t_config(const t_svec& row_pivots, const t_aggspec& agg)
-  : m_aggregates(t_aggspecvec{agg})
+    : m_aggregates(t_aggspecvec{agg})
     , m_totals(TOTALS_BEFORE)
     , m_combiner(FILTER_OP_AND)
     , m_handle_nan_sort(true)

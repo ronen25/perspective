@@ -72,7 +72,7 @@ t_dtree::init() {
     t_lstore_recipe root_args(
         m_dirname, values_colname("_root_"), DEFAULT_CAPACITY, m_backing_store);
 
-    m_values[0] = t_column(DTYPE_STR, false, leaf_args, DEFAULT_CAPACITY);
+    m_values[0] = t_column(DTYPE_STR, true, leaf_args, DEFAULT_CAPACITY);
     m_values[0].init();
 
     m_sortby_dpthcol.push_back("");
@@ -88,7 +88,7 @@ t_dtree::init() {
         t_str sortby_column = has_sortby ? siter->second : colname;
         m_sortby_dpthcol.push_back(sortby_column);
         t_dtype dtype = m_ds->get_dtype(colname);
-        m_values[idx + 1] = t_column(dtype, false, leaf_args, DEFAULT_CAPACITY);
+        m_values[idx + 1] = t_column(dtype, true, leaf_args, DEFAULT_CAPACITY);
         m_values[idx + 1].init();
     }
 
@@ -223,7 +223,6 @@ t_dtree::pivot(const t_filter& filter, t_uindex level) {
                 } break;
                 default: { PSP_COMPLAIN_AND_ABORT("Not supported yet"); } break;
             }
-
             nbidx = neidx;
             neidx = next_neidx;
             m_levels.push_back(t_uidxpair(nbidx, neidx));
@@ -340,12 +339,13 @@ t_dtree::get_pivots() const {
     return m_pivots;
 }
 
-void t_dtree::get_child_indices(t_ptidx nidx, t_ptivec& v) const {
-  auto nptr = get_node_ptr(nidx);
-  for (t_index idx = nptr->m_fcidx + nptr->m_nchild - 1, loop_end = nptr->m_fcidx;
-       idx >= loop_end; --idx) {
-    v.push_back(idx);
-  }
+void
+t_dtree::get_child_indices(t_ptidx nidx, t_ptivec& v) const {
+    auto nptr = get_node_ptr(nidx);
+    for (t_index idx = nptr->m_fcidx + nptr->m_nchild - 1, loop_end = nptr->m_fcidx;
+         idx >= loop_end; --idx) {
+        v.push_back(idx);
+    }
 }
-  
+
 } // end namespace perspective

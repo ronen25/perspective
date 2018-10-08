@@ -4,13 +4,9 @@ project (psp)
 if (NOT PSP_WASM_BUILD)
 	set(PSP_WASM_BUILD ON)
 endif()
-set(PSP_WASM_BUILD OFF)
+
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
-
-#set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-#set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
-set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fno-omit-frame-pointer -O0 -g3")
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
