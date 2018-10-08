@@ -26,7 +26,7 @@ TEST(SCALAR, scalar_literal_test) {
   auto s1 = 1_ts;
   auto s2 = "hello"_ts;
   auto s3 = 42.0_ts;
-  ASSERT_EQ(s1, mktscalar<t_uint64>(1));
+  ASSERT_EQ(s1, mktscalar<t_int64>(1));
   ASSERT_EQ(s2, mktscalar<const char*>("hello"));
   ASSERT_EQ(s3, mktscalar<t_float64>(42.0));
 }
