@@ -193,9 +193,9 @@ function (psp_build_dep name cmake_file)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
-   psp_build_dep("tbb" "TBB.txt.in")
+   ## Build Gtest
+   ## Perhaps we need this on windows -> set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "GTest.txt.in")
-   add_subdirectory(test)
-	## Build Gtest
-	## Perhaps we need this on windows -> set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)	
+   psp_build_dep("tbb" "TBB.txt.in")
+   add_subdirectory(test)	
 endif()
