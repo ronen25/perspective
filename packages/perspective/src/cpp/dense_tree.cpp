@@ -188,37 +188,37 @@ t_dtree::pivot(const t_filter& filter, t_uindex level) {
 
             switch (piv_dtype) {
                 case DTYPE_STR: {
-                    next_neidx = t_pivot_processor<t_uindex, DTYPE_STR>()(
+                    next_neidx = t_pivot_processor<DTYPE_STR>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                     t_column* value_col = &(m_values[pidx]);
                     value_col->copy_vocabulary(pivcol);
                 } break;
                 case DTYPE_INT64: {
-                    next_neidx = t_pivot_processor<t_int64, DTYPE_INT64>()(
+                    next_neidx = t_pivot_processor<DTYPE_INT64>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_INT32: {
-                    next_neidx = t_pivot_processor<t_int32, DTYPE_INT32>()(
+                    next_neidx = t_pivot_processor<DTYPE_INT32>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_FLOAT64: {
-                    next_neidx = t_pivot_processor<t_float64, DTYPE_FLOAT64>()(
+                    next_neidx = t_pivot_processor<DTYPE_FLOAT64>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_FLOAT32: {
-                    next_neidx = t_pivot_processor<t_float32, DTYPE_FLOAT32>()(
+                    next_neidx = t_pivot_processor<DTYPE_FLOAT32>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_BOOL: {
-                    next_neidx = t_pivot_processor<t_uint8, DTYPE_BOOL>()(
+                    next_neidx = t_pivot_processor<DTYPE_BOOL>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_TIME: {
-                    next_neidx = t_pivot_processor<t_int64, DTYPE_INT64>()(
+                    next_neidx = t_pivot_processor<DTYPE_INT64>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_DATE: {
-                    next_neidx = t_pivot_processor<t_uint32, DTYPE_UINT32>()(
+                    next_neidx = t_pivot_processor<DTYPE_UINT32>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 default: { PSP_COMPLAIN_AND_ABORT("Not supported yet"); } break;

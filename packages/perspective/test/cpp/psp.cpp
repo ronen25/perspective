@@ -12,6 +12,7 @@
 #include <perspective/table.h>
 #include <perspective/test_utils.h>
 #include <perspective/context_one.h>
+#include <perspective/node_processor.h>
 #include <gtest/gtest.h>
 
 using namespace perspective;
@@ -31,13 +32,23 @@ TEST(SCALAR, scalar_literal_test) {
   ASSERT_EQ(s3, mktscalar<t_float64>(42.0));
 }
 
-TEST(CONTEXT_ONE, null_pivot_test) {
+TEST(CONTEXT_ONE, null_pivot_test_1) {
   t_schema sch{{"p", "a"}, {DTYPE_INT64, DTYPE_INT64}};
   t_table tbl(sch, {{1_ns, 1_ts}, {1_ts, 1_ts}});
   t_config cfg{{"p"}, {"sum_a", AGGTYPE_SUM, "a"}};
-  auto ctx = do_pivot<t_ctx1>(t_do_pivot::PIVOT_NON_PKEYED, tbl, cfg);
+  auto ctx = do_pivot<t_ctx1, t_int32, DTYPE_INT32>(t_do_pivot::PIVOT_NON_PKEYED, tbl, cfg);
   auto ctx_tbl = ctx->get_table();
   auto got =  ctx_tbl->get_scalvec();
   t_tscalvec expected{2_ts, 1_ns, 1_ts, 1_ts, 1_ts, 1_ns};
   ASSERT_EQ(expected, got);
+}
+
+TEST(SCALAR, map_test_1) {
+  typedef t_comparator<t_tscalar, DTYPE_STR> t_cmp;
+  typedef std::map<t_tscalar, t_uindex, t_cmp> t_map;
+  t_map mmap((t_cmp(nullptr)));
+  mmap[""_ns] = 1;
+  mmap["x"_ts] = 2;
+  mmap["y"_ts] = 3;
+  ASSERT_EQ(mmap.size(), 3);
 }

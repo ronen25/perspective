@@ -24,7 +24,7 @@
 
 namespace perspective {
 
-template <typename DATA_T, int DTYPE_T>
+template <int DTYPE_T>
 struct t_chunk_processor_sstate {
     t_chunk_processor_sstate() {}
 
@@ -36,9 +36,9 @@ struct t_chunk_processor_sstate {
     PSP_NON_COPYABLE(t_chunk_processor_sstate);
 };
 
-template <typename DATA_T, int DTYPE_T>
+template <int DTYPE_T>
 struct t_chunk_processor {
-    typedef t_chunk_processor_sstate<DATA_T, DTYPE_T> t_sstate;
+    typedef t_chunk_processor_sstate<DTYPE_T> t_sstate;
     typedef typename t_sstate::t_spans t_spans;
     typedef typename t_sstate::t_spanvec t_spanvec;
     typedef typename t_sstate::t_spanvvec t_spanvvec;
@@ -52,8 +52,8 @@ struct t_chunk_processor {
     mutable t_sstate* m_sstate;
 };
 
-template <typename DATA_T, int DTYPE_T>
-t_chunk_processor<DATA_T, DTYPE_T>::t_chunk_processor(const t_column* PSP_RESTRICT data,
+template <int DTYPE_T>
+t_chunk_processor<DTYPE_T>::t_chunk_processor(const t_column* PSP_RESTRICT data,
     t_column* PSP_RESTRICT nodes, t_column* PSP_RESTRICT values, t_column* PSP_RESTRICT leaves,
     t_sstate* PSP_RESTRICT sstate)
     : m_data(data)
@@ -62,15 +62,12 @@ t_chunk_processor<DATA_T, DTYPE_T>::t_chunk_processor(const t_column* PSP_RESTRI
     , m_leaves(leaves)
     , m_sstate(sstate) {}
 
-template <typename DATA_T, int DTYPE_T>
+template <int DTYPE_T>
 struct t_pivot_processor {
-    typedef std::map<t_tscalar, t_uindex, t_comparator<DATA_T, DTYPE_T>> t_map;
-    typedef t_chunk_processor<DATA_T, DTYPE_T> t_cp;
+    typedef t_chunk_processor<DTYPE_T> t_cp;
     typedef typename t_cp::t_spanvec t_spanvec;
     typedef typename t_cp::t_spans t_spans;
     typedef typename t_cp::t_sstate t_sstate;
-
-    t_pivot_processor();
 
     // For now we dont do any inter node
     // parallelism. this should be trivial
@@ -79,13 +76,10 @@ struct t_pivot_processor {
         t_column* leaves, t_uindex nbidx, t_uindex neidx, const t_mask* mask);
 };
 
-template <typename DATA_T, int DTYPE_T>
-t_pivot_processor<DATA_T, DTYPE_T>::t_pivot_processor() {}
-
-template <typename DATA_T, int DTYPE_T>
+template <int DTYPE_T>
 t_uindex
-t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* nodes,
-    t_column* values, t_column* leaves, t_uindex nbidx, t_uindex neidx, const t_mask* mask) {
+t_pivot_processor<DTYPE_T>::operator()(const t_column* data, t_column* nodes, t_column* values,
+    t_column* leaves, t_uindex nbidx, t_uindex neidx, const t_mask* mask) {
     typedef std::map<t_tscalar, t_uindex, t_comparator<t_tscalar, DTYPE_T>> t_map;
     t_lstore lcopy(leaves->data_lstore(), t_lstore_tmp_init_tag());
 
@@ -103,7 +97,7 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
         t_sstate sstate;
         {
             t_spanvec spans;
-            partition<DATA_T, DTYPE_T>(data, leaves, cbidx, ceidx, spans);
+            partition(data, leaves, cbidx, ceidx, spans);
             sstate.m_spanvec.push_back(spans);
         }
 
@@ -114,8 +108,7 @@ t_pivot_processor<DATA_T, DTYPE_T>::operator()(const t_column* data, t_column* n
             const t_spanvec& sp = sstate.m_spanvec[idx];
             for (t_uindex spidx = 0, sp_loop_end = sp.size(); spidx < sp_loop_end; ++spidx) {
                 const t_spans& vsp = sp[spidx];
-                typename t_map::iterator miter = globcount.find(vsp.m_value);
-
+                auto miter = globcount.find(vsp.m_value);
                 if (miter == globcount.end()) {
                     globcount[vsp.m_value] = vsp.m_eidx - vsp.m_bidx;
                 } else {

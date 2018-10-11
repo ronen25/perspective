@@ -189,13 +189,13 @@ module.exports = perspective => {
             expect(answer).toEqual(result);
         });
 
-        it("null in pivot column", async function() {
+        it("null_in_pivot_column", async function() {
             var table = perspective.table([{x: null}, {x: "x"}, {x: "y"}]);
             var view = table.view({
                 row_pivot: ["x"],
                 aggregate: [{op: "distinct count", column: "x"}]
             });
-            var answer = [{__ROW_PATH__: [], x: 3}, {__ROW_PATH__: [null], x: 1}, {__ROW_PATH__: ["x"], x: 1}, {__ROW_PATH__: ["y"], x: 1}];
+            var answer = [{__ROW_PATH__: [], x: 3}, {__ROW_PATH__: ["x"], x: 1}, {__ROW_PATH__: ["y"], x: 1}, {__ROW_PATH__: [null], x: 1}];
             let result = await view.to_json();
             expect(result).toEqual(answer);
         });
