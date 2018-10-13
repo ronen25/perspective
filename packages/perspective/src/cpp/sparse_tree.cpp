@@ -1844,4 +1844,26 @@ t_stree::set_has_deltas(t_bool v) {
     m_has_delta = v;
 }
 
+t_bfs_iter<t_stree>
+t_stree::bfs() const {
+    return t_bfs_iter<t_stree>(this);
+}
+
+t_dfs_iter<t_stree>
+t_stree::dfs() const {
+    return t_dfs_iter<t_stree>(this);
+}
+
+void
+t_stree::pprint() const {
+    for (auto idx : dfs()) {
+        t_tscalvec path;
+        get_path(idx, path);
+        std::cout << idx << " --- " << path << " --- ";
+        for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx) {
+            std::cout << get_aggregate(idx, aidx) << ", ";
+        }
+        std::cout << std::endl;
+    }
+}
 } // end namespace perspective

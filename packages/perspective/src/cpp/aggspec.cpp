@@ -60,6 +60,11 @@ t_aggspec::t_aggspec(const t_str& aggname, t_aggtype agg, const t_str& dep)
     , m_dependencies(t_depvec{t_dep(dep, DEPTYPE_COLUMN)})
     , m_kernel(0) {}
 
+t_aggspec::t_aggspec(t_aggtype agg, const t_str& dep)
+    : m_agg(agg)
+    , m_dependencies(t_depvec{t_dep(dep, DEPTYPE_COLUMN)})
+    , m_kernel(0) {}
+
 t_aggspec::t_aggspec(
     const t_str& name, const t_str& disp_name, t_aggtype agg, const t_depvec& dependencies)
     : m_name(name)
@@ -224,6 +229,7 @@ t_aggspec::get_dependencies() const {
 t_dtype
 get_simple_accumulator_type(t_dtype coltype) {
     switch (coltype) {
+        case DTYPE_BOOL:
         case DTYPE_INT64:
         case DTYPE_INT32:
         case DTYPE_INT16:

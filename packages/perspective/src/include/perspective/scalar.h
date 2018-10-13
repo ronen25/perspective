@@ -143,6 +143,50 @@ struct PERSPECTIVE_EXPORT t_tscalar {
     t_bool m_inplace;
 };
 
+inline t_tscalar operator"" _ts(long double v) {
+    t_tscalar rv;
+    t_float64 tmp = v;
+    rv.set(tmp);
+    return rv;
+}
+
+inline t_tscalar operator"" _ts(unsigned long long int v) {
+    t_tscalar rv;
+    t_int64 tmp = v;
+    rv.set(tmp);
+    return rv;
+}
+
+inline t_tscalar operator"" _ts(const char* v, std::size_t len) {
+    t_tscalar rv;
+    rv.set(v);
+    return rv;
+}
+
+inline t_tscalar operator"" _ns(long double v) {
+    t_tscalar rv;
+    rv.m_data.m_uint64 = 0;
+    rv.m_type = DTYPE_FLOAT64;
+    rv.m_status = STATUS_INVALID;
+    return rv;
+}
+
+inline t_tscalar operator"" _ns(unsigned long long int v) {
+    t_tscalar rv;
+    rv.m_data.m_uint64 = 0;
+    rv.m_type = DTYPE_INT64;
+    rv.m_status = STATUS_INVALID;
+    return rv;
+}
+
+inline t_tscalar operator"" _ns(const char* v, std::size_t len) {
+    t_tscalar rv;
+    rv.m_data.m_uint64 = 0;
+    rv.m_type = DTYPE_STR;
+    rv.m_status = STATUS_INVALID;
+    return rv;
+}
+
 typedef std::vector<t_tscalar> t_tscalvec;
 typedef boost::unordered_set<t_tscalar> t_tscalset;
 typedef boost::unordered_map<t_tscalar, t_tvidx> t_tscaltvimap;
@@ -215,7 +259,7 @@ t_tscalar::compare_common(const t_tscalar& rhs) const {
         return cmp(m_type, rhs.m_type);
     }
 
-    if (rhs.m_status != rhs.m_status) {
+    if (m_status != rhs.m_status) {
         COMPARER_T<t_uchar> cmp;
         return cmp(m_status, rhs.m_status);
     }
@@ -312,6 +356,15 @@ t_tscalar
 mktscalar(const T& v) {
     t_tscalar rval;
     rval.set(v);
+    return rval;
+}
+
+inline t_tscalar
+mknull(t_dtype dtype) {
+    t_tscalar rval;
+    rval.m_data.m_uint64 = 0;
+    rval.m_status = STATUS_INVALID;
+    rval.m_type = dtype;
     return rval;
 }
 

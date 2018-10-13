@@ -193,7 +193,7 @@ module.exports = perspective => {
             expect(answer).toEqual(result2);
         });
 
-        it("Serializes a 2 sided view to CSV", async function() {
+        it("zch_test", async function() {
             var table = perspective.table(data);
             var view = table.view({
                 row_pivot: ["z"],

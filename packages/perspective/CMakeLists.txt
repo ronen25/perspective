@@ -1,13 +1,15 @@
 cmake_minimum_required (VERSION 2.8.11)
 project (psp)
 
-if (NOT PSP_WASM_BUILD)
-	set(PSP_WASM_BUILD ON)
+if (NOT DEFINED PSP_WASM_BUILD)
+    set(PSP_WASM_BUILD ON)
 endif()
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
+
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb3 -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
@@ -194,9 +196,9 @@ function (psp_build_dep name cmake_file)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
-	## Build Gtest
-	## Perhaps we need this on windows -> set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
-	psp_build_dep("googletest" "GTest.txt.in")
-	psp_build_dep("tbb" "TBB.txt.in")
-	add_subdirectory(test)
+   ## Build Gtest
+   ## Perhaps we need this on windows -> set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+   psp_build_dep("googletest" "GTest.txt.in")
+   psp_build_dep("tbb" "TBB.txt.in")
+   add_subdirectory(test)	
 endif()

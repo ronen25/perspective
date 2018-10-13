@@ -17,6 +17,7 @@
 #include <perspective/mask.h>
 #include <perspective/filter.h>
 #include <perspective/compat.h>
+#include <perspective/scalar.h>
 #ifdef PSP_PARALLEL_FOR
 #include <tbb/parallel_sort.h>
 #include <tbb/tbb.h>
@@ -65,6 +66,8 @@ public:
     PSP_NON_COPYABLE(t_table);
     t_table(const t_table_recipe& recipe);
     t_table(const t_schema& s, t_uindex capacity = DEFAULT_EMPTY_CAPACITY);
+    // Only use in tests, it inits the table unlike other constructors
+    t_table(const t_schema& s, const std::vector<t_tscalvec>& v);
     t_table(const t_str& name, const t_str& dirname, const t_schema& s, t_uindex init_cap,
         t_backing_store backing_store);
     ~t_table();
@@ -111,7 +114,7 @@ public:
     t_mask filter_cpp(t_filter_op combiner, const t_ftermvec& fops) const;
     t_table* clone_(const t_mask& mask) const;
     t_table_sptr clone(const t_mask& mask) const;
-
+    t_table_sptr clone() const;
     t_column* clone_column(const t_str& existing_col, const t_str& new_colname);
 
     t_table_recipe get_recipe() const;
@@ -127,6 +130,7 @@ public:
     t_col_sptr make_column(const t_str& colname, t_dtype dtype, t_bool status_enabled);
     void verify() const;
     void set_capacity(t_uindex idx);
+    t_tscalvec get_scalvec() const;
 
 protected:
     template <typename FLATTENED_T>

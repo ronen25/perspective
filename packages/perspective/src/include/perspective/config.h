@@ -61,6 +61,7 @@ public:
 
     // t_ctx1
     t_config(const t_svec& row_pivots, const t_aggspecvec& aggregates);
+    t_config(const t_svec& row_pivots, const t_aggspec& agg);
 
     t_config(const t_svec& row_pivots, const t_aggspecvec& aggregates, t_filter_op combiner,
         const t_ftermvec& fterms);

@@ -58,13 +58,14 @@ public:
     t_uindex last_level() const;
     t_uidxpair get_span_index(t_ptidx idx) const;
     void pprint(const t_filter& filter) const;
-
+    void pprint() const;
     const t_column* get_leaf_cptr() const;
 
     t_bfs_iter<t_dtree> bfs() const;
     t_dfs_iter<t_dtree> dfs() const;
     t_ptidx get_parent(t_ptidx idx) const;
     const t_pivotvec& get_pivots() const;
+    void get_child_indices(t_ptidx idx, t_ptivec& out_data) const;
 
 private:
     t_str m_dirname;
@@ -73,8 +74,9 @@ private:
     t_uidxpvec m_levels;
     t_pivotvec m_pivots;
     t_column m_leaves;
-    t_column m_nodes;
+    t_tnodevec m_nodes;
     t_colvec m_values;
+    t_colvec m_valid;
     t_uindex m_nidx;
     t_backing_store m_backing_store;
     t_bool m_init;
