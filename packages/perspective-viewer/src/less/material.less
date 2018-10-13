@@ -50,6 +50,10 @@ perspective-viewer {
         cursor: move;
     }
 
+    #columns_container {
+        height: calc(~"100% - 36px");
+    }
+
     &:not([row-pivots="[]"]) #side_panel {
         #columns_container #active_columns perspective-row .row_draggable {
             height: 52px;
@@ -150,7 +154,8 @@ perspective-viewer #app {
         &.string:before,
         &.float:before,
         &.integer:before,
-        &.date:before {
+        &.date:before,
+        &.datetime:before {
             font-family: @material-monospace-fonts;
             padding-left: 0;
         }
@@ -184,6 +189,11 @@ perspective-viewer #app {
     #side_panel perspective-row .boolean::before {
         .column_row();
         content: "t/f";
+    }
+
+    #side_panel perspective-row .datetime::before {
+        .column_row();
+        content: "mdy";
     }
 
     #side_panel perspective-row .date::before {
@@ -243,6 +253,7 @@ perspective-viewer #app {
                     position: absolute;
                     margin-top: 1px;
                     margin-left: -8px;
+                    left: 24px;
                 }
 
                 span.is_visible {

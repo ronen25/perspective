@@ -65,6 +65,10 @@ function read_promise(filePath) {
 
 function create_http_server(assets, host_psp) {
     return async function(request, response) {
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        response.setHeader("Access-Control-Request-Method", "*");
+        response.setHeader("Access-Control-Allow-Methods", "OPTIONS,GET");
+        response.setHeader("Access-Control-Allow-Headers", "*");
         let url = request.url;
         if (url === "/") {
             url = "/index.html";
@@ -85,7 +89,9 @@ function create_http_server(assets, host_psp) {
             if (host_psp || typeof host_psp === "undefined") {
                 for (let rootDir of DEFAULT_ASSETS) {
                     try {
-                        let filePath = RESOLVER(rootDir + url, {paths: [LOCAL_PATH]});
+                        let paths = RESOLVER.paths(rootDir + url);
+                        paths = [...paths, ...assets.map(x => path.join(x, "node_modules")), LOCAL_PATH];
+                        let filePath = RESOLVER(rootDir + url, {paths});
                         let content = await read_promise(filePath);
                         if (typeof content !== "undefined") {
                             console.log(`200 ${url}`);

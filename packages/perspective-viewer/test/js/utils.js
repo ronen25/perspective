@@ -110,9 +110,9 @@ beforeAll(async () => {
         } else {
             text = msg.text;
         }
-        if (msg.type === "error") {
+        if (msg.type() === "error") {
             errors.push(text);
-            private_console.log(`${__name}: ${text}`);
+            private_console.log(`${__name}: ${text}\n`);
         }
     });
     page.on("pageerror", msg => {
@@ -208,10 +208,7 @@ test.capture = function capture(name, body, timeout = 60000, viewport = null) {
                 }
             }
             if (process.env.WRITE_TESTS) {
-                setTimeout(() => {
-                    results[_url + "/" + name] = hash;
-                    new_results[_url + "/" + name] = hash;
-                });
+                new_results[_url + "/" + name] = hash;
             }
             expect(errors).toEqual([]);
             expect(hash).toBe(results[_url + "/" + name]);
@@ -241,4 +238,8 @@ exports.invoke_tooltip = async function invoke_tooltip(svg_selector, page) {
     await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
     await element.hover();
     await page.waitForSelector(".highcharts-label.highcharts-tooltip");
+    await page.waitFor(() => {
+        let elem = document.querySelector(".highcharts-label.highcharts-tooltip");
+        return window.getComputedStyle(elem).opacity !== "0" && elem.querySelector("text tspan").textContent.indexOf("Loading") === -1 && elem.querySelector("text tspan").textContent.trim() !== "";
+    });
 };

@@ -1,13 +1,16 @@
 {
-    "name": "simple",
+    "name": "cli",
     "private": true,
     "version": "0.2.2",
-    "description": "A collection of simple client-side Perspective examples.",
+    "description": "An example of Remote Perspective as a CLI tool.",
     "scripts": {
         "start": "node server.js"
     },
     "keywords": [],
     "license": "Apache-2.0",
+    "bin": {
+        "perspective-cli": "server.js"
+    },
     "dependencies": {
         "@jpmorganchase/perspective": "^0.2.2",
         "@jpmorganchase/perspective-viewer": "^0.2.2",

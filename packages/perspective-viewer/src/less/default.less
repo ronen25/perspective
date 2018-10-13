@@ -48,7 +48,7 @@
 
 .dropping .psp-text-field__input,
 .psp-text-field__input:not(:empty) {
-    display: initial;
+    display: block;
 }
 
 .dropping .psp-text-field__input::after {
@@ -164,7 +164,7 @@ perspective-viewer {
 
     #columns_container {
         flex-direction: column;
-        height: 100%;
+        height: calc(~"100% - 29px");
 
         #active_columns {
             flex: 0 1 auto;
@@ -265,6 +265,12 @@ perspective-viewer {
         .boolean::before {
             .column_row();
             content: "t/f";
+            color: #999999;
+        }
+
+        .datetime::before {
+            .column_row();
+            content: "mdy";
             color: #999999;
         }
 

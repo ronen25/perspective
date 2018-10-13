@@ -223,7 +223,7 @@ function column_visibility_clicked(ev) {
         }
     } else {
         // check if we're manipulating computed column input
-        if (ev.path[1].classList.contains("psp-cc-computation__input-column")) {
+        if (ev.path && ev.path[1].classList.contains("psp-cc-computation__input-column")) {
             //  this._computed_column._register_inputs();
             this._computed_column.deselect_column(ev.currentTarget.getAttribute("name"));
             this._update_column_view();
@@ -361,7 +361,7 @@ async function loadTable(table, redraw = true) {
         this.setAttribute("columns", JSON.stringify(this._initial_col_order));
     }
 
-    let type_order = {integer: 2, string: 0, float: 3, boolean: 4, date: 1};
+    let type_order = {integer: 2, string: 0, float: 3, boolean: 4, datetime: 1};
 
     // Sort columns by type and then name
     cols.sort((a, b) => {
@@ -1037,13 +1037,15 @@ class View extends ViewPrivate {
      *
      * @name sort
      * @memberof View.prototype
-     * @type {array<string>} Array of column names
+     * @type {array<string>} Array of arrays tuples of column name and
+     * direction, where the possible values are "asc", "desc", "asc abs",
+     * "desc abs" and "none".
      * @fires View#perspective-config-update
      * @example <caption>via Javascript DOM</caption>
      * let elem = document.getElementById('my_viewer');
-     * elem.setAttribute('sort', JSON.stringify(["x"]));
+     * elem.setAttribute('sort', JSON.stringify([["x","desc"]));
      * @example <caption>via HTML</caption>
-     * <perspective-viewer sort='["x"]'></perspective-viewer>
+     * <perspective-viewer sort='[["x","desc"]]'></perspective-viewer>
      */
     @array_attribute
     set sort(sort) {
@@ -1324,14 +1326,10 @@ class View extends ViewPrivate {
      * const tbl = perspective.table("x,y\n1,a\n2,b");
      * my_viewer.load(tbl);
      */
-    load(data) {
+    load(data, options) {
         try {
             data = data.trim();
         } catch (e) {}
-        let options = {};
-        if (this.getAttribute("index")) {
-            options.index = this.getAttribute("index");
-        }
         let table;
         if (data.hasOwnProperty("_name")) {
             table = data;

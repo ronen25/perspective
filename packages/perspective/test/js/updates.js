@@ -143,6 +143,14 @@ module.exports = perspective => {
             expect(result).toEqual(expected);
         });
 
+        it("`update()` unbound to table", async function() {
+            var table = perspective.table(meta);
+            var updater = table.update;
+            updater(data);
+            let result = await table.view().to_json();
+            expect(data).toEqual(result);
+        });
+
         it("Multiple `update()`s", async function() {
             var table = perspective.table(meta);
             table.update(data);
@@ -166,6 +174,25 @@ module.exports = perspective => {
             var view = table.view();
             let result = await view.to_json();
             expect(arrow_result.concat(arrow_result)).toEqual(result);
+        });
+    });
+
+    describe("Computed column updates", function() {
+        it("String computed column of arity 1", async function() {
+            var table = perspective.table(data);
+
+            let table2 = table.add_computed([
+                {
+                    column: "yes/no",
+                    type: "string",
+                    func: z => (z === true ? "yes" : "no"),
+                    inputs: ["z"]
+                }
+            ]);
+            table2.update(data);
+            let result = await table2.view({aggregate: [{op: "count", column: "yes/no"}]}).to_json();
+            let expected = [{"yes/no": "yes"}, {"yes/no": "no"}, {"yes/no": "yes"}, {"yes/no": "no"}, {"yes/no": "yes"}, {"yes/no": "no"}, {"yes/no": "yes"}, {"yes/no": "no"}];
+            expect(result).toEqual(expected);
         });
     });
 

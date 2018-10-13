@@ -101,8 +101,6 @@ const light_theme_overrides = {
     columnHeaderBackgroundColor: "#fff",
     columnHeaderForegroundSelectionColor: "#333",
     columnHeaderBackgroundSelectionColor: "#40536d",
-    columnHeaderBackgroundNumberPositive: "#1078d1",
-    columnHeaderBackgroundNumberNegative: "#de3838",
     rowHeaderForegroundSelectionFont: "12px Arial, Helvetica, sans-serif",
     treeHeaderColor: "#666",
     treeHeaderBackgroundColor: "#fff",
@@ -192,6 +190,9 @@ bindTemplate(TEMPLATE)(
                 const header = window.getComputedStyle(this.querySelector("th"), null);
                 const row_hover = window.getComputedStyle(this.querySelector("tr.hover"), null);
                 const cell_hover = window.getComputedStyle(this.querySelector("td.hover"), null);
+                const cell_positive = window.getComputedStyle(this.querySelector("td.positive"), null);
+                const cell_negative = window.getComputedStyle(this.querySelector("td.negative"), null);
+                const table = window.getComputedStyle(this.querySelector("table"));
 
                 grid_properties["showRowNumbers"] = grid_properties["showCheckboxes"] || grid_properties["showRowNumbers"];
                 grid_properties["treeHeaderBackgroundColor"] = grid_properties["backgroundColor"] = style.getPropertyValue("background-color");
@@ -199,6 +200,19 @@ bindTemplate(TEMPLATE)(
                 grid_properties["columnHeaderBackgroundColor"] = header.getPropertyValue("background-color");
                 grid_properties["columnHeaderSeparatorColor"] = header.getPropertyValue("border-color");
                 grid_properties["columnHeaderColor"] = header.getPropertyValue("color");
+
+                grid_properties["columnColorNumberPositive"] = cell_positive.getPropertyValue("color");
+                grid_properties["columnColorNumberNegative"] = cell_negative.getPropertyValue("color");
+                grid_properties["columnBackgroundColorNumberPositive"] = cell_positive.getPropertyValue("background-color");
+                grid_properties["columnBackgroundColorNumberNegative"] = cell_negative.getPropertyValue("background-color");
+
+                const font = `${table.getPropertyValue("font-size")} ${table.getPropertyValue("font-family")}`;
+                const headerfont = `${header.getPropertyValue("font-size")} ${header.getPropertyValue("font-family")}`;
+
+                grid_properties["columnHeaderFont"] = headerfont;
+                grid_properties["font"] = font;
+                grid_properties["rowHeaderFont"] = font;
+                grid_properties["treeHeaderFont"] = font;
 
                 grid_properties["hoverRowHighlight"]["backgroundColor"] = row_hover.getPropertyValue("background-color");
                 grid_properties["hoverRowHighlight"]["color"] = row_hover.getPropertyValue("color");
@@ -221,7 +235,7 @@ bindTemplate(TEMPLATE)(
                 const integer_formatter = null_formatter(new this.grid.localization.NumberFormatter("en-US", {}));
                 this.grid.localization.add("FinanceInteger", integer_formatter);
 
-                const date_formatter = null_formatter(
+                const datetime_formatter = null_formatter(
                     new this.grid.localization.DateFormatter("en-us", {
                         week: "numeric",
                         year: "numeric",
@@ -233,12 +247,24 @@ bindTemplate(TEMPLATE)(
                     }),
                     -1
                 );
+
+                const date_formatter = null_formatter(
+                    new this.grid.localization.DateFormatter("en-us", {
+                        week: "numeric",
+                        year: "numeric",
+                        month: "numeric",
+                        day: "numeric"
+                    }),
+                    -1
+                );
+                this.grid.localization.add("FinanceDatetime", datetime_formatter);
                 this.grid.localization.add("FinanceDate", date_formatter);
 
                 this.grid.localization.add("FinanceTree", {
                     format: function(val, type) {
                         const f = {
                             date: date_formatter,
+                            datetime: datetime_formatter,
                             integer: integer_formatter,
                             float: float_formatter
                         }[type];
@@ -268,7 +294,9 @@ async function grid_update(div, view, task) {
         return;
     }
 
-    this.hypergrid.behavior.dataModel.setDirty(nrows);
+    const dataModel = this.hypergrid.behavior.dataModel;
+    dataModel.setDirty(nrows);
+    dataModel._view = view;
     this.hypergrid.canvas.paintNow();
 }
 
@@ -323,7 +351,7 @@ async function grid_create(div, view, task) {
     dataModel._view = view;
 
     dataModel.pspFetch = async function(range) {
-        let next_page = await view.to_columns(range);
+        let next_page = await dataModel._view.to_columns(range);
         this.data = [];
         const rows = psp2hypergrid(next_page, hidden, schema, tschema, rowPivots).rows;
         const data = this.data;
