@@ -275,6 +275,7 @@ public:
 
     t_bfs_iter<t_stree> bfs() const;
     t_dfs_iter<t_stree> dfs() const;
+    void pprint() const;
 
 protected:
     t_uidxvec get_children(t_uindex idx) const;

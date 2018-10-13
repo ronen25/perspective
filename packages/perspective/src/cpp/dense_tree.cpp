@@ -56,8 +56,6 @@ t_dtree::init() {
     m_leaves.init();
 
     t_lstore_recipe node_args(m_dirname, nodes_colname(), DEFAULT_CAPACITY, m_backing_store);
-    m_nodes = t_column(DTYPE_USER_FIXED, false, leaf_args, DEFAULT_CAPACITY);
-    m_nodes.init();
 
     m_values = t_colvec(m_pivots.size() + 1);
 
@@ -171,9 +169,9 @@ t_dtree::pivot(const t_filter& filter, t_uindex level) {
 
     for (t_uindex pidx = m_levels_pivoted; pidx < level; pidx++) {
         const t_column* pivcol;
-
         if (pidx == 0) {
-            t_tnode* root = m_nodes.extend<t_tnode>();
+            m_nodes.push_back(t_tnode());
+            t_tnode* root = &m_nodes.back();
             fill_dense_tnode(root, nidx, nidx, 1, 0, 0, nrows);
             nidx++;
             m_values[0].push_back(t_str("Grand Aggregate"));
@@ -190,8 +188,6 @@ t_dtree::pivot(const t_filter& filter, t_uindex level) {
                 case DTYPE_STR: {
                     next_neidx = t_pivot_processor<DTYPE_STR>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
-                    t_column* value_col = &(m_values[pidx]);
-                    value_col->copy_vocabulary(pivcol);
                 } break;
                 case DTYPE_INT64: {
                     next_neidx = t_pivot_processor<DTYPE_INT64>()(
@@ -210,6 +206,7 @@ t_dtree::pivot(const t_filter& filter, t_uindex level) {
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
                 case DTYPE_BOOL: {
+
                     next_neidx = t_pivot_processor<DTYPE_BOOL>()(
                         pivcol, &m_nodes, &(m_values[pidx]), &m_leaves, nbidx, neidx, mask);
                 } break;
@@ -240,6 +237,11 @@ t_dtree::get_depth(t_ptidx idx) const {
 }
 
 void
+t_dtree::pprint() const {
+    pprint(t_filter());
+}
+
+void
 t_dtree::pprint(const t_filter& filter) const {
     t_str indent("  ");
 
@@ -266,7 +268,7 @@ t_dtree::last_level() const {
 
 const t_dtree::t_tnode*
 t_dtree::get_node_ptr(t_ptidx nidx) const {
-    return m_nodes.get_nth<t_tnode>(nidx);
+    return &m_nodes.at(nidx);
 }
 
 t_tscalar

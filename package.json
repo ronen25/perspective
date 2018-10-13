@@ -23,7 +23,7 @@
         "bench": "npm-run-all --silent bench:build bench:run",
         "docs": "lerna run docs --silent --stream",
         "test:build": "bash -c '[[ -z \"${PSP_DOCKER}\" ]] && npm run --silent _build_test || npm run --silent _emsdk -- npm run --silent _build_test'",
-        "test:run": "npm run --silent clean:screenshots && npm run --silent _puppeteer -- node_modules/.bin/lerna exec --concurrency 1 --no-bail ${PACKAGE:+--scope=@jpmorganchase/${PACKAGE}} -- npm run --silent test:run",
+        "test:run": "npm run --silent && npm run --silent _puppeteer -- node_modules/.bin/lerna exec --concurrency 1 --no-bail ${PACKAGE:+--scope=@jpmorganchase/${PACKAGE}} -- npm run --silent test:run",
         "test:run_quiet": "npm run --silent _puppeteer -- node_modules/.bin/lerna run test:run",
         "test": "npm-run-all --silent lint test:build test:run",
         "clean": "lerna run clean ${PACKAGE:+--scope=@jpmorganchase/${PACKAGE}} --stream",

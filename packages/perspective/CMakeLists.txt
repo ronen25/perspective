@@ -8,6 +8,9 @@ endif()
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
 
+set (CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb3 -fno-omit-frame-pointer -fsanitize=address")
+set (CMAKE_LINKER_FLAGS_DEBUG "${CMAKE_LINKER_FLAGS_DEBUG} -fno-omit-frame-pointer -fsanitize=address")
+
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
 	set(CMAKE_C_COMPILER emcc)

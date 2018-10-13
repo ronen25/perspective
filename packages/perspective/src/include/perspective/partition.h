@@ -59,7 +59,6 @@ inline void
 partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_uindex bidx,
     t_uindex eidx, std::vector<t_chunk_value_span<t_tscalar>>& out_spans) {
     t_uindex* leaves = leaves_->get_nth<t_uindex>(0);
-
     typedef t_chunk_value_span<t_tscalar> t_cvs;
     t_uindex nelems = eidx - bidx;
     switch (nelems) {
@@ -74,6 +73,8 @@ partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_
             t_tscalvec buf(nelems);
             for (t_uindex idx = 0; idx < nelems; ++idx) {
                 buf[idx] = data_->get_scalar(leaves[bidx + idx]);
+                // std::cout << idx << " :: " << leaves[bidx + idx] << " -- " << buf[idx] <<
+                // std::endl;
             }
 
             t_uidxvec order(nelems);
@@ -113,17 +114,12 @@ partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_
                 for (t_uindex i = 0, loop_end = boundaries.size() - 1; i < loop_end; ++i) {
                     t_uindex begin = boundaries[i];
                     t_uindex end = boundaries[i + 1];
-
                     value = sdata[begin];
-
+                    // std::cout << "scalar ... " << value << std::endl;
                     t_uindex num_new_bytes = sizeof(t_uindex) * (end - begin);
-
                     memcpy(leaves + begin + bidx, &temp_leaves[begin], num_new_bytes);
-
                     out_spans.push_back(t_cvs());
-
                     t_cvs& cvs = out_spans.back();
-
                     fill_chunk_value_span<t_tscalar>(cvs, value, bidx + begin, bidx + end);
                 }
             }

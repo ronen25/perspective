@@ -1854,4 +1854,16 @@ t_stree::dfs() const {
     return t_dfs_iter<t_stree>(this);
 }
 
+void
+t_stree::pprint() const {
+    for (auto idx : dfs()) {
+        t_tscalvec path;
+        get_path(idx, path);
+        std::cout << idx << " --- " << path << " --- ";
+        for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx) {
+            std::cout << get_aggregate(idx, aidx) << ", ";
+        }
+        std::cout << std::endl;
+    }
+}
 } // end namespace perspective

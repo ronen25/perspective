@@ -238,6 +238,19 @@ t_ctx2::get_data(t_tvidx start_row, t_tvidx end_row, t_tvidx start_col, t_tvidx 
         }
     }
 
+    int tcount = 0;
+    // for (auto cttree : m_trees) {
+    //   std::cout << "tree " << tcount << std::endl;
+    //   std::stringstream ss;
+    //   ss << "pivots : ";
+    //   for (const auto& p: cttree->get_pivots()) {
+    // 	ss << p.name() << ", ";
+    //   }
+    //   ss << std::endl;
+    //   std::cout << ss.str();
+    //   cttree->pprint();
+    //   ++tcount;
+    // }
     return retval;
 }
 void
