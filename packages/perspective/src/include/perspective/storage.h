@@ -123,9 +123,6 @@ public:
     void reserve(t_uindex capacity);
     void shrink(t_uindex capacity);
     void copy(t_lstore& out);
-    void load(const t_str& fname);
-    void save(const t_str& fname);
-    void warmup();
 
     t_uindex size() const;
     t_uindex capacity() const;
@@ -133,7 +130,7 @@ public:
     template <typename T>
     void push_back(T value);
     void push_back(const void* ptr, t_uindex len);
-
+    
     // idx is in bytes
     template <typename T>
     T* get(t_uindex idx);
@@ -169,9 +166,6 @@ public:
 
     t_str get_fname() const;
 
-    void* get_ptr(t_uindex offset);
-    const void* get_ptr(t_uindex offset) const;
-
     t_str get_desc_fname() const;
 
     t_uindex get_version() const;
@@ -195,12 +189,21 @@ public:
 
     t_lstore_sptr clone() const;
 
+    t_bool get_init() const { return m_init; }
+    t_bool empty() const { return size() == 0; }
+    
 protected:
     void copy_helper_(const t_lstore& other);
     void freeze_impl();
     void unfreeze_impl();
 
 private:
+    void* get_ptr(t_uindex offset);
+    const void* get_ptr(t_uindex offset) const;
+
+    void load(const t_str& fname);
+    void save(const t_str& fname);
+    
     void reserve_impl(t_uindex capacity, bool allow_shrink);
     t_handle create_file();
     void* create_mapping();
@@ -226,7 +229,7 @@ private:
     t_float64 m_resize_factor;
     t_uindex m_version;
     t_bool m_from_recipe;
-
+    
 #ifdef PSP_MPROTECT
     // size of padding + size of fields above
     // ==
