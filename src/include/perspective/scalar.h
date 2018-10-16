@@ -26,12 +26,15 @@
 #include <sstream>
 #include <functional> //std::hash
 
-namespace perspective {
+namespace perspective
+{
 
 template <template <typename COMPARED_T> class COMPARER_T>
-struct PERSPECTIVE_EXPORT t_const_char_comparator {
+struct PERSPECTIVE_EXPORT t_const_char_comparator
+{
     inline bool
-    operator()(const char* s1, const char* s2) const {
+    operator()(const char* s1, const char* s2) const
+    {
         COMPARER_T<t_index> cmp;
         int cmpval = std::strcmp(s1, s2);
         return cmp(cmpval, 0);
@@ -61,7 +64,8 @@ union t_scalar_u {
 };
 
 // t_scalar should remain a POD type.
-struct PERSPECTIVE_EXPORT t_tscalar {
+struct PERSPECTIVE_EXPORT t_tscalar
+{
 
     template <typename T>
     T get() const;
@@ -143,27 +147,31 @@ struct PERSPECTIVE_EXPORT t_tscalar {
     t_bool m_inplace;
 };
 
-inline t_tscalar operator"" _ts(long double v) {
+inline t_tscalar operator"" _ts(long double v)
+{
     t_tscalar rv;
     t_float64 tmp = v;
     rv.set(tmp);
     return rv;
 }
 
-inline t_tscalar operator"" _ts(unsigned long long int v) {
+inline t_tscalar operator"" _ts(unsigned long long int v)
+{
     t_tscalar rv;
     t_int64 tmp = v;
     rv.set(tmp);
     return rv;
 }
 
-inline t_tscalar operator"" _ts(const char* v, std::size_t len) {
+inline t_tscalar operator"" _ts(const char* v, std::size_t len)
+{
     t_tscalar rv;
     rv.set(v);
     return rv;
 }
 
-inline t_tscalar operator"" _ns(long double v) {
+inline t_tscalar operator"" _ns(long double v)
+{
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
     rv.m_type = DTYPE_FLOAT64;
@@ -171,7 +179,8 @@ inline t_tscalar operator"" _ns(long double v) {
     return rv;
 }
 
-inline t_tscalar operator"" _ns(unsigned long long int v) {
+inline t_tscalar operator"" _ns(unsigned long long int v)
+{
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
     rv.m_type = DTYPE_INT64;
@@ -179,7 +188,8 @@ inline t_tscalar operator"" _ns(unsigned long long int v) {
     return rv;
 }
 
-inline t_tscalar operator"" _ns(const char* v, std::size_t len) {
+inline t_tscalar operator"" _ns(const char* v, std::size_t len)
+{
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
     rv.m_type = DTYPE_STR;
@@ -195,7 +205,8 @@ PERSPECTIVE_EXPORT t_tscalar mknone();
 
 template <typename DATA_T>
 t_tscalar
-t_tscalar::coerce_numeric() const {
+t_tscalar::coerce_numeric() const
+{
     auto v = to_double();
     DATA_T converted(v);
     t_tscalar rv = mknone();
@@ -253,82 +264,117 @@ t_bool t_tscalar::get() const;
 
 template <template <typename COMPARED_T> class COMPARER_T>
 bool
-t_tscalar::compare_common(const t_tscalar& rhs) const {
-    if (m_type != rhs.m_type) {
+t_tscalar::compare_common(const t_tscalar& rhs) const
+{
+    if (m_type != rhs.m_type)
+    {
         COMPARER_T<t_uchar> cmp;
         return cmp(m_type, rhs.m_type);
     }
 
-    if (m_status != rhs.m_status) {
+    if (m_status != rhs.m_status)
+    {
         COMPARER_T<t_uchar> cmp;
         return cmp(m_status, rhs.m_status);
     }
 
-    switch (m_type) {
-        case DTYPE_INT64: {
+    switch (m_type)
+    {
+        case DTYPE_INT64:
+        {
             COMPARER_T<t_int64> cmp;
             return cmp(m_data.m_int64, rhs.m_data.m_int64);
-        } break;
-        case DTYPE_INT32: {
+        }
+        break;
+        case DTYPE_INT32:
+        {
             COMPARER_T<t_int32> cmp;
             return cmp(m_data.m_int32, rhs.m_data.m_int32);
-        } break;
-        case DTYPE_INT16: {
+        }
+        break;
+        case DTYPE_INT16:
+        {
             COMPARER_T<t_int16> cmp;
             return cmp(m_data.m_int16, rhs.m_data.m_int16);
-        } break;
-        case DTYPE_INT8: {
+        }
+        break;
+        case DTYPE_INT8:
+        {
             COMPARER_T<t_int8> cmp;
             return cmp(m_data.m_int8, rhs.m_data.m_int8);
-        } break;
-        case DTYPE_UINT64: {
+        }
+        break;
+        case DTYPE_UINT64:
+        {
             COMPARER_T<t_uint64> cmp;
             return cmp(m_data.m_uint64, rhs.m_data.m_uint64);
-        } break;
-        case DTYPE_UINT32: {
+        }
+        break;
+        case DTYPE_UINT32:
+        {
             COMPARER_T<t_uint32> cmp;
             return cmp(m_data.m_uint32, rhs.m_data.m_uint32);
-        } break;
-        case DTYPE_UINT16: {
+        }
+        break;
+        case DTYPE_UINT16:
+        {
             COMPARER_T<t_uint16> cmp;
             return cmp(m_data.m_uint16, rhs.m_data.m_uint16);
-        } break;
-        case DTYPE_UINT8: {
+        }
+        break;
+        case DTYPE_UINT8:
+        {
             COMPARER_T<t_uint8> cmp;
             return cmp(m_data.m_uint8, rhs.m_data.m_uint8);
-        } break;
-        case DTYPE_FLOAT64: {
+        }
+        break;
+        case DTYPE_FLOAT64:
+        {
             COMPARER_T<t_float64> cmp;
             return cmp(m_data.m_float64, rhs.m_data.m_float64);
-        } break;
-        case DTYPE_FLOAT32: {
+        }
+        break;
+        case DTYPE_FLOAT32:
+        {
             COMPARER_T<t_float32> cmp;
             return cmp(m_data.m_float32, rhs.m_data.m_float32);
-        } break;
-        case DTYPE_DATE: {
+        }
+        break;
+        case DTYPE_DATE:
+        {
             COMPARER_T<t_uint32> cmp;
             return cmp(m_data.m_uint32, rhs.m_data.m_uint32);
-        } break;
-        case DTYPE_TIME: {
+        }
+        break;
+        case DTYPE_TIME:
+        {
             COMPARER_T<t_int64> cmp;
             return cmp(m_data.m_int64, rhs.m_data.m_int64);
-        } break;
-        case DTYPE_BOOL: {
+        }
+        break;
+        case DTYPE_BOOL:
+        {
             COMPARER_T<t_bool> cmp;
             return cmp(m_data.m_bool, rhs.m_data.m_bool);
-        } break;
-        case DTYPE_NONE: {
+        }
+        break;
+        case DTYPE_NONE:
+        {
             COMPARER_T<t_none> cmp;
             return cmp(t_none(), t_none());
-        } break;
-        case DTYPE_STR: {
+        }
+        break;
+        case DTYPE_STR:
+        {
             t_const_char_comparator<COMPARER_T> cmp;
             return cmp(get_char_ptr(), rhs.get_char_ptr());
-        } break;
-        default: {
+        }
+        break;
+        default:
+        {
 #ifdef PSP_DEBUG
-            std::cout << __FILE__ << ":" << __LINE__ << " Reached unknown type " << m_type
-                      << std::endl;
+            std::cout << __FILE__ << ":" << __LINE__ << " Reached unknown type "
+                      << m_type << std::endl;
 #endif
             return false;
         }
@@ -336,10 +382,13 @@ t_tscalar::compare_common(const t_tscalar& rhs) const {
 }
 
 template <typename T>
-struct t_tscal_extractor {
+struct t_tscal_extractor
+{
     static bool
-    extract(T& output, const t_tscalar& in) {
-        if (in.is_none()) {
+    extract(T& output, const t_tscalar& in)
+    {
+        if (in.is_none())
+        {
             return false;
         }
         output = in.get<T>();
@@ -353,14 +402,16 @@ size_t hash_value(const t_tscalar& s);
 
 template <typename T>
 t_tscalar
-mktscalar(const T& v) {
+mktscalar(const T& v)
+{
     t_tscalar rval;
     rval.set(v);
     return rval;
 }
 
 inline t_tscalar
-mknull(t_dtype dtype) {
+mknull(t_dtype dtype)
+{
     t_tscalar rval;
     rval.m_data.m_uint64 = 0;
     rval.m_status = STATUS_INVALID;
@@ -372,17 +423,22 @@ t_tscalar mktscalar();
 
 } // end namespace perspective
 
-namespace std {
+namespace std
+{
 
 template <>
-struct hash<perspective::t_tscalar> {
+struct hash<perspective::t_tscalar>
+{
     // Enable the use of std::unordered_map
     size_t
-    operator()(const perspective::t_tscalar& key) const {
+    operator()(const perspective::t_tscalar& key) const
+    {
         return perspective::hash_value(key);
     }
 };
 
-PERSPECTIVE_EXPORT std::ostream& operator<<(std::ostream& os, const perspective::t_tscalar& t);
-PERSPECTIVE_EXPORT std::ostream& operator<<(std::ostream& os, const perspective::t_tscalvec& t);
+PERSPECTIVE_EXPORT std::ostream& operator<<(
+    std::ostream& os, const perspective::t_tscalar& t);
+PERSPECTIVE_EXPORT std::ostream& operator<<(
+    std::ostream& os, const perspective::t_tscalvec& t);
 } // namespace std
