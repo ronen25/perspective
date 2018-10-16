@@ -47,6 +47,13 @@ public:
 
     using t_ctxbase<t_ctx1>::get_data;
 
+    t_uindex get_leaf_count(const t_depth depth) const;
+    t_tscalvec get_leaf_data(t_uindex depth,
+                             t_uindex start_row,
+                             t_uindex end_row,
+                             t_uindex start_col,
+                             t_uindex end_col) const;
+
 private:
     t_trav_sptr m_traversal;
     t_stree_sptr m_tree;

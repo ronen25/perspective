@@ -268,6 +268,10 @@ public:
     void clear_aggregates(const t_uidxvec& indices);
 
     std::pair<iter_by_idx, bool> insert_node(const t_tnode& node);
+
+    t_uindex get_num_leaves(t_uindex depth) const;
+    t_idxvec get_indices_for_depth(t_uindex depth) const;
+
     t_bool has_deltas() const;
     void set_has_deltas(t_bool v);
 

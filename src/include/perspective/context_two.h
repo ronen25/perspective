@@ -49,6 +49,14 @@ public:
 
     using t_ctxbase<t_ctx2>::get_data;
 
+    t_uindex get_leaf_count(t_header header, t_uindex depth) const;
+    t_tscalvec get_leaf_data(t_uindex row_depth,
+                      t_uindex col_depth,
+                      t_uindex start_row,
+                      t_uindex end_row,
+                      t_uindex start_col,
+                      t_uindex end_col) const;
+
 protected:
     t_cinfovec resolve_cells(const t_uidxpvec& cells) const;
 

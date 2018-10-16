@@ -7,11 +7,11 @@
  *
  */
 
-var Jasmine = require('jasmine');
+var Jasmine = require("jasmine");
 var jasmine = new Jasmine();
 
 jasmine.configureDefaultReporter({
     showColors: true
 });
 
-jasmine.execute(['./build/test_node.js']);
+jasmine.execute(["./build/test_node.js"]);

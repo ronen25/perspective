@@ -15,8 +15,6 @@
 #include <perspective/node_processor_types.h>
 #include <vector>
 #include <algorithm>
-#include <csignal>
-
 /*
 TODO improvements
 
@@ -73,8 +71,6 @@ partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_
             t_tscalvec buf(nelems);
             for (t_uindex idx = 0; idx < nelems; ++idx) {
                 buf[idx] = data_->get_scalar(leaves[bidx + idx]);
-                // std::cout << idx << " :: " << leaves[bidx + idx] << " -- " << buf[idx] <<
-                // std::endl;
             }
 
             t_uidxvec order(nelems);
@@ -115,7 +111,6 @@ partition(const t_column* PSP_RESTRICT data_, t_column* PSP_RESTRICT leaves_, t_
                     t_uindex begin = boundaries[i];
                     t_uindex end = boundaries[i + 1];
                     value = sdata[begin];
-                    // std::cout << "scalar ... " << value << std::endl;
                     t_uindex num_new_bytes = sizeof(t_uindex) * (end - begin);
                     memcpy(leaves + begin + bidx, &temp_leaves[begin], num_new_bytes);
                     out_spans.push_back(t_cvs());

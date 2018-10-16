@@ -191,15 +191,15 @@ public:
 
     t_bool get_init() const { return m_init; }
     t_bool empty() const { return size() == 0; }
-    
+
+    void* get_ptr(t_uindex offset);
+    const void* get_ptr(t_uindex offset) const;
 protected:
     void copy_helper_(const t_lstore& other);
     void freeze_impl();
     void unfreeze_impl();
 
 private:
-    void* get_ptr(t_uindex offset);
-    const void* get_ptr(t_uindex offset) const;
 
     void load(const t_str& fname);
     void save(const t_str& fname);

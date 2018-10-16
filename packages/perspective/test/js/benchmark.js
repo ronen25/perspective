@@ -10,38 +10,38 @@
 import perspective from "../../src/js/perspective.wasm.js";
 import "../less/benchmark.css";
 
-import CodeMirror from 'codemirror';
-import 'codemirror/lib/codemirror.css';
-import 'codemirror/theme/eclipse.css';
-import 'codemirror/mode/javascript/javascript.js';
+import CodeMirror from "codemirror";
+import "codemirror/lib/codemirror.css";
+import "codemirror/theme/eclipse.css";
+import "codemirror/mode/javascript/javascript.js";
 
 import Chart from "chart.js";
 
-
-
 import {histogram} from "d3-array";
 
-String.prototype.hashCode = function(){
+String.prototype.hashCode = function() {
     var hash = 0;
     if (this.length == 0) return hash;
     for (let i = 0; i < this.length; i++) {
         let char = this.charCodeAt(i);
-        hash = ((hash<<5)-hash)+char;
+        hash = (hash << 5) - hash + char;
         hash = hash & hash; // Convert to 32bit integer
     }
     return "" + hash;
-}
+};
 
 function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
 
 function print(message, append) {
-    if (append === undefined) {append = true;}
-    if ((typeof message) === "string") {
+    if (append === undefined) {
+        append = true;
+    }
+    if (typeof message === "string") {
         console.log(message);
         var desc = document.createElement("div");
-        desc.className = "content"
+        desc.className = "content";
         desc.innerHTML = message;
         message = desc;
     }
@@ -53,10 +53,18 @@ function print(message, append) {
 
 function code(f) {
     var desc = document.createElement("textarea");
-    var y = f.toString().match(/function[^{]+\{([\s\S]*)\}$/)[1].replace(/\t/g, '    ');
-    var indentation = y.split('\n')[1].match(/^[\s\t]*/)[0].length;
-    var z = y.split('\n').map(function(q) { return q.slice(indentation, q.length); }).join('\n')
-    desc.innerHTML = z
+    var y = f
+        .toString()
+        .match(/function[^{]+\{([\s\S]*)\}$/)[1]
+        .replace(/\t/g, "    ");
+    var indentation = y.split("\n")[1].match(/^[\s\t]*/)[0].length;
+    var z = y
+        .split("\n")
+        .map(function(q) {
+            return q.slice(indentation, q.length);
+        })
+        .join("\n");
+    desc.innerHTML = z;
     document.body.appendChild(desc);
     var editor = CodeMirror.fromTextArea(desc, {
         lineNumbers: true,
@@ -64,7 +72,7 @@ function code(f) {
     });
 }
 
-    function get_csv(url, callback) {
+function get_csv(url, callback) {
     var xhr = new XMLHttpRequest();
     xhr.onreadystatechange = function() {
         if (xhr.readyState == XMLHttpRequest.DONE) {
@@ -72,8 +80,8 @@ function code(f) {
             callback(xhr.responseText);
             console.timeEnd(url + " load");
         }
-    }
-    xhr.open('GET', url, true);
+    };
+    xhr.open("GET", url, true);
     xhr.send(null);
 }
 
@@ -85,42 +93,52 @@ function test(iterations, f) {
 }
 
 function draw(canvas, bins, bins2) {
-
     var myLineChart = new Chart(canvas, {
-        type: 'line',
+        type: "line",
         data: {
-            datasets: [{
-                label: "Current",
-                data: bins.map(function(x) { return {x: x.x0, y: x.length} }),
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255,99,132,1)',
-                borderWidth: 2,
-             //   fill: 'origin'
-            },{
-                label: "Previous",
-                data: bins2.map(function(x) { return {x: x.x0, y: x.length} }),
-                backgroundColor: 'rgba(99, 255, 132, 0.2)',
-                borderColor: 'rgba(99,255,132,1)',
-                borderWidth: 2,
-              //  fill: 'origin'
-            }]
+            datasets: [
+                {
+                    label: "Current",
+                    data: bins.map(function(x) {
+                        return {x: x.x0, y: x.length};
+                    }),
+                    backgroundColor: "rgba(255, 99, 132, 0.2)",
+                    borderColor: "rgba(255,99,132,1)",
+                    borderWidth: 2
+                    //   fill: 'origin'
+                },
+                {
+                    label: "Previous",
+                    data: bins2.map(function(x) {
+                        return {x: x.x0, y: x.length};
+                    }),
+                    backgroundColor: "rgba(99, 255, 132, 0.2)",
+                    borderColor: "rgba(99,255,132,1)",
+                    borderWidth: 2
+                    //  fill: 'origin'
+                }
+            ]
         },
-        options:  {
+        options: {
             responsive: true,
             maintainAspectRatio: false,
             animation: {
-                duration: 0,
+                duration: 0
             },
             scales: {
-                xAxes: [{
-                    type: 'linear',
-                    position: 'bottom'
-                }],
-                yAxes: [{
-                    ticks: {
-                        beginAtZero:true
+                xAxes: [
+                    {
+                        type: "linear",
+                        position: "bottom"
                     }
-                }]
+                ],
+                yAxes: [
+                    {
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }
+                ]
             }
         }
     });
@@ -133,7 +151,6 @@ function run_tests() {
 }
 
 function _run_tests() {
-
     if (__tests__.length === 0) {
         print("Performance suite complete.");
         return;
@@ -143,8 +160,8 @@ function _run_tests() {
     let iterations = f[0];
     f = f[1];
     __tests__ = __tests__.slice(1);
-    print("Running scenario " + attempt + (__tests__.length > 0 ? (" (" + __tests__.length + " remaining).") : ""));
-    attempt ++;
+    print("Running scenario " + attempt + (__tests__.length > 0 ? " (" + __tests__.length + " remaining)." : ""));
+    attempt++;
 
     code(f);
 
@@ -155,15 +172,15 @@ function _run_tests() {
     var start_all = performance.now();
     var testcase = function() {
         var start = performance.now();
-        new Promise(f).then(function () {
+        new Promise(f).then(function() {
             print(x + "/" + iterations, false);
             results.push(performance.now() - start);
             if (x === iterations) {
                 print("Completed in " + numberWithCommas((performance.now() - start_all).toFixed(3)) + "ms", false);
-                var canvas = document.createElement('canvas');
-                var div = document.createElement('div');
-                canvas.setAttribute('width', 400);
-                canvas.setAttribute('height', 400);
+                var canvas = document.createElement("canvas");
+                var div = document.createElement("div");
+                canvas.setAttribute("width", 400);
+                canvas.setAttribute("height", 400);
                 div.appendChild(canvas);
 
                 div.className = "histogram";
@@ -180,16 +197,12 @@ function _run_tests() {
                 setTimeout(testcase, 10);
             }
         });
-    }
+    };
     setTimeout(testcase);
-
 }
 
-
-
 window.addEventListener("perspective-ready", function() {
-
-    get_csv('flight_small.csv', function(csv) {
+    get_csv("flight_small.csv", function(csv) {
         var table = perspective.table(csv);
 
         test(500, function(resolve) {
@@ -205,10 +218,10 @@ window.addEventListener("perspective-ready", function() {
             var view = table.view({
                 filter: [["Origin", "contains", "P"]],
                 aggregate: "count"
-            })
+            });
             view.to_json({
                 end_row: 10
-            }).then(function () {
+            }).then(function() {
                 view.delete();
                 resolve();
             });
@@ -217,10 +230,10 @@ window.addEventListener("perspective-ready", function() {
         test(500, function(resolve) {
             var view = table.view({
                 filter: [["Origin", "contains", "P"]],
-                row_pivot: ['Dest'],
+                row_pivot: ["Dest"],
                 aggregate: "count"
-            })
-            view.to_json().then(function () {
+            });
+            view.to_json().then(function() {
                 view.delete();
                 resolve();
             });
@@ -230,19 +243,19 @@ window.addEventListener("perspective-ready", function() {
             var view = table.view({
                 filter: [["Origin", "contains", "P"]],
                 aggregate: "count"
-            })
-            view.to_json().then(function () {
+            });
+            view.to_json().then(function() {
                 view.delete();
                 resolve();
-            })
+            });
         });
 
         test(150, function(resolve) {
             var view = table.view({
-                row_pivot: ['Dest'],
+                row_pivot: ["Dest"],
                 aggregate: "count",
-                row_pivot_depth: 1,
-            })
+                row_pivot_depth: 1
+            });
             view.to_json().then(function() {
                 view.delete();
                 resolve();
@@ -251,5 +264,4 @@ window.addEventListener("perspective-ready", function() {
 
         run_tests();
     });
-
 });
