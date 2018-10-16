@@ -4,9 +4,9 @@
 
 // NOTE: This page generates 2 jsdoc pages, one for the `GroupedHeader` cell renderer class and the other for the add-on (API with `mixInTo` method).
 
-'use strict';
+"use strict";
 
-var CLASS_NAME = 'GroupedHeader';
+var CLASS_NAME = "GroupedHeader";
 
 /**
  * @summary For detailed tutorial-style documentation, see the {@link https://github.com/openfin/fin-hypergrid/wiki/Grouped+Column+Headers|wiki page}.
@@ -88,7 +88,7 @@ var prototypeAdditions = {
      * @default '|' (the vertical bar character)
      * @memberOf groupedHeader.mixInTo~GroupedHeader#
      */
-    delimiter: '|',
+    delimiter: "|",
 
     /**
      * @summary An additional renderer for just the background.
@@ -121,17 +121,16 @@ var prototypeAdditions = {
      * @default A single-element array (see above)
      * @memberOf groupedHeader.mixInTo~GroupedHeader#
      */
-    groupConfig: [{
-        color: function(gc, config) {
-            return config.color; //lighterColor(gc, config.color, 0.0);
-        },
-        gradientStops: function(gc, config) {
-            return [
-                [0, lighterColor(gc, config.color, 0.5, 0)],
-                [1, lighterColor(gc, config.color, 0.5, .35)]
-            ];
+    groupConfig: [
+        {
+            color: function(gc, config) {
+                return config.color; //lighterColor(gc, config.color, 0.0);
+            },
+            gradientStops: function(gc, config) {
+                return [[0, lighterColor(gc, config.color, 0.5, 0)], [1, lighterColor(gc, config.color, 0.5, 0.35)]];
+            }
         }
-    }]
+    ]
 };
 
 /**
@@ -153,8 +152,8 @@ function mixInTo(grid, options) {
     // 1. Creates a new renderer and adds it to the grid.
     var CellRenderer = options.CellRenderer;
 
-    if (!CellRenderer || typeof CellRenderer === 'string') {
-        var cellRendererName = CellRenderer || grid.behavior.getActiveColumn(0).getCellProperty(0, 'renderer'),
+    if (!CellRenderer || typeof CellRenderer === "string") {
+        var cellRendererName = CellRenderer || grid.behavior.getActiveColumn(0).getCellProperty(0, "renderer"),
             cellRenderer = grid.cellRenderers.get(cellRendererName);
         CellRenderer = Object.getPrototypeOf(cellRenderer).constructor;
     }
@@ -218,10 +217,10 @@ function setHeaders(headers) {
     }, 0);
 
     var headerDataModel = this.grid.behavior.subgrids.lookup.header,
-        headerRowHeight = 5 / 4 * this.grid.properties.defaultRowHeight;
+        headerRowHeight = (5 / 4) * this.grid.properties.defaultRowHeight;
 
     if (levels > 1) {
-        headerRowHeight = levels * 4 / 5 * this.grid.properties.defaultRowHeight; 
+        headerRowHeight = ((levels * 4) / 5) * this.grid.properties.defaultRowHeight;
     }
 
     this.grid.setRowHeight(0, headerRowHeight, headerDataModel);
@@ -247,9 +246,11 @@ function isColumnReorderable() {
 
     return (
         isReorderable &&
-        !this.columns.find(function(column) { // but only if no grouped columns
-            return column.getCellProperty(0, 'renderer') === CLASS_NAME && // header cell using GroupedHeader
-                column.header.indexOf(delimiter) !== -1; // header is part of a group
+        !this.columns.find(function(column) {
+            // but only if no grouped columns
+            return (
+                column.getCellProperty(0, "renderer") === CLASS_NAME && column.header.indexOf(delimiter) !== -1 // header cell using GroupedHeader
+            ); // header is part of a group
         })
     );
 }
@@ -278,17 +279,18 @@ function paintHeaderGroups(gc, config) {
     var values = config.value.split(this.delimiter), // each group header including column header
         groupCount = values.length - 1; // group header levels above column header
 
-    if (groupCount === 0 || colIndex === 0) { // no group headers OR first column
+    if (groupCount === 0 || colIndex === 0) {
+        // no group headers OR first column
         this.groups = []; // start out with no groups defined
     }
 
-    if (groupCount) { // has group headers
+    if (groupCount) {
+        // has group headers
         var group,
             groups = this.groups,
             rect = config.bounds,
             new_group = false,
             bounds = Object.assign({}, rect), // save bounds for final column header render and resetting
-
             // save cosmetic properties for final column header render that follows this if-block
             columnConfigStash = {
                 isColumnHovered: config.isColumnHovered,
@@ -340,24 +342,24 @@ function paintHeaderGroups(gc, config) {
                 this.groupCount = groupCount;
                 // Suppress hover and selection effects for group headers
                 config.isColumnHovered = config.isSelected = false;
-                config.columnHeaderHalign = 'center';
+                config.columnHeaderHalign = "center";
 
                 // Make group headers bold & grey
                 config.value = group.value;
-                config.font = '12px Arial'; //'bold ' + config.font;
+                config.font = "12px Arial"; //'bold ' + config.font;
                 // config.backgroundColor = 'transparent';
 
                 // Paint the group header foreground
                 paint.call(this, gc, config);
-              //  gc.cache.fillStyle = "#999"; //config.columnHeaderColor;
-              //  gc.fillRect(bounds.x - 1, bounds.y, 1, bounds.y + bounds.height);
+                //  gc.cache.fillStyle = "#999"; //config.columnHeaderColor;
+                //  gc.fillRect(bounds.x - 1, bounds.y, 1, bounds.y + bounds.height);
 
                 var decorator = config.paintBackground || this.paintBackground;
                 if (decorator) {
-                    if (typeof decorator !== 'function') {
+                    if (typeof decorator !== "function") {
                         decorator = groupedHeader[decorator];
-                        if (typeof decorator !== 'function') {
-                            throw 'Expected decorator function or name of registered decorator function.';
+                        if (typeof decorator !== "function") {
+                            throw "Expected decorator function or name of registered decorator function.";
                         }
                     }
                     decorator.call(this, gc, config);
@@ -386,12 +388,13 @@ function paintHeaderGroups(gc, config) {
     if (groupCount) {
         if (new_group) {
             gc.cache.fillStyle = "#AAA"; //config.columnHeaderColor;
-            gc.fillRect(bounds.x-1, bounds.y, 1, bounds.y + bounds.height);
+            gc.fillRect(bounds.x - 1, bounds.y, 1, bounds.y + bounds.height);
         }
         Object.assign(rect, bounds);
     }
 
-    function stash(key) { // iteratee function for iterating over `group.config`
+    function stash(key) {
+        // iteratee function for iterating over `group.config`
         if (key in config) {
             if (key in group.configStash) {
                 config[key] = group.configStash[key];
@@ -400,7 +403,7 @@ function paintHeaderGroups(gc, config) {
             }
         }
         var property = group.config[key];
-        if (key !== 'paintBackground' && typeof property === 'function') {
+        if (key !== "paintBackground" && typeof property === "function") {
             property = property.call(this, gc, config);
         }
         group[key] = property;
@@ -448,8 +451,7 @@ function decorateBackgroundWithLinearGradient(gc, config) {
  */
 function decorateBackgroundWithBottomBorder(gc, config) {
     var bounds = config.bounds,
-        thickness = 1 || config.thickness ||
-            this.groupCount - this.groupIndex; // when `thickness` undefined, higher-order groups get progressively thicker borders
+        thickness = 1 || config.thickness || this.groupCount - this.groupIndex; // when `thickness` undefined, higher-order groups get progressively thicker borders
 
     gc.cache.fillStyle = "#fff"; // config.color;
     gc.fillRect(bounds.x + 3, bounds.y + bounds.height - thickness, bounds.width - 6, thickness);
@@ -488,11 +490,7 @@ function lighterColor(gc, color, factor, newAlpha) {
         alpha = newAlpha;
     }
 
-    return (
-        alpha !== undefined
-            ? 'rgba(' + r + ', ' + g + ', ' + b + ', ' + alpha + ')'
-            : '#' + toHex2(r) + toHex2(g) + toHex2(b)
-    );
+    return alpha !== undefined ? "rgba(" + r + ", " + g + ", " + b + ", " + alpha + ")" : "#" + toHex2(r) + toHex2(g) + toHex2(b);
 }
 
 function lighterComponent(n, factor) {
@@ -501,7 +499,9 @@ function lighterComponent(n, factor) {
 
 function toHex2(n) {
     var x = Math.round(n).toString(16);
-    if (n < 0x10) { x = '0' + x; }
+    if (n < 0x10) {
+        x = "0" + x;
+    }
     return x;
 }
 
@@ -512,4 +512,3 @@ module.exports = {
     decorateBackgroundWithLinearGradient: decorateBackgroundWithLinearGradient,
     lighterColor: lighterColor
 };
-

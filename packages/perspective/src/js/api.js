@@ -57,6 +57,8 @@ function view(worker, table_name, config) {
     bindall(this);
 }
 
+view.prototype.to_flat = async_queue("to_flat");
+
 view.prototype.to_json = async_queue("to_json");
 
 view.prototype.to_columns = async_queue("to_columns");

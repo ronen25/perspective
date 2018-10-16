@@ -1,6 +1,6 @@
 declare module '@jpmorganchase/perspective' {
     /**** object types ****/
-    export enum TypeNames {
+    export const enum TypeNames {
         STRING = 'string',
         FLOAT = 'float',
         INTEGER = 'integer',
@@ -16,12 +16,23 @@ declare module '@jpmorganchase/perspective' {
         TypeNames: Array<string>
     }
 
-    export enum SortOrders {
+    export const enum SortOrders {
         ASC = 'asc',
         ASC_ABS = 'asc abs',
         DESC = 'desc',
         DESC_ABS = 'desc abs',
         NONE = 'none',
+    }
+
+    export const enum NumericRelation {
+        GT = '>',
+        LT = '<',
+        EQ = '==',
+        NEQ = '!=',
+        GTE = '>=',
+        LTE = '<=',
+        NAN = 'is nan',
+        NOT_NAN = 'is not nan',
     }
 
     enum NUMBER_AGGREGATES {
@@ -78,15 +89,32 @@ declare module '@jpmorganchase/perspective' {
         [ key: string ]: TypeNames ;
     }
 
+    /**** Flat result ****/
+    export type FlatOptions = {
+        row_depth?: number;
+        col_depth?: number;
+        start_row?: number;
+        start_col?: number;
+    }
+
+    export type FlatResult = {
+        row_spans: any[][];
+        col_spans: any[][];
+        data: any[][];
+    }
+
     /**** View ****/
     export type View = {
         delete(): Promise<void>;
         num_columns(): Promise<number>;
+        expand_to_depth(depth: number, column: boolean | undefined): void;
+        collapse_to_depth(depth: number, column: boolean | undefined): void;
         num_rows(): Promise<number>;
         on_update(callback: UpdateCallback): void;
         on_delete(callback: Function): void;
         schema(): Promise<Schema>;
         to_json(): Promise<Array<object>>;
+        to_flat(options: FlatOptions): Promise<object>;
         to_csv(): Promise<string>;
     }
 
@@ -101,27 +129,27 @@ declare module '@jpmorganchase/perspective' {
 
     export type AggregateConfig = {
         column: string | Array<string>;
+        op: string; //NUMBER_AGGREGATES | STRING_AGGREGATES | BOOLEAN_AGGREGATES;
         name?: string;
-        op: NUMBER_AGGREGATES | STRING_AGGREGATES | BOOLEAN_AGGREGATES;
     };
 
     export type ViewConfig = {
         row_pivot?: Array<string>;
         column_pivot?: Array<string>;
-        sort?: Array<string>;
+        sort?: Array<[number, SortOrders]>;
         filter?: Array<Array<string>>;
-        aggregate: Array<AggregateConfig>;
+        aggregate?: Array<AggregateConfig>;
     };
 
     export type Table = {
-        add_computed(): Table;
+        add_computed(computed: Array<object>): Table;
         columns(): Array<string>;
         delete(): Promise<void>;
         on_delete(callback: Function): void;
         schema(): Promise<Schema>;
         size(): Promise<number>;
-        update(TableData): void;
-        view(ViewConfig): View;
+        update(data: TableData): void;
+        view(config: ViewConfig): View;
     }
 
     /**** perspective ****/

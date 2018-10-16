@@ -728,7 +728,7 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         agg_update_info.m_aggspecs.push_back(ctx.get_aggspec(colname));
     }
 
-    auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
+    /*auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
         int agg_type = agg_update_info.m_aggspecs[col_idx].agg();
 
         return agg_type == AGGTYPE_SCALED_DIV || agg_type == AGGTYPE_SCALED_ADD
@@ -774,7 +774,7 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         for (size_t i = 0; i < col_cnt; ++i) {
             push_column(i);
         }
-    }
+    }*/
 
     for (const auto& r : m_tree_unification_records) {
         if (!node_exists(r.m_sptidx)) {
@@ -850,7 +850,10 @@ void
 t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info, t_uindex src_ridx,
     t_uindex dst_ridx, t_index nstrands, const t_gstate& gstate) {
     static bool const enable_sticky_nan_fix = true;
-    for (t_uindex idx : info.m_dst_topo_sorted) {
+    t_uindex nentries = info.m_src.size();
+
+    for (t_uindex idx = 0; idx < nentries; ++idx)
+    {
         const t_column* src = info.m_src[idx];
         t_column* dst = info.m_dst[idx];
         const t_aggspec& spec = info.m_aggspecs[idx];
@@ -996,16 +999,15 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info, t_uindex src_r
             case AGGTYPE_JOIN: {
                 old_value.set(dst->get_scalar(dst_ridx));
                 auto pkeys = get_pkeys(nidx);
-
                 new_value.set(gstate.reduce<std::function<t_tscalar(t_tscalvec&)>>(
                     pkeys, spec.get_dependencies()[0].name(), [this](t_tscalvec& values) {
-                        t_tscalset vset;
+                        std::set<t_tscalar> vset;
                         for (const auto& v : values) {
                             vset.insert(v);
                         }
 
                         std::stringstream ss;
-                        for (t_tscalset::const_iterator iter = vset.begin(); iter != vset.end();
+                        for (std::set<t_tscalar>::const_iterator iter = vset.begin(); iter != vset.end();
                              ++iter) {
                             ss << *iter << ", ";
                         }
@@ -1809,6 +1811,40 @@ t_stree::node_exists(t_uindex idx) {
 t_table*
 t_stree::get_aggtable() {
     return m_aggregates.get();
+}
+
+t_uindex
+t_stree::get_num_leaves(t_uindex depth) const
+{
+    t_uint8 d8(depth);
+    auto iterators = m_nodes->get<by_depth>().equal_range(d8);
+    return std::distance(iterators.first, iterators.second);
+}
+
+t_idxvec
+t_stree::get_indices_for_depth(t_uindex depth) const
+ {
+    t_idxvec indices;
+    std::deque<t_tnode> dft;
+    dft.push_front(get_node(0));
+     while (!dft.empty())
+    {
+        t_tnode node = dft.front();
+        dft.pop_front();
+         if (node.m_depth < depth)
+        {
+            t_stnode_vec nodes;
+            get_child_nodes(node.m_idx, nodes);
+            std::copy(nodes.rbegin(),
+                      nodes.rend(),
+                      std::front_inserter(dft));
+        }
+        else if (node.m_depth == depth)
+        {
+            indices.push_back(node.m_idx);
+        }
+    }
+    return indices;
 }
 
 std::pair<iter_by_idx, t_bool>
