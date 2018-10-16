@@ -6,16 +6,6 @@ const prettier = require("prettier");
 const argv = require("minimist")(process.argv.slice(2));
 
 /**
- * ASMJS Output Options
- */
-const WEB_ASMJS_OPTIONS = {
-    inputFile: "psp.asmjs.js",
-    format: false,
-    packageName: "perspective",
-    build: !!argv.asmjs // should we build asm?
-};
-
-/**
  * WASM Output Options
  */
 const WEB_WASM_OPTIONS = {
@@ -40,7 +30,7 @@ const NODE_OPTIONS = {
 /**
  * Filter for the runtimes we should build
  */
-const AVAILABLE_RUNTIMES = [WEB_ASMJS_OPTIONS, WEB_WASM_OPTIONS, NODE_OPTIONS];
+const AVAILABLE_RUNTIMES = [WEB_WASM_OPTIONS, NODE_OPTIONS];
 
 // Select the runtimes - if no builds are specified then build everything
 const RUNTIMES = AVAILABLE_RUNTIMES.filter(runtime => runtime.build).length ? AVAILABLE_RUNTIMES.filter(runtime => runtime.build) : AVAILABLE_RUNTIMES;

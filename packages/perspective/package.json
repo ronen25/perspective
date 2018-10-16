@@ -25,7 +25,6 @@
         "build:copy:sync": "cp obj/psp.sync.wasm build/psp.sync.wasm",
         "build:webpack": "npm-run-all -p build:webpack:*",
         "build:webpack:umd": "webpack --color --config src/config/perspective.config.js",
-        "build:webpack:asmjs": "webpack --color --config src/config/perspective.asmjs.config.js",
         "build:webpack:wasm": "webpack --color --config src/config/perspective.wasm.config.js",
         "build:webpack:parallel": "webpack --color --config src/config/perspective.cjs.config.js",
         "build:webpack:node": "webpack --color --config src/config/perspective.node.config.js",

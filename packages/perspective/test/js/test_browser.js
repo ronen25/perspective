@@ -8,7 +8,6 @@
  */
 
 import perspective_wasm from "../../src/js/perspective.wasm.js";
-import perspective_asmjs from "../../src/js/perspective.asmjs.js";
 import psp_parallel from "../../src/js/perspective.parallel.js";
 
 import "./jasmine.js";
@@ -21,7 +20,6 @@ const internal_tests = require("./internal.js");
 
 const RUNTIMES = {
     WASM: perspective_wasm,
-    ASMJS: perspective_asmjs,
     Parallel: psp_parallel.worker()
 };
 

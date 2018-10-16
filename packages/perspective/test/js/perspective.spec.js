@@ -8,11 +8,9 @@
  */
 
 const perspective = require("../../src/js/perspective.js");
-const asmjs_perspective = require("../../src/js/perspective.asmjs.js");
 const node_perspective = require("../../src/js/perspective.node.js");
 
 const RUNTIMES = {
-    ASMJS: asmjs_perspective,
     NODE: node_perspective
 };
 

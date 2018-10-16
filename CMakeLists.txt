@@ -48,7 +48,6 @@ if (PSP_WASM_BUILD)
 
 	set(SYNC_MODE_FLAGS "-s ENVIRONMENT=node -s BINARYEN_ASYNC_COMPILATION=0 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
 	set(ASYNC_MODE_FLAGS "-s ENVIRONMENT=worker -s BINARYEN_ASYNC_COMPILATION=1 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
-	set(ASMJS_MODE_FLAGS "-s ENVIRONMENT=worker -s LEGACY_VM_SUPPORT=1 -s BINARYEN_ASYNC_COMPILATION=0 -s BINARYEN_METHOD='\"asmjs\"' -Wno-almost-asm -s WASM=0")
 else()
 	if(DEFINED ENV{PSP_DEBUG})
 		set(OPT_FLAGS " \
@@ -63,7 +62,6 @@ else()
 	endif()
 	set(SYNC_MODE_FLAGS "")
 	set(ASYNC_MODE_FLAGS "")
-	set(ASMJS_MODE_FLAGS "")
 endif()
 
 set(CMAKE_C_FLAGS " \
@@ -162,14 +160,6 @@ if (PSP_WASM_BUILD)
 	set_target_properties(perspective.sync PROPERTIES COMPILE_FLAGS "${SYNC_MODE_FLAGS}")
 	set_target_properties(perspective.sync PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build/")
 	set_target_properties(perspective.sync PROPERTIES OUTPUT_NAME "psp.sync")
-	add_dependencies(perspective.sync perspective.async)
-
-	add_executable(perspective.asm src/cpp/main.cpp)
-	target_link_libraries(perspective.asm psp "${ASMJS_MODE_FLAGS}")
-	set_target_properties(perspective.asm PROPERTIES COMPILE_FLAGS "${ASMJS_MODE_FLAGS}")
-	set_target_properties(perspective.asm PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build/")
-	set_target_properties(perspective.asm PROPERTIES OUTPUT_NAME "psp.asmjs")
-	add_dependencies(perspective.asm perspective.sync)
 endif()
 
 
