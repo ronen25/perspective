@@ -62,7 +62,6 @@ public:
     ~t_pool();
 
     void unregister_gnode(t_uindex idx);
-
     void unregister_context(t_uindex gnode_id, const t_str& name);
 
     void send(t_uindex gnode_id, t_uindex port_id, const t_table& table);
