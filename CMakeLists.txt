@@ -1,12 +1,15 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 3.0)
 project (psp)
 
 if (NOT DEFINED PSP_WASM_BUILD)
-    set(PSP_WASM_BUILD ON)
+    set(PSP_WASM_BUILD OFF)
 endif()
 
+set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+#set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing as we don't need it.")
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
+
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
@@ -48,27 +51,16 @@ if (PSP_WASM_BUILD)
 
 	set(SYNC_MODE_FLAGS "-s ENVIRONMENT=node -s BINARYEN_ASYNC_COMPILATION=0 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
 	set(ASYNC_MODE_FLAGS "-s ENVIRONMENT=worker -s BINARYEN_ASYNC_COMPILATION=1 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
-else()
-	if(DEFINED ENV{PSP_DEBUG})
-		set(OPT_FLAGS " \
-			-O1 \
-			-g3 \
-		")
-	else()
-		set(OPT_FLAGS " \
-			-O3 \
-			-g0 \
-		")
-	endif()
-	set(SYNC_MODE_FLAGS "")
-	set(ASYNC_MODE_FLAGS "")
+
+
+	set(CMAKE_C_FLAGS " \
+		${CMAKE_C_FLAGS} \
+		${EXTENDED_FLAGS} \
+		${OPT_FLAGS} \
+	")
 endif()
 
-set(CMAKE_C_FLAGS " \
-	${CMAKE_C_FLAGS} \
-	${EXTENDED_FLAGS} \
-	${OPT_FLAGS} \
-")
+set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-deprecated")
 
 set (SOURCE_FILES
 src/cpp/aggregate.cpp
@@ -143,8 +135,6 @@ src/cpp/update_task.cpp
 src/cpp/vocab.cpp
 )
 
-set(CMAKE_CXX_FLAGS " -std=c++0x ${CMAKE_CXX_FLAGS} ${CMAKE_C_FLAGS}")
-
 add_library(psp ${SOURCE_FILES})
 set_target_properties(psp PROPERTIES COMPILE_FLAGS "${ASYNC_MODE_FLAGS}")
 
@@ -183,10 +173,12 @@ function (psp_build_dep name cmake_file)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
-   ## Build Gtest
-   ## Perhaps we need this on windows -> set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+   if (WIN32)
+       set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
+   endif()
    psp_build_dep("googletest" "cmake/GTest.txt.in")
    psp_build_dep("tbb" "cmake/TBB.txt.in")
+   psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)
+   add_subdirectory(bench)
 endif()
-
