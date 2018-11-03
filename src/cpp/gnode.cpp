@@ -202,7 +202,7 @@ t_gnode::_send(t_uindex portid, const t_table& fragments)
 }
 
 t_value_transition
-t_gnode::calc_transition(t_bool prev_existed, t_bool row_pre_existed,
+calc_transition(t_bool prev_existed, t_bool row_pre_existed,
     t_bool exists, t_bool prev_valid, t_bool cur_valid, t_bool prev_cur_eq,
     t_bool prev_pkey_eq)
 {

@@ -36,6 +36,11 @@ PERSPECTIVE_EXPORT t_tscalar calc_newer(
 
 PERSPECTIVE_EXPORT t_tscalar calc_negate(t_tscalar val);
 
+
+t_value_transition calc_transition(t_bool prev_existed,
+        t_bool row_pre_existed, t_bool exists, t_bool prev_valid,
+        t_bool cur_valid, t_bool prev_cur_eq, t_bool prev_pkey_eq);
+
 struct PERSPECTIVE_EXPORT t_gnode_recipe
 {
     t_gnode_recipe() {}
@@ -140,10 +145,6 @@ protected:
         t_column* tcolumn, const t_uint8* op_base, std::vector<t_rlookup>& lkup,
         std::vector<t_bool>& prev_pkey_eq_vec,
         std::vector<t_uindex>& added_vec);
-
-    t_value_transition calc_transition(t_bool prev_existed,
-        t_bool row_pre_existed, t_bool exists, t_bool prev_valid,
-        t_bool cur_valid, t_bool prev_cur_eq, t_bool prev_pkey_eq);
 
     void _update_contexts_from_state(const t_table& tbl);
     void _update_contexts_from_state();

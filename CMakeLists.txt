@@ -7,7 +7,6 @@ endif()
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-#set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "Disable benchmark testing as we don't need it.")
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
 
 
@@ -19,11 +18,8 @@ if (PSP_WASM_BUILD)
 	set(CMAKE_AR emar)
 	set(CMAKE_RANLIB emranlib)
 	set(CMAKE_EXECUTABLE_SUFFIX ".js")
-	list(APPEND CMAKE_PREFIX_PATH /usr/local)
-	include_directories("/usr/local/include")
-	include_directories("/boost_includes")
 
-	set(EXTENDED_FLAGS " \
+	set(CMAKE_CXX_FLAGS " \
 		--bind \
 		--memory-init-file 0 \
 		-s NO_EXIT_RUNTIME=1 \
@@ -33,31 +29,17 @@ if (PSP_WASM_BUILD)
 		-s EXPORTED_FUNCTIONS=\"['_main']\" \
 	")
 
-	if(DEFINED ENV{PSP_DEBUG})
-		set(OPT_FLAGS " \
-			-O1 \
-			-g4 \
-			-s SAFE_HEAP=1 \
-			-s DISABLE_EXCEPTION_CATCHING=0 \
-			-s ASSERTIONS=2 \
-			-s DEMANGLE_SUPPORT=1 \
-		")
-	else()
-		set(OPT_FLAGS " \
-			-O3 \
-			-g0 \
-		")
-	endif()
+    set(CMAKE_CXX_FLAGS_DEBUG " \
+        -O1 \
+        -g4 \
+        -s SAFE_HEAP=1 \
+        -s DISABLE_EXCEPTION_CATCHING=0 \
+        -s ASSERTIONS=2 \
+        -s DEMANGLE_SUPPORT=1 \
+    ")
 
 	set(SYNC_MODE_FLAGS "-s ENVIRONMENT=node -s BINARYEN_ASYNC_COMPILATION=0 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
 	set(ASYNC_MODE_FLAGS "-s ENVIRONMENT=worker -s BINARYEN_ASYNC_COMPILATION=1 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
-
-
-	set(CMAKE_C_FLAGS " \
-		${CMAKE_C_FLAGS} \
-		${EXTENDED_FLAGS} \
-		${OPT_FLAGS} \
-	")
 endif()
 
 set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-deprecated")
@@ -170,12 +152,14 @@ function (psp_build_dep name cmake_file)
 	add_subdirectory(${CMAKE_BINARY_DIR}/${name}-src
 			${CMAKE_BINARY_DIR}/${name}-build
 			EXCLUDE_FROM_ALL)
+    include_directories(${CMAKE_BINARY_DIR}/${name}-src/include)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
    if (WIN32)
        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
    endif()
+   set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
    psp_build_dep("tbb" "cmake/TBB.txt.in")
    psp_build_dep("benchmark" "cmake/benchmark.txt.in")
