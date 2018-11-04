@@ -20,16 +20,18 @@ if (PSP_WASM_BUILD)
 	set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
 	set(CMAKE_CXX_FLAGS " \
+	    ${CMAKE_CXX_FLAGS} \
 		--bind \
 		--memory-init-file 0 \
 		-s NO_EXIT_RUNTIME=1 \
 		-s NO_FILESYSTEM=1 \
 		-s ALLOW_MEMORY_GROWTH=1 \
-		-s NO_DYNAMIC_EXECUTION=2 \
+		-s DYNAMIC_EXECUTION=1 \
 		-s EXPORTED_FUNCTIONS=\"['_main']\" \
 	")
 
     set(CMAKE_CXX_FLAGS_DEBUG " \
+        ${CMAKE_CXX_FLAGS_DEBUG} \
         -O1 \
         -g4 \
         -s SAFE_HEAP=1 \
@@ -42,7 +44,7 @@ if (PSP_WASM_BUILD)
 	set(ASYNC_MODE_FLAGS "-s ENVIRONMENT=worker -s BINARYEN_ASYNC_COMPILATION=1 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
 endif()
 
-set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-deprecated")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
 
 set (SOURCE_FILES
 src/cpp/aggregate.cpp

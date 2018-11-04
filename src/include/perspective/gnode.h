@@ -130,8 +130,7 @@ protected:
 
     template <typename CTX_T>
     void notify_context(CTX_T* ctx, const t_table& flattened,
-        const t_table& delta, const t_table& prev, const t_table& current,
-        const t_table& transitions, const t_table& existed);
+        const t_table& prev, const t_table& current);
 
     template <typename CTX_T>
     void update_context_from_state(CTX_T* ctx, const t_table& tbl);
@@ -141,8 +140,8 @@ protected:
 
     template <typename DATA_T>
     void _process_helper(const t_column* fcolumn, const t_column* scolumn,
-        t_column* dcolumn, t_column* pcolumn, t_column* ccolumn,
-        t_column* tcolumn, const t_uint8* op_base, std::vector<t_rlookup>& lkup,
+        t_column* pcolumn, t_column* ccolumn,
+        const t_uint8* op_base, std::vector<t_rlookup>& lkup,
         std::vector<t_bool>& prev_pkey_eq_vec,
         std::vector<t_uindex>& added_vec);
 
@@ -173,8 +172,8 @@ private:
 
 template <>
 void t_gnode::_process_helper<t_str>(const t_column* fcolumn,
-    const t_column* scolumn, t_column* dcolumn, t_column* pcolumn,
-    t_column* ccolumn, t_column* tcolumn, const t_uint8* op_base,
+    const t_column* scolumn, t_column* pcolumn,
+    t_column* ccolumn, const t_uint8* op_base,
     std::vector<t_rlookup>& lkup, std::vector<t_bool>& prev_pkey_eq_vec,
     std::vector<t_uindex>& added_vec);
 
@@ -183,25 +182,20 @@ void
 t_gnode::notify_context(const t_table& flattened, const t_ctx_handle& ctxh)
 {
     CTX_T* ctx = ctxh.get<CTX_T>();
-    const t_table& delta = *(m_oports[PSP_PORT_DELTA]->get_table().get());
     const t_table& prev = *(m_oports[PSP_PORT_PREV]->get_table().get());
     const t_table& current = *(m_oports[PSP_PORT_CURRENT]->get_table().get());
-    const t_table& transitions
-        = *(m_oports[PSP_PORT_TRANSITIONS]->get_table().get());
-    const t_table& existed = *(m_oports[PSP_PORT_EXISTED]->get_table().get());
     notify_context<CTX_T>(
-        ctx, flattened, delta, prev, current, transitions, existed);
+        ctx, flattened, prev, current);
 }
 
 template <typename CTX_T>
 void
 t_gnode::notify_context(CTX_T* ctx, const t_table& flattened,
-    const t_table& delta, const t_table& prev, const t_table& current,
-    const t_table& transitions, const t_table& existed)
+    const t_table& prev, const t_table& current)
 {
     auto t1 = std::chrono::high_resolution_clock::now();
     ctx->step_begin();
-    ctx->notify(flattened, delta, prev, current, transitions, existed);
+    ctx->notify(flattened, prev, current);
     ctx->step_end();
     if (t_env::log_time_ctx_notify())
     {
@@ -234,7 +228,7 @@ t_gnode::update_context_from_state(CTX_T* ctx, const t_table& flattened)
 template <typename DATA_T>
 void
 t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
-    t_column* dcolumn, t_column* pcolumn, t_column* ccolumn, t_column* tcolumn,
+    t_column* pcolumn, t_column* ccolumn,
     const t_uint8* op_base, std::vector<t_rlookup>& lkup,
     std::vector<t_bool>& prev_pkey_eq_vec, std::vector<t_uindex>& added_vec)
 {
@@ -274,10 +268,6 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
                     exists, prev_valid, cur_valid, prev_cur_eq,
                     prev_pkey_eq_vec[idx]);
 
-                dcolumn->set_nth<DATA_T>(added_count,
-                    cur_valid ? cur_value - prev_value : DATA_T(0));
-                dcolumn->set_valid(added_count, true);
-
                 pcolumn->set_nth<DATA_T>(added_count, prev_value);
                 pcolumn->set_valid(added_count, prev_valid);
 
@@ -286,8 +276,6 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
 
                 ccolumn->set_valid(
                     added_count, cur_valid ? cur_valid : prev_valid);
-
-                tcolumn->set_nth<t_uint8>(idx, trans);
             }
             break;
             case OP_DELETE:
@@ -303,14 +291,6 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
 
                     ccolumn->set_nth<DATA_T>(added_count, prev_value);
                     ccolumn->set_valid(added_count, prev_valid);
-
-                    SUPPRESS_WARNINGS_VC(4146)
-                    dcolumn->set_nth<DATA_T>(added_count, -prev_value);
-                    RESTORE_WARNINGS_VC()
-                    dcolumn->set_valid(added_count, true);
-
-                    tcolumn->set_nth<t_uint8>(
-                        added_count, VALUE_TRANSITION_NEQ_TDF);
                 }
             }
             break;

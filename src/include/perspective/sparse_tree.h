@@ -185,8 +185,8 @@ public:
     void build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
         t_uindex npivots, t_uindex strand_count_idx, t_uindex aggcolsize,
         t_bool force_current_row, const t_colcptrvec& piv_pcolcontexts,
-        const t_colcptrvec& piv_tcols, const t_colcptrvec& agg_ccols,
-        const t_colcptrvec& agg_dcols, t_colptrvec& piv_scols,
+        const t_colcptrvec& agg_ccols,
+        t_colptrvec& piv_scols,
         t_colptrvec& agg_acols, t_column* agg_scountspar, t_column* spkey,
         t_uindex& insert_count, t_bool& pivots_neq,
         const t_svec& pivot_like) const;
@@ -199,8 +199,8 @@ public:
         const t_svec& pivot_like) const;
 
     std::pair<t_table_sptr, t_table_sptr> build_strand_table(
-        const t_table& flattened, const t_table& delta, const t_table& prev,
-        const t_table& current, const t_table& transitions,
+        const t_table& flattened, const t_table& prev,
+        const t_table& current,
         const t_aggspecvec& aggspecs, const t_config& config) const;
 
     std::pair<t_table_sptr, t_table_sptr> build_strand_table(

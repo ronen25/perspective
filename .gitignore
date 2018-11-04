@@ -113,12 +113,12 @@ website/i18n/*
 .vscode
 
 .idea
-cmake-build-debug
+cmake-build-*
 .ipynb_checkpoints
 
 package.json.lerna_backup
 website/static/css/material.dark.css
 
 # CPP Compile
-/include/boost
+src/include/boost
 obj

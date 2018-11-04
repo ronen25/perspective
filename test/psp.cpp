@@ -217,3 +217,7 @@ TEST(SCALAR, map_test_3)
     mmap["y"_ts] = 3;
     ASSERT_EQ(mmap.size(), 3);
 }
+
+TEST(DELTA, delta_test_1) {
+
+}

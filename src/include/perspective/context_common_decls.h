@@ -21,8 +21,8 @@ void reset_sortby();
 // will only work on empty contexts
 void notify(const t_table& flattened);
 
-void notify(const t_table& flattened, const t_table& delta, const t_table& prev,
-    const t_table& current, const t_table& transitions, const t_table& existed);
+void notify(const t_table& flattened, const t_table& prev,
+    const t_table& current);
 
 void step_begin();
 
