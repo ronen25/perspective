@@ -120,5 +120,5 @@ package.json.lerna_backup
 website/static/css/material.dark.css
 
 # CPP Compile
-/include/boost
+src/include/boost
 obj
