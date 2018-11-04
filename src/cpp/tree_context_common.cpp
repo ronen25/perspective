@@ -75,6 +75,7 @@ notify_sparse_tree_common(t_table_sptr strands, t_table_sptr strand_deltas,
     tree->drop_zero_strands();
 
     tree->populate_leaf_index(non_zero_leaves);
+
     tree->update_aggs_from_static(dctx, gstate);
 
     t_uidxset visited;
@@ -171,6 +172,7 @@ notify_sparse_tree(t_stree_sptr tree, t_trav_sptr traversal,
 {
     auto strand_values
         = tree->build_strand_table(flattened, aggregates, config);
+
     auto strands = strand_values.first;
     auto strand_deltas = strand_values.second;
     notify_sparse_tree_common(strands, strand_deltas, tree, traversal,
@@ -213,7 +215,7 @@ ctx_get_flattened_tree(t_tvidx idx, t_depth stop_depth, t_traversal& trav,
     const t_config& config, const t_sortsvec& sortby)
 {
     t_ptidx ptidx = trav.get_tree_index(idx);
-    trav.expand_to_depth(sortby, stop_depth);
+    trav.set_depth(sortby, stop_depth);
     if (!sortby.empty())
     {
         trav.sort_by(config, sortby, *(trav.get_tree()));

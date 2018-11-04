@@ -284,7 +284,6 @@ t_lstore::~t_lstore()
 void t_lstore::set_size(t_uindex idx) // in bytes
 {
     PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     t_unlock_store tmp(this);
 #ifdef PSP_VERIFY
     PSP_VERBOSE_ASSERT(m_size <= m_capacity, "Setting bad size");
@@ -495,6 +494,13 @@ t_lstore::copy(t_lstore& out)
     PSP_COMPLAIN_AND_ABORT("copy is unimplemented!");
 }
 
+void
+t_lstore::warmup()
+{
+    PSP_TRACE_SENTINEL();
+    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+}
+
 t_uindex
 t_lstore::size() const
 {
@@ -549,14 +555,12 @@ t_lstore::push_back(const void* ptr, t_uindex len)
 void*
 t_lstore::get_ptr(t_uindex offset)
 {
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     return static_cast<void*>(static_cast<t_uchar*>(m_base) + offset);
 }
 
 const void*
 t_lstore::get_ptr(t_uindex offset) const
 {
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     return static_cast<void*>(static_cast<t_uchar*>(m_base) + offset);
 }
 
@@ -651,7 +655,6 @@ t_lstore::fill(const t_lstore& other, const t_mask& mask, t_uindex elem_size)
 void
 t_lstore::pprint() const
 {
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     std::cout << repr() << std::endl;
     t_uindex nelems = size() / sizeof(t_uint8);
     for (t_uindex idx = 0; idx < size() / nelems; ++idx)
@@ -666,7 +669,6 @@ t_lstore::pprint() const
 t_lstore_sptr
 t_lstore::clone() const
 {
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     auto recipe = get_recipe();
     t_lstore_sptr rval(new t_lstore(recipe));
     rval->init();

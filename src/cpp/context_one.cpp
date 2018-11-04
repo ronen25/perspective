@@ -24,6 +24,8 @@ namespace perspective
 
 t_ctx1::t_ctx1(const t_schema& schema, const t_config& pivot_config)
     : t_ctxbase<t_ctx1>(schema, pivot_config)
+    , m_depth_set(false)
+    , m_depth(0)
 {
 }
 
@@ -79,11 +81,16 @@ t_ctx1::open(t_tvidx idx)
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    // If we manually open/close a node, stop automatically expanding
+    m_depth_set = false;
+    m_depth = 0;
+
     if (idx >= t_tvidx(m_traversal->size()))
         return 0;
 
-    m_rows_changed = true;
-    return m_traversal->expand_node(m_sortby, idx);
+    t_index retval = m_traversal->expand_node(m_sortby, idx);
+    m_rows_changed = (retval > 0);
+    return retval;
 }
 
 t_index
@@ -91,11 +98,16 @@ t_ctx1::close(t_tvidx idx)
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    // If we manually open/close a node, stop automatically expanding
+    m_depth_set = false;
+    m_depth = 0;
+
     if (idx >= t_tvidx(m_traversal->size()))
         return 0;
 
-    m_rows_changed = true;
-    return m_traversal->collapse_node(idx);
+    t_index retval = m_traversal->collapse_node(idx);
+    m_rows_changed = (retval > 0);
+    return retval;
 }
 
 t_tscalvec
@@ -193,6 +205,10 @@ t_ctx1::step_end()
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     m_minmax = m_tree->get_min_max();
     sort_by(m_sortby);
+    if (m_depth_set)
+    {
+        set_depth(m_depth);
+    }
 }
 
 t_aggspec
@@ -245,23 +261,24 @@ t_ctx1::sort_by(const t_sortsvec& sortby)
 }
 
 void
-t_ctx1::expand_to_depth(t_depth depth)
+t_ctx1::set_depth(t_depth depth)
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     if (m_config.get_num_rpivots() == 0)
         return;
-    t_depth expand_depth
-        = std::min<t_depth>(m_config.get_num_rpivots() - 1, depth);
-    m_traversal->expand_to_depth(m_sortby, expand_depth);
+    depth = std::min<t_depth>(m_config.get_num_rpivots() - 1, depth);
+    t_index retval = 0;
+    retval = m_traversal->set_depth(m_sortby, depth);
+    m_rows_changed = (retval > 0);
+    m_depth = depth;
+    m_depth_set = true;
 }
 
-void
-t_ctx1::collapse_to_depth(t_depth depth)
+t_depth
+t_ctx1::get_depth() const
 {
-    PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-    m_traversal->collapse_to_depth(depth);
+    return m_depth;
 }
 
 t_tscalvec
@@ -416,6 +433,8 @@ t_ctx1::reset()
 void
 t_ctx1::reset_step_state()
 {
+    m_rows_changed = false;
+    m_columns_changed = false;
     if (t_env::log_progress())
     {
         std::cout << "t_ctx1.reset_step_state " << repr() << std::endl;
@@ -439,21 +458,23 @@ t_ctx1::get_trees()
 }
 
 t_uindex
-t_ctx1::get_leaf_count(const t_depth depth) const
+t_ctx1::get_leaf_count() const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-    return m_tree->get_num_leaves(depth);
+    return m_tree->get_num_leaves(m_depth + 1);
 }
 
 t_tscalvec
-t_ctx1::get_leaf_data(t_uindex depth, t_uindex start_row, t_uindex end_row,
-    t_uindex start_col, t_uindex end_col) const
+t_ctx1::get_leaf_data(t_uindex start_row, t_uindex end_row, t_uindex start_col,
+    t_uindex end_col) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     t_uindex nrows = end_row - start_row;
     t_uindex stride = end_col - start_col;
+
+    t_depth depth = m_depth + 1;
 
     t_tscalvec values((nrows)*stride);
     t_uindex ridx = 0;
@@ -727,44 +748,6 @@ t_ctx1::clear_deltas()
 void
 t_ctx1::unity_init_load_step_end()
 {
-}
-
-t_table_sptr
-t_ctx1::get_table() const
-{
-    auto schema = m_tree->get_aggtable()->get_schema();
-    auto pivots = m_config.get_row_pivots();
-    auto tbl = std::make_shared<t_table>(schema, m_tree->size());
-    tbl->init();
-    tbl->extend(m_tree->size());
-
-    t_colptrvec aggcols = tbl->get_columns();
-    auto n_aggs = aggcols.size();
-    t_colptrvec pivcols;
-
-    std::stringstream ss;
-    for (const auto& c : pivots)
-    {
-        pivcols.push_back(tbl->add_column(
-            c.colname(), m_schema.get_dtype(c.colname()), true));
-    }
-
-    auto idx = 0;
-    for (auto nidx : m_tree->dfs())
-    {
-        auto depth = m_tree->get_depth(nidx);
-        if (depth > 0)
-        {
-            pivcols[depth - 1]->set_scalar(idx, m_tree->get_value(nidx));
-        }
-        for (t_uindex aggnum = 0; aggnum < n_aggs; ++aggnum)
-        {
-            auto aggscalar = m_tree->get_aggregate(nidx, aggnum);
-            aggcols[aggnum]->set_scalar(idx, aggscalar);
-        }
-        ++idx;
-    }
-    return tbl;
 }
 
 } // end namespace perspective

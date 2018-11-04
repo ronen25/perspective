@@ -66,17 +66,6 @@ _get_sort(val j_sortby)
     return svec;
 }
 
-template <typename T>
-void
-sort(T ctx, val j_sortby)
-{
-    auto svec = _get_sort(j_sortby);
-    if (svec.size() > 0)
-    {
-        ctx->sort_by(svec);
-    }
-}
-
 /**
  *
  *
@@ -713,18 +702,18 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
         // If user doesn't specify an column to use as the pkey index, just use
         // row number
         auto key_col = tbl->add_column("psp_pkey", DTYPE_INT32, true);
-        auto okey_col = tbl->add_column("psp_okey", DTYPE_INT32, true);
+        // auto okey_col = tbl->add_column("psp_okey", DTYPE_INT32, true);
 
         for (auto ridx = 0; ridx < tbl->size(); ++ridx)
         {
             key_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
-            okey_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
+            //    okey_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
         }
     }
     else
     {
         tbl->clone_column(index, "psp_pkey");
-        tbl->clone_column(index, "psp_okey");
+        // tbl->clone_column(index, "psp_okey");
     }
 
     return tbl;
@@ -1184,39 +1173,6 @@ get_data(T ctx, t_uint32 start_row, t_uint32 end_row, t_uint32 start_col,
     return arr;
 }
 
-val
-get_leaf_data_one(t_ctx1_sptr ctx, t_depth depth, t_uint32 start_row,
-    t_uint32 end_row, t_uint32 start_col, t_uint32 end_col)
-{
-    t_uindex count = ctx->get_leaf_count(depth);
-    auto slice
-        = ctx->get_leaf_data(depth, start_row, end_row, start_col, end_col);
-
-    val arr = val::array();
-    for (auto idx = 0; idx < slice.size(); ++idx)
-    {
-        arr.set(idx, scalar_to_val(slice[idx]));
-    }
-    return arr;
-}
-
-val
-get_leaf_data_two(t_ctx2_sptr ctx, t_depth row_depth, t_depth col_depth,
-    t_uint32 start_row, t_uint32 end_row, t_uint32 start_col, t_uint32 end_col)
-{
-    t_uindex row_count = ctx->get_leaf_count(HEADER_ROW, row_depth);
-    t_uindex col_count = ctx->get_leaf_count(HEADER_COLUMN, col_depth);
-    auto slice = ctx->get_leaf_data(
-        row_depth, col_depth, start_row, end_row, start_col, end_col);
-
-    val arr = val::array();
-    for (auto idx = 0; idx < slice.size(); ++idx)
-    {
-        arr.set(idx, scalar_to_val(slice[idx]));
-    }
-    return arr;
-}
-
 /**
  * Main
  */
@@ -1277,8 +1233,6 @@ EMSCRIPTEN_BINDINGS(perspective)
         .function<t_uindex>("get_id",
             reinterpret_cast<t_uindex (t_gnode::*)() const>(&t_gnode::get_id))
         .function<t_schema>("get_tblschema", &t_gnode::get_tblschema)
-        .function<t_svec>(
-            "get_contexts_last_updated", &t_gnode::get_contexts_last_updated)
         .function<t_table*>(
             "get_table", &t_gnode::get_table, allow_raw_pointers());
 
@@ -1286,16 +1240,13 @@ EMSCRIPTEN_BINDINGS(perspective)
         .constructor<t_schema, t_config>()
         .smart_ptr<std::shared_ptr<t_ctx0>>("shared_ptr<t_ctx0>")
         .function<t_index>("sidedness", &t_ctx0::sidedness)
-        .function<unsigned long>("get_row_count",
-            reinterpret_cast<unsigned long (t_ctx0::*)() const>(
-                &t_ctx0::get_row_count))
-        .function<unsigned long>("get_column_count",
-            reinterpret_cast<unsigned long (t_ctx0::*)() const>(
-                &t_ctx0::get_column_count))
+        .function<t_index>("get_row_count", &t_ctx0::get_row_count)
+        .function<t_index>("get_column_count", &t_ctx0::get_column_count)
         .function<t_tscalvec>("get_data", &t_ctx0::get_data)
         .function<t_stepdelta>("get_step_delta", &t_ctx0::get_step_delta)
         .function<t_cellupdvec>("get_cell_delta", &t_ctx0::get_cell_delta)
         .function<t_svec>("get_column_names", &t_ctx0::get_column_names)
+        .function<t_dtype>("get_column_dtype", &t_ctx0::get_column_dtype)
         // .function<t_minmaxvec>("get_min_max", &t_ctx0::get_min_max)
         // .function<void>("set_minmax_enabled", &t_ctx0::set_minmax_enabled)
         .function<t_tscalvec>("unity_get_row_data", &t_ctx0::unity_get_row_data)
@@ -1329,28 +1280,20 @@ EMSCRIPTEN_BINDINGS(perspective)
         .constructor<t_schema, t_config>()
         .smart_ptr<std::shared_ptr<t_ctx1>>("shared_ptr<t_ctx1>")
         .function<t_index>("sidedness", &t_ctx1::sidedness)
-        .function<unsigned long>("get_row_count",
-            reinterpret_cast<unsigned long (t_ctx1::*)() const>(
-                &t_ctx1::get_row_count))
-        .function<unsigned long>("get_column_count",
-            reinterpret_cast<unsigned long (t_ctx1::*)() const>(
-                &t_ctx1::get_column_count))
-        .function<unsigned long>("get_leaf_count",
-            reinterpret_cast<unsigned long (t_ctx1::*)(const t_depth) const>(
-                &t_ctx1::get_leaf_count))
+        .function<t_index>("get_row_count", &t_ctx1::get_row_count)
+        .function<t_index>("get_column_count", &t_ctx1::get_column_count)
         .function<t_tscalvec>("get_data", &t_ctx1::get_data)
+        .function<t_uindex>("get_leaf_count", &t_ctx1::get_leaf_count)
+        .function<t_tscalvec>("get_leaf_data", &t_ctx1::get_leaf_data)
         .function<t_stepdelta>("get_step_delta", &t_ctx1::get_step_delta)
         .function<t_cellupdvec>("get_cell_delta", &t_ctx1::get_cell_delta)
-        .function<t_minmaxvec>("get_min_max", &t_ctx1::get_min_max)
-        .function<t_minmax>("get_agg_min_max",
-            reinterpret_cast<t_minmax (t_ctx1::*)(t_uindex, t_depth) const>(
-                &t_ctx1::get_agg_min_max))
-        .function<void>("expand_to_depth", &t_ctx1::expand_to_depth)
-        .function<void>("collapse_to_depth", &t_ctx1::collapse_to_depth)
+        .function<void>("set_depth", &t_ctx1::set_depth)
+        .function<t_depth>("get_depth", &t_ctx1::get_depth)
         .function("open", select_overload<t_index(t_tvidx)>(&t_ctx1::open))
         .function("close", select_overload<t_index(t_tvidx)>(&t_ctx1::close))
         .function<t_depth>("get_trav_depth", &t_ctx1::get_trav_depth)
         .function<t_aggspecvec>("get_column_names", &t_ctx1::get_aggregates)
+        .function<t_dtype>("get_column_dtype", &t_ctx1::get_column_dtype)
         .function<t_tscalvec>("unity_get_row_data", &t_ctx1::unity_get_row_data)
         .function<t_tscalvec>(
             "unity_get_column_data", &t_ctx1::unity_get_column_data)
@@ -1382,26 +1325,21 @@ EMSCRIPTEN_BINDINGS(perspective)
         .constructor<t_schema, t_config>()
         .smart_ptr<std::shared_ptr<t_ctx2>>("shared_ptr<t_ctx2>")
         .function<t_index>("sidedness", &t_ctx2::sidedness)
-        .function<unsigned long>("get_row_count",
-            reinterpret_cast<unsigned long (t_ctx2::*)() const>(
-                select_overload<t_index() const>(&t_ctx2::get_row_count)))
-        .function<unsigned long>("get_column_count",
-            reinterpret_cast<unsigned long (t_ctx2::*)() const>(
-                &t_ctx2::get_column_count))
-        .function<unsigned long>("get_leaf_count",
-            reinterpret_cast<unsigned long (t_ctx2::*)(
-                const t_header, const t_depth) const>(&t_ctx2::get_leaf_count))
+        .function<t_index>("get_row_count", &t_ctx2::get_row_count)
+        .function<t_index>("get_column_count", &t_ctx2::get_column_count)
         .function<t_tscalvec>("get_data", &t_ctx2::get_data)
+        .function<t_uindex>("get_leaf_count", &t_ctx2::get_leaf_count)
+        .function<t_tscalvec>("get_leaf_data", &t_ctx2::get_leaf_data)
         .function<t_stepdelta>("get_step_delta", &t_ctx2::get_step_delta)
         //.function<t_cellupdvec>("get_cell_delta", &t_ctx2::get_cell_delta)
-        .function<void>("expand_to_depth", &t_ctx2::expand_to_depth)
-        .function<void>("collapse_to_depth", &t_ctx2::collapse_to_depth)
+        .function<void>("set_depth", &t_ctx2::set_depth)
+        .function<t_depth>("get_depth", &t_ctx2::get_depth)
         .function(
             "open", select_overload<t_index(t_header, t_tvidx)>(&t_ctx2::open))
         .function("close",
             select_overload<t_index(t_header, t_tvidx)>(&t_ctx2::close))
-        .function<t_minmaxvec>("get_min_max", &t_ctx2::get_min_max)
         .function<t_aggspecvec>("get_column_names", &t_ctx2::get_aggregates)
+        .function<t_dtype>("get_column_dtype", &t_ctx2::get_column_dtype)
         .function<t_tscalvec>("unity_get_row_data", &t_ctx2::unity_get_row_data)
         .function<t_tscalvec>(
             "unity_get_column_data", &t_ctx2::unity_get_column_data)
@@ -1453,14 +1391,8 @@ EMSCRIPTEN_BINDINGS(perspective)
         .function<t_gnode*>(
             "get_gnode", &t_pool::get_gnode, allow_raw_pointers());
 
-    value_object<t_col_name_type>("t_col_name_type")
-        .field("name", &t_col_name_type::m_name)
-        .field("type", &t_col_name_type::m_type);
-
     class_<t_aggspec>("t_aggspec")
-        .function<std::string>("name", &t_aggspec::name)
-        .function<t_col_name_type_vec>(
-            "get_output_specs", &t_aggspec::get_output_specs);
+        .function<std::string>("name", &t_aggspec::name);
 
     class_<t_tscalar>("t_tscalar");
 
@@ -1479,18 +1411,10 @@ EMSCRIPTEN_BINDINGS(perspective)
         .field("columns_changed", &t_stepdelta::columns_changed)
         .field("cells", &t_stepdelta::cells);
 
-    value_object<t_minmax>("t_minmax")
-        .field("min_count", &t_minmax::m_min_count)
-        .field("m_max_count", &t_minmax::m_max_count)
-        .field("min", &t_minmax::m_min)
-        .field("max", &t_minmax::m_max);
-
     register_vector<t_dtype>("t_dtypevec");
     register_vector<t_cellupd>("t_cellupdvec");
     register_vector<t_aggspec>("t_aggspecvec");
     register_vector<t_tscalar>("t_tscalvec");
-    register_vector<t_minmax>("t_minmaxvec");
-    register_vector<t_col_name_type>("t_col_name_type_vec");
     register_vector<std::string>("std::vector<std::string>");
     register_vector<t_updctx>("t_updctx_vec");
     register_vector<t_uindex>("t_uidxvec");
@@ -1589,9 +1513,7 @@ EMSCRIPTEN_BINDINGS(perspective)
         .value("TOTALS_HIDDEN", TOTALS_HIDDEN)
         .value("TOTALS_AFTER", TOTALS_AFTER);
 
-    function("sort_zero", &sort<t_ctx0_sptr>);
-    function("sort_one", &sort<t_ctx1_sptr>);
-    function("sort_two", &sort<t_ctx2_sptr>);
+    function("sort", &sort);
     function("make_table", &make_table);
     function("make_gnode", &make_gnode);
     function("clone_gnode_table", &clone_gnode_table);
@@ -1605,6 +1527,4 @@ EMSCRIPTEN_BINDINGS(perspective)
     function("get_data_zero", &get_data<t_ctx0_sptr>);
     function("get_data_one", &get_data<t_ctx1_sptr>);
     function("get_data_two", &get_data<t_ctx2_sptr>);
-    function("get_leaf_data_one", &get_leaf_data_one);
-    function("get_leaf_data_two", &get_leaf_data_two);
 }

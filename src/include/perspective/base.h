@@ -41,7 +41,7 @@ const t_float64 PSP_TABLE_GROW_RATIO = 1.3;
 #define PSP_THR_LOCAL __declspec(thread)
 #else
 #define PSP_RESTRICT __restrict__
-#define PSP_ABORT() std::raise(SIGSEGV);
+#define PSP_ABORT() std::raise(SIGINT);
 #define PSP_THR_LOCAL __thread
 #endif
 
