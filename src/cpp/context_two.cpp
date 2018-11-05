@@ -18,10 +18,20 @@
 
 namespace perspective
 {
-t_ctx2::t_ctx2() {}
+t_ctx2::t_ctx2()
+    : m_row_depth_set(false)
+    , m_column_depth_set(false)
+    , m_row_depth(0)
+    , m_column_depth(0)
+{
+}
 
 t_ctx2::t_ctx2(const t_schema& schema, const t_config& pivot_config)
     : t_ctxbase<t_ctx2>(schema, pivot_config)
+    , m_row_depth_set(false)
+    , m_column_depth_set(false)
+    , m_row_depth(0)
+    , m_column_depth(0)
 {
 }
 
@@ -84,6 +94,14 @@ void
 t_ctx2::step_end()
 {
     m_minmax = m_trees.back()->get_min_max();
+    if (m_row_depth_set)
+    {
+        set_depth(HEADER_ROW, m_row_depth);
+    }
+    if (m_column_depth_set)
+    {
+        set_depth(HEADER_COLUMN, m_column_depth);
+    }
 }
 
 t_index
@@ -107,7 +125,8 @@ t_ctx2::open(t_header header, t_tvidx idx)
     {
         if (!m_rtraversal->is_valid_idx(idx))
             return 0;
-        m_rows_changed = true;
+        m_row_depth_set = false;
+        m_row_depth = 0;
         if (m_row_sortby.empty())
         {
             retval = m_rtraversal->expand_node(idx);
@@ -116,13 +135,16 @@ t_ctx2::open(t_header header, t_tvidx idx)
         {
             retval = m_rtraversal->expand_node(m_row_sortby, idx);
         }
+        m_rows_changed = (retval > 0);
     }
     else
     {
         if (!m_ctraversal->is_valid_idx(idx))
             return 0;
         retval = m_ctraversal->expand_node(idx);
-        m_columns_changed = true;
+        m_column_depth_set = false;
+        m_column_depth = 0;
+        m_columns_changed = (retval > 0);
     }
 
     return retval;
@@ -131,22 +153,27 @@ t_ctx2::open(t_header header, t_tvidx idx)
 t_index
 t_ctx2::close(t_header header, t_tvidx idx)
 {
+    t_index retval;
+
     switch (header)
     {
         case HEADER_ROW:
         {
             if (!m_rtraversal->is_valid_idx(idx))
                 return 0;
-            m_rows_changed = true;
-            return m_rtraversal->collapse_node(idx);
+            m_row_depth_set = false;
+            m_row_depth = 0;
+            retval = m_rtraversal->collapse_node(idx);
+            m_rows_changed = (retval > 0);
         }
         case HEADER_COLUMN:
         {
-
             if (!m_ctraversal->is_valid_idx(idx))
                 return 0;
-            m_columns_changed = true;
-            return m_ctraversal->collapse_node(idx);
+            m_column_depth_set = false;
+            m_column_depth = 0;
+            retval = m_ctraversal->collapse_node(idx);
+            m_columns_changed = (retval > 0);
         }
         default:
         {
@@ -155,6 +182,7 @@ t_ctx2::close(t_header header, t_tvidx idx)
         }
         break;
     }
+    return retval;
 }
 
 t_totals
@@ -299,19 +327,6 @@ t_ctx2::get_data(t_tvidx start_row, t_tvidx end_row, t_tvidx start_col,
         }
     }
 
-    int tcount = 0;
-    // for (auto cttree : m_trees) {
-    //   std::cout << "tree " << tcount << std::endl;
-    //   std::stringstream ss;
-    //   ss << "pivots : ";
-    //   for (const auto& p: cttree->get_pivots()) {
-    // 	ss << p.name() << ", ";
-    //   }
-    //   ss << std::endl;
-    //   std::cout << ss.str();
-    //   cttree->pprint();
-    //   ++tcount;
-    // }
     return retval;
 }
 void
@@ -654,9 +669,9 @@ t_ctx2::get_aggregates() const
 }
 
 void
-t_ctx2::expand_to_depth(t_header header, t_depth depth)
+t_ctx2::set_depth(t_header header, t_depth depth)
 {
-    t_depth expand_depth;
+    t_depth new_depth;
 
     switch (header)
     {
@@ -664,18 +679,22 @@ t_ctx2::expand_to_depth(t_header header, t_depth depth)
         {
             if (m_config.get_num_rpivots() == 0)
                 return;
-            expand_depth
+            new_depth
                 = std::min<t_depth>(m_config.get_num_rpivots() - 1, depth);
-            m_rtraversal->expand_to_depth(m_row_sortby, expand_depth);
+            m_rtraversal->set_depth(m_row_sortby, new_depth);
+            m_row_depth = new_depth;
+            m_row_depth_set = true;
         }
         break;
         case HEADER_COLUMN:
         {
             if (m_config.get_num_cpivots() == 0)
                 return;
-            expand_depth
+            new_depth
                 = std::min<t_depth>(m_config.get_num_cpivots() - 1, depth);
-            m_ctraversal->expand_to_depth(m_column_sortby, expand_depth);
+            m_ctraversal->set_depth(m_column_sortby, new_depth);
+            m_column_depth = new_depth;
+            m_column_depth_set = true;
         }
         break;
         default:
@@ -686,19 +705,19 @@ t_ctx2::expand_to_depth(t_header header, t_depth depth)
     }
 }
 
-void
-t_ctx2::collapse_to_depth(t_header header, t_depth depth)
+t_depth
+t_ctx2::get_depth(t_header header) const
 {
     switch (header)
     {
         case HEADER_ROW:
         {
-            m_rtraversal->collapse_to_depth(depth);
+            return m_row_depth;
         }
         break;
         case HEADER_COLUMN:
         {
-            m_ctraversal->collapse_to_depth(depth);
+            return m_column_depth;
         }
         break;
         default:
@@ -842,6 +861,8 @@ t_ctx2::reset()
 void
 t_ctx2::reset_step_state()
 {
+    m_rows_changed = false;
+    m_columns_changed = false;
 }
 
 void
@@ -903,14 +924,14 @@ t_ctx2::get_trees()
 }
 
 t_uindex
-t_ctx2::get_leaf_count(t_header header, t_uindex depth) const
+t_ctx2::get_leaf_count(t_header header) const
 {
     switch (header)
     {
         case HEADER_ROW:
-            return m_trees.back()->get_num_leaves(depth);
+            return m_trees.back()->get_num_leaves(m_row_depth + 1);
         case HEADER_COLUMN:
-            return m_trees.front()->get_num_leaves(depth);
+            return m_trees.front()->get_num_leaves(m_column_depth + 1);
         default:
         {
             PSP_COMPLAIN_AND_ABORT("Bad header passed in");
@@ -920,41 +941,31 @@ t_ctx2::get_leaf_count(t_header header, t_uindex depth) const
 }
 
 t_tscalvec
-t_ctx2::get_leaf_data(t_uindex row_depth, t_uindex col_depth,
-    t_uindex start_row, t_uindex end_row, t_uindex start_col,
+t_ctx2::get_leaf_data(t_uindex start_row, t_uindex end_row, t_uindex start_col,
     t_uindex end_col) const
 {
+    t_depth row_depth = m_row_depth + 1;
+    t_depth column_depth = m_column_depth + 1;
     t_index nrows = end_row - start_row;
     t_index stride = end_col - start_col;
-
     t_tscalvec retval((nrows + 1) * stride);
-
     t_index n_aggs = m_config.get_num_aggregates();
-
     t_tscalvec r_path;
     r_path.reserve(m_config.get_num_rpivots() + m_config.get_num_cpivots() + 1);
-
     t_tscalar empty = t_tscalar::canonical(DTYPE_NONE);
-
     t_index ridx = 0;
     t_depth minus_one = -1;
     t_depth last_depth = -1;
-
     auto tree = m_trees[row_depth];
-
     std::vector<t_tscalvec> col_paths(end_col);
-
     static const char unit_sep = 0x1F;
-
-    t_idxvec cidxvec = m_trees[0]->get_indices_for_depth(col_depth);
-
+    t_idxvec cidxvec = m_trees[0]->get_indices_for_depth(column_depth);
     for (t_uindex cidx = 0; cidx < end_col - row_depth; ++cidx)
     {
         t_index translated_idx = cidx / n_aggs;
         t_ptidx c_ptidx = cidxvec[translated_idx];
         col_paths[cidx].reserve(m_config.get_num_cpivots());
         m_trees[0]->get_path(c_ptidx, col_paths[cidx]);
-
         std::stringstream label;
         t_tscalvec& plabels = col_paths[cidx];
         if (!plabels.empty())
@@ -968,19 +979,15 @@ t_ctx2::get_leaf_data(t_uindex row_depth, t_uindex col_depth,
         }
         retval[cidx + row_depth].set(get_interned_tscalar(label.str().c_str()));
     }
-
     // Iterate by depth
     std::deque<t_uindex> dft;
     dft.push_front(0);
-
     std::vector<t_tscalar> pheader;
     while (!dft.empty())
     {
         auto nidx = dft.front();
         dft.pop_front();
-
         t_stnode node = tree->get_node(nidx);
-
         if (node.m_depth < row_depth)
         {
             if (node.m_depth < last_depth && last_depth != minus_one)
@@ -990,39 +997,32 @@ t_ctx2::get_leaf_data(t_uindex row_depth, t_uindex col_depth,
                     pheader.pop_back();
                 }
             }
-
             if (node.m_depth != 0)
             {
                 pheader.push_back(node.m_value);
             }
-
             t_uidxvec nodes = tree->get_child_idx(nidx);
             std::copy(nodes.rbegin(), nodes.rend(), std::front_inserter(dft));
         }
         else if (node.m_depth == row_depth)
         {
             ridx++;
-
             t_uindex r_start = (ridx - start_row) * stride;
             for (t_uindex hidx = 0; hidx < row_depth; ++hidx)
             {
                 retval[r_start + hidx].set(pheader[hidx]);
             }
             retval[r_start + row_depth - 1].set(node.m_value);
-
             t_ptidx r_ptidx = node.m_idx;
             tree->get_path(r_ptidx, r_path);
             t_depth r_depth = node.m_depth;
-
             for (t_uindex cidx = 0; cidx < end_col - row_depth; ++cidx)
             {
                 t_index insert_idx
                     = (ridx - start_row) * stride + row_depth + cidx;
                 const t_tscalvec& c_path = col_paths[cidx];
-
                 t_index agg_idx = cidx % n_aggs;
                 t_ptidx query_ptidx = INVALID_INDEX;
-
                 if (c_path.size() == 0)
                 {
                     query_ptidx = r_ptidx;
@@ -1047,7 +1047,6 @@ t_ctx2::get_leaf_data(t_uindex row_depth, t_uindex col_depth,
                         }
                     }
                 }
-
                 if (query_ptidx < 0)
                 {
                     retval[insert_idx].set(empty);
@@ -1058,7 +1057,6 @@ t_ctx2::get_leaf_data(t_uindex row_depth, t_uindex col_depth,
                         tree->get_aggregate(query_ptidx, agg_idx));
                 }
             }
-
             r_path.clear();
         }
         last_depth = node.m_depth;

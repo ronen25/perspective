@@ -70,8 +70,6 @@ void pprint() const;
 
 t_dtype get_column_dtype(t_uindex idx) const;
 
-t_table_sptr get_table() const;
-
 // Unity api
 t_tscalvec unity_get_row_data(t_uindex idx) const;
 t_tscalvec unity_get_column_data(t_uindex idx) const;

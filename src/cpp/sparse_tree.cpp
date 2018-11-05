@@ -854,7 +854,7 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         agg_update_info.m_aggspecs.push_back(ctx.get_aggspec(colname));
     }
 
-    /*auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
+    auto is_col_scaled_aggregate = [&](int col_idx) -> bool {
         int agg_type = agg_update_info.m_aggspecs[col_idx].agg();
 
         return agg_type == AGGTYPE_SCALED_DIV || agg_type == AGGTYPE_SCALED_ADD
@@ -871,9 +871,11 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
 
     std::unordered_set<t_column*> dst_visited;
     auto push_column = [&](size_t idx) {
-        if (enable_fix_double_calculation) {
+        if (enable_fix_double_calculation)
+        {
             t_column* dst = agg_update_info.m_dst[idx];
-            if (dst_visited.find(dst) != dst_visited.end()) {
+            if (dst_visited.find(dst) != dst_visited.end())
+            {
                 return;
             }
             dst_visited.insert(dst);
@@ -881,27 +883,34 @@ t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
         cols_topo_sorted.push_back(idx);
     };
 
-    if (enable_aggregate_reordering) {
+    if (enable_aggregate_reordering)
+    {
         // Move scaled agg columns to the end
         // This does not handle case where scaled aggregate depends on other
-    scaled aggregate
-        // ( not sure if that is possible )
-        for (size_t i = 0; i < col_cnt; ++i) {
-            if (!is_col_scaled_aggregate(i)) {
+        // scaled aggregate ( not sure if that is possible )
+        for (size_t i = 0; i < col_cnt; ++i)
+        {
+            if (!is_col_scaled_aggregate(i))
+            {
                 push_column(i);
             }
         }
-        for (size_t i = 0; i < col_cnt; ++i) {
-            if (is_col_scaled_aggregate(i)) {
+        for (size_t i = 0; i < col_cnt; ++i)
+        {
+            if (is_col_scaled_aggregate(i))
+            {
                 push_column(i);
             }
         }
-    } else {
+    }
+    else
+    {
         // If backed out, use same column order as before ( not topo sorted )
-        for (size_t i = 0; i < col_cnt; ++i) {
+        for (size_t i = 0; i < col_cnt; ++i)
+        {
             push_column(i);
         }
-    }*/
+    }
 
     for (const auto& r : m_tree_unification_records)
     {
@@ -990,9 +999,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
     const t_gstate& gstate)
 {
     static bool const enable_sticky_nan_fix = true;
-    t_uindex nentries = info.m_src.size();
-
-    for (t_uindex idx = 0; idx < nentries; ++idx)
+    for (t_uindex idx : info.m_dst_topo_sorted)
     {
         const t_column* src = info.m_src[idx];
         t_column* dst = info.m_dst[idx];
@@ -1186,19 +1193,19 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
             {
                 old_value.set(dst->get_scalar(dst_ridx));
                 auto pkeys = get_pkeys(nidx);
+
                 new_value.set(
                     gstate.reduce<std::function<t_tscalar(t_tscalvec&)>>(pkeys,
                         spec.get_dependencies()[0].name(),
                         [this](t_tscalvec& values) {
-                            std::set<t_tscalar> vset;
+                            t_tscalset vset;
                             for (const auto& v : values)
                             {
                                 vset.insert(v);
                             }
 
                             std::stringstream ss;
-                            for (std::set<t_tscalar>::const_iterator iter
-                                 = vset.begin();
+                            for (t_tscalset::const_iterator iter = vset.begin();
                                  iter != vset.end(); ++iter)
                             {
                                 ss << *iter << ", ";
@@ -2204,6 +2211,18 @@ t_stree::get_aggtable()
     return m_aggregates.get();
 }
 
+std::pair<iter_by_idx, t_bool>
+t_stree::insert_node(const t_tnode& node)
+{
+    return m_nodes->insert(node);
+}
+
+t_bool
+t_stree::has_deltas() const
+{
+    return m_has_delta;
+}
+
 t_uindex
 t_stree::get_num_leaves(t_uindex depth) const
 {
@@ -2236,18 +2255,6 @@ t_stree::get_indices_for_depth(t_uindex depth) const
     return indices;
 }
 
-std::pair<iter_by_idx, t_bool>
-t_stree::insert_node(const t_tnode& node)
-{
-    return m_nodes->insert(node);
-}
-
-t_bool
-t_stree::has_deltas() const
-{
-    return m_has_delta;
-}
-
 void
 t_stree::get_sortby_path(t_uindex idx, t_tscalvec& rval) const
 {
@@ -2275,31 +2282,4 @@ t_stree::set_has_deltas(t_bool v)
     m_has_delta = v;
 }
 
-t_bfs_iter<t_stree>
-t_stree::bfs() const
-{
-    return t_bfs_iter<t_stree>(this);
-}
-
-t_dfs_iter<t_stree>
-t_stree::dfs() const
-{
-    return t_dfs_iter<t_stree>(this);
-}
-
-void
-t_stree::pprint() const
-{
-    for (auto idx : dfs())
-    {
-        t_tscalvec path;
-        get_path(idx, path);
-        std::cout << idx << " --- " << path << " --- ";
-        for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx)
-        {
-            std::cout << get_aggregate(idx, aidx) << ", ";
-        }
-        std::cout << std::endl;
-    }
-}
 } // end namespace perspective

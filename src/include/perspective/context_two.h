@@ -46,15 +46,14 @@ public:
 
     t_aggspecvec get_aggregates() const;
 
-    void expand_to_depth(t_header header, t_depth depth);
-    void collapse_to_depth(t_header header, t_depth depth);
+    void set_depth(t_header header, t_depth depth);
+    t_depth get_depth(t_header header) const;
 
     using t_ctxbase<t_ctx2>::get_data;
 
-    t_uindex get_leaf_count(t_header header, t_uindex depth) const;
-    t_tscalvec get_leaf_data(t_uindex row_depth, t_uindex col_depth,
-        t_uindex start_row, t_uindex end_row, t_uindex start_col,
-        t_uindex end_col) const;
+    t_uindex get_leaf_count(t_header header) const;
+    t_tscalvec get_leaf_data(t_uindex start_row, t_uindex end_row,
+        t_uindex start_col, t_uindex end_col) const;
 
 protected:
     t_cinfovec resolve_cells(const t_uidxpvec& cells) const;
@@ -82,6 +81,10 @@ private:
     std::vector<t_stree_sptr> m_trees;
     t_sortsvec m_row_sortby;
     t_sortsvec m_column_sortby;
+    t_depth m_row_depth;
+    t_bool m_row_depth_set;
+    t_depth m_column_depth;
+    t_bool m_column_depth_set;
 };
 
 typedef std::shared_ptr<t_ctx2> t_ctx2_sptr;

@@ -38,8 +38,8 @@ public:
     t_aggspec get_aggregate(t_uindex idx) const;
     t_aggspecvec get_aggregates() const;
     t_tscalvec get_row_path(t_tvidx idx) const;
-    void expand_to_depth(t_depth depth);
-    void collapse_to_depth(t_depth depth);
+    void set_depth(t_depth depth);
+    t_depth get_depth() const;
 
     t_minmax get_agg_min_max(t_uindex aggidx, t_depth depth) const;
 
@@ -49,14 +49,16 @@ public:
 
     using t_ctxbase<t_ctx1>::get_data;
 
-    t_uindex get_leaf_count(const t_depth depth) const;
-    t_tscalvec get_leaf_data(t_uindex depth, t_uindex start_row,
-        t_uindex end_row, t_uindex start_col, t_uindex end_col) const;
+    t_uindex get_leaf_count() const;
+    t_tscalvec get_leaf_data(t_uindex start_row, t_uindex end_row,
+        t_uindex start_col, t_uindex end_col) const;
 
 private:
     t_trav_sptr m_traversal;
     t_stree_sptr m_tree;
     t_sortsvec m_sortby;
+    t_depth m_depth;
+    t_bool m_depth_set;
 };
 
 typedef std::shared_ptr<t_ctx1> t_ctx1_sptr;

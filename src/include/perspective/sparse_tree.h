@@ -29,7 +29,6 @@ SUPPRESS_WARNINGS_VC(4503)
 #include <perspective/sym_table.h>
 #include <perspective/shared_ptrs.h>
 #include <perspective/table.h>
-#include <perspective/tree_iterator.h>
 #include <vector>
 #include <algorithm>
 #include <deque>
@@ -303,21 +302,15 @@ public:
     void clear_aggregates(const t_uidxvec& indices);
 
     std::pair<iter_by_idx, bool> insert_node(const t_tnode& node);
-
-    t_uindex get_num_leaves(t_uindex depth) const;
-    t_idxvec get_indices_for_depth(t_uindex depth) const;
-
     t_bool has_deltas() const;
     void set_has_deltas(t_bool v);
 
     t_uidxvec get_descendents(t_uindex nidx) const;
 
-    t_bfs_iter<t_stree> bfs() const;
-    t_dfs_iter<t_stree> dfs() const;
-    void pprint() const;
+    t_uindex get_num_leaves(t_uindex depth) const;
+    t_idxvec get_indices_for_depth(t_uindex depth) const;
 
 protected:
-    t_uidxvec get_children(t_uindex idx) const;
     void mark_zero_desc();
     t_uindex get_num_aggcols() const;
     typedef std::pair<const t_column*, t_column*> t_srcdst_columns;
@@ -326,6 +319,7 @@ protected:
     t_bool pivots_changed(t_value_transition t) const;
     t_uindex genidx();
     t_uindex gen_aggidx();
+    t_uidxvec get_children(t_uindex idx) const;
     void update_agg_table(t_uindex nidx, t_agg_update_info& info,
         t_uindex src_ridx, t_uindex dst_ridx, t_index nstrands,
         const t_gstate& gstate);

@@ -49,6 +49,7 @@ t_tscalar::operator==(const t_tscalar& rhs) const
 {
     if (m_type != rhs.m_type || m_status != rhs.m_status)
         return false;
+
     if (m_type == DTYPE_BOOL)
         return get<t_bool>() == rhs.get<t_bool>();
 
