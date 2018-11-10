@@ -169,7 +169,11 @@ private:
     t_bool m_from_recipe;
 };
 
-inline bool operator==(const t_table& lhs, const t_table& rhs){ return lhs.get_scalvec() == rhs.get_scalvec(); }
+inline bool
+operator==(const t_table& lhs, const t_table& rhs)
+{
+    return lhs.get_scalvec() == rhs.get_scalvec();
+}
 
 template <typename FLATTENED_T>
 void
@@ -540,9 +544,8 @@ typedef std::vector<t_table_csptr> t_tblcsvec;
 
 } // end namespace perspective
 
-
 namespace std
 {
-    PERSPECTIVE_EXPORT std::ostream& operator<<(
-            std::ostream& os, const perspective::t_table& t);
+PERSPECTIVE_EXPORT std::ostream& operator<<(
+    std::ostream& os, const perspective::t_table& t);
 } // namespace std

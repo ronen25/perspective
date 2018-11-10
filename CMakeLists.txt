@@ -167,6 +167,17 @@ if (NOT PSP_WASM_BUILD)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
    psp_build_dep("tbb" "cmake/TBB.txt.in")
    psp_build_dep("benchmark" "cmake/benchmark.txt.in")
+       enable_testing()
    add_subdirectory(test)
    add_subdirectory(bench)
+   add_custom_target(gcov
+           COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
+           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+           )
+   add_custom_command(TARGET gcov
+           COMMAND echo "=================== GCOV ===================="
+           COMMAND gcovr -r ../ --html --html-details -o coverage/index.html
+           COMMAND xdg-open coverage/index.html
+           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+           )
 endif()

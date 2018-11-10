@@ -92,7 +92,6 @@ struct PERSPECTIVE_EXPORT t_tscalar
     bool is_nan() const;
     bool is_none() const;
     bool is_str() const;
-    bool is_of_type(t_uchar t) const;
     bool is_floating_point() const;
     bool is_signed() const;
 
@@ -423,13 +422,13 @@ mknull(t_dtype dtype)
     return rval;
 }
 
-    inline t_tscalar
-    mkclear(t_dtype dtype)
-    {
-        t_tscalar rval = mknull(dtype);
-        rval.m_status = STATUS_CLEAR;
-        return rval;
-    }
+inline t_tscalar
+mkclear(t_dtype dtype)
+{
+    t_tscalar rval = mknull(dtype);
+    rval.m_status = STATUS_CLEAR;
+    return rval;
+}
 
 t_tscalar mktscalar();
 

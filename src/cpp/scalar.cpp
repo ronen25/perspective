@@ -39,12 +39,6 @@ t_tscalar::is_str() const
 }
 
 bool
-t_tscalar::is_of_type(t_uchar t) const
-{
-    return m_type == t;
-}
-
-bool
 t_tscalar::operator==(const t_tscalar& rhs) const
 {
     if (m_type != rhs.m_type || m_status != rhs.m_status)

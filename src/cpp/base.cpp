@@ -178,7 +178,7 @@ get_dtype_size(t_dtype dtype)
 t_bool
 is_vlen_dtype(t_dtype dtype)
 {
-    if (dtype == DTYPE_STR || dtype == DTYPE_USER_VLEN)
+    if (dtype == DTYPE_STR)
         return true;
     return false;
 }
@@ -263,24 +263,9 @@ get_dtype_descr(t_dtype dtype)
             return "date";
         }
         break;
-        case DTYPE_ENUM:
-        {
-            return "enum";
-        }
-        break;
-        case DTYPE_OID:
-        {
-            return "oid";
-        }
-        break;
         case DTYPE_USER_FIXED:
         {
             return "ufix";
-        }
-        break;
-        case DTYPE_USER_VLEN:
-        {
-            return "uvlen";
         }
         break;
         case DTYPE_LAST:

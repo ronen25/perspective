@@ -61,16 +61,13 @@ enum t_dtype
     DTYPE_BOOL,
     DTYPE_TIME,
     DTYPE_DATE,
-    DTYPE_ENUM,
-    DTYPE_OID,
     DTYPE_PTR,
     DTYPE_F64PAIR,
     DTYPE_USER_FIXED,
     DTYPE_STR,
-    DTYPE_USER_VLEN,
-    DTYPE_LAST_VLEN,
     DTYPE_LAST
 };
+typedef std::vector<t_dtype> t_dtypevec;
 
 #ifdef PSP_ENABLE_WASM
 typedef t_uint32 t_uindex;
@@ -91,7 +88,6 @@ typedef t_int32 t_handle;
 typedef t_index t_rcode;
 typedef t_index t_oid;
 
-typedef std::vector<t_dtype> t_dtypevec;
 typedef std::vector<t_str> t_svec;
 typedef std::set<t_str> t_sset;
 typedef std::map<t_str, t_str> t_ssmap;

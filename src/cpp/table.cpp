@@ -83,8 +83,7 @@ t_table::t_table(const t_schema& s, const std::vector<t_tscalvec>& v)
     t_uindex nrows = -1;
     PSP_VERBOSE_ASSERT(
         std::all_of(v.begin(), v.end(),
-            [ncols](const t_scalvec& vec) { return vec.size() == ncols;
-        }),
+            [ncols](const t_scalvec& vec) { return vec.size() == ncols; }),
         "Mismatched row size found");
     set_capacity(v.size());
     init();
@@ -782,12 +781,12 @@ t_table::get_scalvec() const
 
 } // end namespace perspective
 
-
 namespace std
 {
-    PERSPECTIVE_EXPORT std::ostream& operator<<(
-            std::ostream& os, const perspective::t_table& t) {
-        t.pprint(t.size(), &os);
-        return os;
-    }
+PERSPECTIVE_EXPORT std::ostream&
+operator<<(std::ostream& os, const perspective::t_table& t)
+{
+    t.pprint(t.size(), &os);
+    return os;
+}
 } // namespace std

@@ -2,5 +2,6 @@
 
 clang-format -i src/cpp/*.cpp
 clang-format -i src/include/perspective/*.h
-clang-format -i test/psp.cpp
+clang-format -i test/*.cpp
+clang-format -i test/*.h
 clang-format -i bench/bench.cpp

@@ -726,6 +726,7 @@ t_ctx2::get_depth(t_header header) const
         }
         break;
     }
+    return m_row_depth;
 }
 
 t_tscalvec
