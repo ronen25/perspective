@@ -154,7 +154,7 @@ template <>
 t_tscalar test_traits<t_date, DTYPE_DATE>::v1 = mktscalar(t_date(2018, 1, 1));
 
 template <>
-t_tscalar test_traits<t_date, DTYPE_DATE>::v2 = mktscalar(t_date(2018, 1, 1));
+t_tscalar test_traits<t_date, DTYPE_DATE>::v2 = mktscalar(t_date(2018, 2, 2));
 
 // Time specializations
 template <>
