@@ -687,8 +687,8 @@ t_str
 t_tscalar::repr() const
 {
     std::stringstream ss;
-    ss << "t_tscalar< " << get_dtype_descr(static_cast<t_dtype>(m_type)) << ", "
-       << to_string() << " status: " << m_status << " >";
+    ss << get_dtype_descr(static_cast<t_dtype>(m_type)) << ":"
+       << get_status_descr(m_status) << ":" << to_string();
     return ss.str();
 }
 
@@ -1597,7 +1597,7 @@ namespace std
 std::ostream&
 operator<<(std::ostream& os, const perspective::t_tscalar& t)
 {
-    os << repr(t);
+    os << t.repr();
     return os;
 }
 

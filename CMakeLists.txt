@@ -44,7 +44,9 @@ if (PSP_WASM_BUILD)
 	set(ASYNC_MODE_FLAGS "-s ENVIRONMENT=worker -s BINARYEN_ASYNC_COMPILATION=1 -s BINARYEN_METHOD='\"native-wasm\"' -s WASM=1")
 endif()
 
+set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
+set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -fPIC -O0")
 
 set (SOURCE_FILES
 src/cpp/aggregate.cpp
@@ -119,7 +121,7 @@ src/cpp/update_task.cpp
 src/cpp/vocab.cpp
 )
 
-add_library(psp ${SOURCE_FILES})
+add_library(psp SHARED ${SOURCE_FILES})
 set_target_properties(psp PROPERTIES COMPILE_FLAGS "${ASYNC_MODE_FLAGS}")
 
 if (PSP_WASM_BUILD)

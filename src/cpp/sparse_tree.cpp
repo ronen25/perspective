@@ -28,6 +28,7 @@
 #include <perspective/filter_utils.h>
 #include <perspective/context_two.h>
 #include <unordered_set>
+#include <cstdlib>
 
 namespace perspective
 {
@@ -182,9 +183,9 @@ t_stree::get_sortby_value(t_tvidx idx) const
 void
 t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
     t_uindex npivots, t_uindex strand_count_idx, t_uindex aggcolsize,
-    t_bool force_current_row, const t_colcptrvec& piv_ccols,
-    const t_colcptrvec& agg_ccols,
-    t_colptrvec& piv_scols,
+    t_bool force_current_row, const t_colcptrvec& piv_pcols,
+    const t_colcptrvec& piv_ccols, const t_colcptrvec& agg_pcols,
+    const t_colcptrvec& agg_ccols, t_colptrvec& piv_scols,
     t_colptrvec& agg_acols, t_column* agg_scount, t_column* spkey,
     t_uindex& insert_count, t_bool& pivots_neq, const t_svec& pivot_like) const
 {
@@ -201,15 +202,19 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
             continue;
         }
         pivmap.insert(colname);
+
+        auto pval = piv_pcols[pidx]->get_scalar(idx);
+        auto cval = piv_ccols[pidx]->get_scalar(idx);
         piv_scols[pidx]->push_back(piv_ccols[pidx]->get_scalar(idx));
-        // zch FIX
-        t_value_transition trans = VALUE_TRANSITION_EQ_TT;
-        if (trans != VALUE_TRANSITION_EQ_TT)
+
+        if (pval != cval)
+        {
             all_eq_tt = false;
+        }
 
         if (pidx < npivots)
         {
-            pivots_neq = pivots_neq || pivots_changed(trans);
+            pivots_neq = pivots_neq || pval != cval;
         }
     }
 
@@ -224,9 +229,9 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
             }
             else
             {
-                // zch fix
-                //agg_acols[aggidx]->push_back(
-                //    agg_dcols[aggidx]->get_scalar(idx));
+                auto tmp = agg_ccols[aggidx]->get_scalar(idx);
+                agg_acols[aggidx]->push_back(
+                    tmp.difference(agg_pcols[aggidx]->get_scalar(idx)));
             }
         }
     }
@@ -362,9 +367,9 @@ t_stree::build_strand_table_common(const t_table& flattened,
 // can contain additional rows
 // notably pivot changed rows will be added
 std::pair<t_table_sptr, t_table_sptr>
-t_stree::build_strand_table(const t_table& flattened,
-    const t_table& prev, const t_table& current,
-    const t_aggspecvec& aggspecs, const t_config& config) const
+t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
+    const t_table& current, const t_aggspecvec& aggspecs,
+    const t_config& config) const
 {
 
     PSP_TRACE_SENTINEL();
@@ -459,8 +464,8 @@ t_stree::build_strand_table(const t_table& flattened,
             {
                 // apply current row
                 build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                    strand_count_idx, aggcolsize, true, piv_ccols,
-                    agg_ccols, piv_scols, agg_acols, agg_scount,
+                    strand_count_idx, aggcolsize, true, piv_pcols, piv_ccols,
+                    agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount,
                     spkey, insert_count, pivots_neq, rv.m_pivot_like_columns);
             }
             else if (filter_prev && !filter_curr)
@@ -475,8 +480,8 @@ t_stree::build_strand_table(const t_table& flattened,
             {
                 // should be handled as normal
                 build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                    strand_count_idx, aggcolsize, false, piv_ccols,
-                    agg_ccols, piv_scols, agg_acols, agg_scount,
+                    strand_count_idx, aggcolsize, false, piv_pcols, piv_ccols,
+                    agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount,
                     spkey, insert_count, pivots_neq, rv.m_pivot_like_columns);
 
                 if (op == OP_DELETE || !pivots_neq)
@@ -503,8 +508,8 @@ t_stree::build_strand_table(const t_table& flattened,
             t_bool pivots_neq;
 
             build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                strand_count_idx, aggcolsize, false, piv_ccols,
-                agg_ccols, piv_scols, agg_acols, agg_scount, spkey,
+                strand_count_idx, aggcolsize, false, piv_pcols, piv_ccols,
+                agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount, spkey,
                 insert_count, pivots_neq, rv.m_pivot_like_columns);
 
             if (op == OP_DELETE || !pivots_neq)
@@ -2280,6 +2285,34 @@ void
 t_stree::set_has_deltas(t_bool v)
 {
     m_has_delta = v;
+}
+
+t_bfs_iter<t_stree>
+t_stree::bfs() const
+{
+    return t_bfs_iter<t_stree>(this);
+}
+
+t_dfs_iter<t_stree>
+t_stree::dfs() const
+{
+    return t_dfs_iter<t_stree>(this);
+}
+
+void
+t_stree::pprint() const
+{
+    for (auto idx : dfs())
+    {
+        t_tscalvec path;
+        get_path(idx, path);
+        std::cout << idx << " --- " << path << " --- ";
+        for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx)
+        {
+            std::cout << get_aggregate(idx, aidx) << ", ";
+        }
+        std::cout << std::endl;
+    }
 }
 
 } // end namespace perspective

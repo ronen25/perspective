@@ -150,8 +150,7 @@ void
 notify_sparse_tree(t_stree_sptr tree, t_trav_sptr traversal,
     t_bool process_traversal, const t_aggspecvec& aggregates,
     const t_sspvec& tree_sortby, const t_sortsvec& ctx_sortby,
-    const t_table& flattened, const t_table& prev,
-    const t_table& current,
+    const t_table& flattened, const t_table& prev, const t_table& current,
     const t_config& config, const t_gstate& gstate)
 {
 

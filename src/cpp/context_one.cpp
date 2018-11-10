@@ -177,8 +177,8 @@ t_ctx1::get_data(t_tvidx start_row, t_tvidx end_row, t_tvidx start_col,
 }
 
 void
-t_ctx1::notify(const t_table& flattened,
-    const t_table& prev, const t_table& current)
+t_ctx1::notify(
+    const t_table& flattened, const t_table& prev, const t_table& current)
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -747,6 +747,44 @@ t_ctx1::clear_deltas()
 void
 t_ctx1::unity_init_load_step_end()
 {
+}
+
+t_table_sptr
+t_ctx1::get_table() const
+{
+    auto schema = m_tree->get_aggtable()->get_schema();
+    auto pivots = m_config.get_row_pivots();
+    auto tbl = std::make_shared<t_table>(schema, m_tree->size());
+    tbl->init();
+    tbl->extend(m_tree->size());
+
+    t_colptrvec aggcols = tbl->get_columns();
+    auto n_aggs = aggcols.size();
+    t_colptrvec pivcols;
+
+    std::stringstream ss;
+    for (const auto& c : pivots)
+    {
+        pivcols.push_back(tbl->add_column(
+            c.colname(), m_schema.get_dtype(c.colname()), true));
+    }
+
+    auto idx = 0;
+    for (auto nidx : m_tree->dfs())
+    {
+        auto depth = m_tree->get_depth(nidx);
+        if (depth > 0)
+        {
+            pivcols[depth - 1]->set_scalar(idx, m_tree->get_value(nidx));
+        }
+        for (t_uindex aggnum = 0; aggnum < n_aggs; ++aggnum)
+        {
+            auto aggscalar = m_tree->get_aggregate(nidx, aggnum);
+            aggcols[aggnum]->set_scalar(idx, aggscalar);
+        }
+        ++idx;
+    }
+    return tbl;
 }
 
 } // end namespace perspective

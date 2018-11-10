@@ -60,7 +60,7 @@ public:
         const t_str& aggname, t_aggtype agg, const t_depvec& dependencies);
 
     t_aggspec(const t_str& aggname, t_aggtype agg, const t_str& dep);
-
+    t_aggspec(t_aggtype agg, const t_str& dep);
     t_aggspec(const t_str& aggname, const t_str& disp_aggname, t_aggtype agg,
         const t_depvec& dependencies);
 

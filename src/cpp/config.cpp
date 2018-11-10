@@ -163,6 +163,22 @@ t_config::t_config(const t_svec& row_pivots, const t_aggspecvec& aggregates)
     setup(m_detail_columns, t_svec{}, t_svec{});
 }
 
+// t_ctx1
+t_config::t_config(const t_svec& row_pivots, const t_aggspec& agg)
+    : m_aggregates(t_aggspecvec{agg})
+    , m_totals(TOTALS_BEFORE)
+    , m_combiner(FILTER_OP_AND)
+    , m_handle_nan_sort(true)
+    , m_fmode(FMODE_SIMPLE_CLAUSES)
+{
+    for (const auto& p : row_pivots)
+    {
+        m_row_pivots.push_back(t_pivot(p));
+    }
+
+    setup(m_detail_columns, t_svec{}, t_svec{});
+}
+
 t_config::t_config(const t_svec& row_pivots, const t_aggspecvec& aggregates,
     t_filter_op combiner, const t_ftermvec& fterms)
     : m_aggregates(aggregates)

@@ -21,8 +21,8 @@ void reset_sortby();
 // will only work on empty contexts
 void notify(const t_table& flattened);
 
-void notify(const t_table& flattened, const t_table& prev,
-    const t_table& current);
+void notify(
+    const t_table& flattened, const t_table& prev, const t_table& current);
 
 void step_begin();
 
@@ -69,6 +69,8 @@ t_bool has_deltas() const;
 void pprint() const;
 
 t_dtype get_column_dtype(t_uindex idx) const;
+
+t_table_sptr get_table() const;
 
 // Unity api
 t_tscalvec unity_get_row_data(t_uindex idx) const;

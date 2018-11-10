@@ -74,6 +74,10 @@ typedef std::shared_ptr<t_column> t_col_sptr;
 #define COLUMN_CHECK_STRCOL()
 #endif
 
+class t_column;
+typedef std::shared_ptr<t_column> t_col_sptr;
+typedef std::shared_ptr<const t_column> t_col_csptr;
+
 class PERSPECTIVE_EXPORT t_column
 {
 public:
@@ -82,9 +86,11 @@ public:
 #endif
     t_column();
     t_column(const t_column_recipe& recipe);
+    t_column(t_dtype dtype, t_bool missing_enabled, t_uindex row_capacity);
     t_column(t_dtype dtype, t_bool missing_enabled, const t_lstore_recipe& a);
     t_column(t_dtype dtype, t_bool missing_enabled, const t_lstore_recipe& a,
         t_uindex row_capacity);
+    static t_col_sptr build(t_dtype dtype, const t_tscalvec& vec);
     ~t_column();
 
     void column_copy_helper(const t_column& other);
@@ -248,8 +254,6 @@ private:
     t_uint32 m_elemsize;
 };
 
-typedef std::shared_ptr<t_column> t_col_sptr;
-typedef std::shared_ptr<const t_column> t_col_csptr;
 typedef std::vector<t_col_sptr> t_colsptrvec;
 typedef std::vector<t_col_csptr> t_colcsptrvec;
 typedef std::vector<t_col_sptr> t_colsptrvec;

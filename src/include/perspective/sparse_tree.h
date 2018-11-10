@@ -34,6 +34,7 @@ SUPPRESS_WARNINGS_VC(4503)
 #include <deque>
 #include <sstream>
 #include <queue>
+#include <perspective/tree_iterator.h>
 
 namespace perspective
 {
@@ -183,9 +184,9 @@ public:
 
     void build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
         t_uindex npivots, t_uindex strand_count_idx, t_uindex aggcolsize,
-        t_bool force_current_row, const t_colcptrvec& piv_pcolcontexts,
-        const t_colcptrvec& agg_ccols,
-        t_colptrvec& piv_scols,
+        t_bool force_current_row, const t_colcptrvec& piv_pcols,
+        const t_colcptrvec& piv_ccols, const t_colcptrvec& agg_pcols,
+        const t_colcptrvec& agg_ccols, t_colptrvec& piv_scols,
         t_colptrvec& agg_acols, t_column* agg_scountspar, t_column* spkey,
         t_uindex& insert_count, t_bool& pivots_neq,
         const t_svec& pivot_like) const;
@@ -198,8 +199,7 @@ public:
         const t_svec& pivot_like) const;
 
     std::pair<t_table_sptr, t_table_sptr> build_strand_table(
-        const t_table& flattened, const t_table& prev,
-        const t_table& current,
+        const t_table& flattened, const t_table& prev, const t_table& current,
         const t_aggspecvec& aggspecs, const t_config& config) const;
 
     std::pair<t_table_sptr, t_table_sptr> build_strand_table(
@@ -309,6 +309,10 @@ public:
 
     t_uindex get_num_leaves(t_uindex depth) const;
     t_idxvec get_indices_for_depth(t_uindex depth) const;
+
+    t_bfs_iter<t_stree> bfs() const;
+    t_dfs_iter<t_stree> dfs() const;
+    void pprint() const;
 
 protected:
     void mark_zero_desc();

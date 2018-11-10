@@ -110,6 +110,12 @@ t_column::t_column(
 {
 }
 
+t_column::t_column(t_dtype dtype, t_bool missing_enabled, t_uindex row_capacity)
+    : t_column(dtype, missing_enabled,
+          t_lstore_recipe(row_capacity * get_dtype_size(dtype)), row_capacity)
+{
+}
+
 t_column::t_column(t_dtype dtype, t_bool missing_enabled,
     const t_lstore_recipe& a, t_uindex row_capacity)
     : m_dtype(dtype)
@@ -156,6 +162,18 @@ t_column::t_column(t_dtype dtype, t_bool missing_enabled,
     {
         m_status.reset(new t_lstore);
     }
+}
+
+t_col_sptr
+t_column::build(t_dtype dtype, const t_tscalvec& vec)
+{
+    auto rv = std::make_shared<t_column>(dtype, true, vec.size());
+    rv->init();
+    for (const auto& s : vec)
+    {
+        rv->push_back(s);
+    }
+    return rv;
 }
 
 bool

@@ -43,8 +43,8 @@ public:
 protected:
     t_tscalvec get_all_pkeys(const t_uidxpvec& cells) const;
 
-    void calc_step_delta(const t_table& flattened, const t_table& prev,
-        const t_table& curr);
+    void calc_step_delta(
+        const t_table& flattened, const t_table& prev, const t_table& curr);
 
 private:
     t_ftrav_sptr m_traversal;

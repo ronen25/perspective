@@ -64,6 +64,9 @@ public:
 
     t_table_sptr get_pkeyed_table() const;
 
+    // Only for tests
+    t_table_sptr get_sorted_pkeyed_table() const;
+
     t_table* _get_pkeyed_table() const;
     t_table* _get_pkeyed_table(const t_tscalvec& pkeys) const;
     t_table* _get_pkeyed_table(

@@ -294,8 +294,8 @@ enum t_value_transition
 
 enum t_gnode_port
 {
-    PSP_PORT_PREV,        // same schema as state
-    PSP_PORT_CURRENT,     // same schema as state
+    PSP_PORT_PREV,    // same schema as state
+    PSP_PORT_CURRENT, // same schema as state
 };
 
 enum t_ctx_feature
@@ -414,6 +414,7 @@ PERSPECTIVE_EXPORT t_str get_error_str();
 PERSPECTIVE_EXPORT bool is_numeric_type(t_dtype dtype);
 PERSPECTIVE_EXPORT bool is_linear_order_type(t_dtype dtype);
 PERSPECTIVE_EXPORT t_str get_dtype_descr(t_dtype dtype);
+PERSPECTIVE_EXPORT t_str get_status_descr(t_status dtype);
 PERSPECTIVE_EXPORT t_uindex get_dtype_size(t_dtype dtype);
 PERSPECTIVE_EXPORT t_bool is_vlen_dtype(t_dtype dtype);
 PERSPECTIVE_EXPORT t_bool is_neq_transition(t_value_transition t);

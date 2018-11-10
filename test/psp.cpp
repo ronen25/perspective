@@ -13,14 +13,24 @@
 #include <perspective/context_one.h>
 #include <perspective/node_processor.h>
 #include <perspective/storage.h>
+#include <perspective/none.h>
+#include <perspective/gnode.h>
 #include <gtest/gtest.h>
+#include <limits>
 
 using namespace perspective;
 
 t_tscalar bnull = mknull(DTYPE_BOOL);
-t_tscalar snull = mknull(DTYPE_BOOL);
+t_tscalar snull = mknull(DTYPE_STR);
+t_tscalar i64null = mknull(DTYPE_INT64);
+
 t_tscalar s_true = mktscalar<t_bool>(true);
 t_tscalar s_false = mktscalar<t_bool>(false);
+t_tscalar s_none = mktscalar<t_none>(t_none());
+t_tscalar iop = mktscalar<t_uint8>(OP_INSERT);
+t_tscalar dop = mktscalar<t_uint8>(OP_DELETE);
+t_tscalar cop = mktscalar<t_uint8>(OP_CLEAR);
+
 
 TEST(TABLE, simplest_test)
 {
@@ -218,6 +228,140 @@ TEST(SCALAR, map_test_3)
     ASSERT_EQ(mmap.size(), 3);
 }
 
-TEST(DELTA, delta_test_1) {
+TEST(SCALAR, scalar_repr)
+{
+    EXPECT_EQ(s_none.repr(), "none:v:");
+    EXPECT_EQ(mktscalar<t_int64>(0).repr(), "i64:v:0");
+    EXPECT_EQ(mktscalar<t_int32>(0).repr(), "i32:v:0");
+    EXPECT_EQ(mktscalar<t_int16>(0).repr(), "i16:v:0");
+    EXPECT_EQ(mktscalar<t_int8>(0).repr(), "i8:v:0");
+    EXPECT_EQ(mktscalar<t_uint64>(0).repr(), "u64:v:0");
+    EXPECT_EQ(mktscalar<t_uint32>(0).repr(), "u32:v:0");
+    EXPECT_EQ(mktscalar<t_uint16>(0).repr(), "u16:v:0");
+    EXPECT_EQ(mktscalar<t_uint8>(0).repr(), "u8:v:0");
+    EXPECT_EQ(mktscalar<t_float64>(0).repr(), "f64:v:0");
+    EXPECT_EQ(mktscalar<t_float32>(0).repr(), "f32:v:0");
+    EXPECT_EQ(mktscalar<t_date>(t_date(0)).repr(), "date:v:0-00-00");
+    EXPECT_EQ(
+        mktscalar<t_time>(t_time(0)).repr(), "time:v:1970-01-01 00:00:00.000");
+    EXPECT_EQ(mktscalar<const char*>("").repr(), "str:v:");
 
+    EXPECT_EQ(mknull(DTYPE_NONE).repr(), "none:i:null");
+    EXPECT_EQ(mknull(DTYPE_INT64).repr(), "i64:i:null");
+    EXPECT_EQ(mknull(DTYPE_INT32).repr(), "i32:i:null");
+    EXPECT_EQ(mknull(DTYPE_INT16).repr(), "i16:i:null");
+    EXPECT_EQ(mknull(DTYPE_INT8).repr(), "i8:i:null");
+    EXPECT_EQ(mknull(DTYPE_UINT64).repr(), "u64:i:null");
+    EXPECT_EQ(mknull(DTYPE_UINT32).repr(), "u32:i:null");
+    EXPECT_EQ(mknull(DTYPE_UINT16).repr(), "u16:i:null");
+    EXPECT_EQ(mknull(DTYPE_UINT8).repr(), "u8:i:null");
+    EXPECT_EQ(mknull(DTYPE_FLOAT64).repr(), "f64:i:null");
+    EXPECT_EQ(mknull(DTYPE_FLOAT32).repr(), "f32:i:null");
+    EXPECT_EQ(mknull(DTYPE_DATE).repr(), "date:i:null");
+    EXPECT_EQ(mknull(DTYPE_TIME).repr(), "time:i:null");
+    EXPECT_EQ(mknull(DTYPE_STR).repr(), "str:i:null");
+}
+
+TEST(SCALAR, scalar_str)
+{
+    EXPECT_TRUE(mktscalar("a") < mktscalar("b"));
+    EXPECT_TRUE(mktscalar("a") == mktscalar("a"));
+}
+
+TEST(SCALAR, nan_test)
+{
+    EXPECT_TRUE(
+        mktscalar<t_float64>(std::numeric_limits<t_float64>::quiet_NaN())
+            .is_nan());
+    EXPECT_TRUE(
+        mktscalar<t_float32>(std::numeric_limits<t_float64>::quiet_NaN())
+            .is_nan());
+}
+
+TEST(SCALAR, difference)
+{
+    EXPECT_EQ(
+        mktscalar<t_float64>(42).difference(mknull(DTYPE_FLOAT64)).to_double(),
+        42.0);
+    EXPECT_EQ(
+        mknull(DTYPE_FLOAT64).difference(mktscalar<t_float64>(42)).to_double(),
+        -42.0);
+}
+
+class GnodeI64 : public ::testing::Test {
+public:
+    typedef std::function<t_table_sptr(const t_schema&, const std::vector<t_tscalvec>&)> t_tblfactory;
+    GnodeI64() {
+        m_ischema = t_schema{
+                {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
+        m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_INT64}};
+        m_g = t_gnode::build(m_ischema);
+    }
+
+    t_table_sptr it(const std::vector<t_tscalvec>& recs) const {
+    return make_table(m_ischema, recs);
+    }
+
+    t_table_sptr ot(const std::vector<t_tscalvec>& recs) const {
+        return make_table(m_oschema, recs);
+    }
+
+    t_table_sptr make_table(const t_schema& s, const std::vector<t_tscalvec>& recs ) const {
+        return std::make_shared<t_table>(s, recs);
+    }
+
+    t_table_sptr step(const std::vector<t_tscalvec>& recs) {
+        return m_g->tstep(it(recs));
+    }
+
+protected:
+    t_schema m_ischema;
+    t_schema m_oschema;
+    t_gnode_sptr m_g;
+
+};
+
+TEST_F(GnodeI64, clear)
+{
+    EXPECT_EQ(*step({{iop, 1_ts, 1_ts}}), *ot({{1_ts, 1_ts}}));
+    EXPECT_EQ(*step({{iop, 1_ts, mkclear(DTYPE_INT64)}}), *ot({{1_ts, mknull(DTYPE_INT64)}}));
+}
+
+TEST_F(GnodeI64, row_delete)
+{
+    EXPECT_EQ(*step({{iop, 1_ts, 1_ts}}), *ot({{1_ts, 1_ts}}));
+    EXPECT_EQ(*step({{dop, 1_ts, i64null}}), *ot({}));
+}
+
+TEST_F(GnodeI64, test_1)
+{
+    EXPECT_EQ(*step({{iop, 1_ts, 1_ts}}), *ot({{1_ts, 1_ts}}));
+    EXPECT_EQ(*step({{iop, 1_ts, i64null}}), *ot({{1_ts, 1_ts}}));
+}
+
+TEST_F(GnodeI64, test_2)
+{
+    EXPECT_EQ(*step({{iop, 1_ts, 1_ts}}), *ot({{1_ts, 1_ts}}));
+    EXPECT_EQ(*step({{dop, 1_ts, i64null},
+                     {iop, 1_ts, 5_ts}}), *ot({{1_ts, 5_ts}}));
+}
+
+TEST_F(GnodeI64, test_3) {
+    EXPECT_EQ(*step({{iop, 1_ts, i64null}}), *ot({{1_ts, i64null}}));
+    EXPECT_EQ(*step({{iop, 1_ts, i64null}}), *ot({{1_ts, i64null}}));
+}
+
+TEST_F(GnodeI64, test_5) {
+    EXPECT_EQ(*step({{iop, 1_ts, i64null}}), *ot({{1_ts, i64null}}));
+    EXPECT_EQ(*step({{iop, 1_ts, 5_ts}}), *ot({{1_ts, 5_ts}}));
+}
+
+TEST_F(GnodeI64, test_6) {
+    EXPECT_EQ(*step({{iop, 1_ts, 5_ts}}), *ot({{1_ts, 5_ts}}));
+    EXPECT_EQ(*step({{iop, 1_ts, i64null}}), *ot({{1_ts, 5_ts}}));
+}
+
+TEST_F(GnodeI64, test_7) {
+    EXPECT_EQ(*step({{iop, 1_ts, 5_ts}}), *ot({{1_ts, 5_ts}}));
+    EXPECT_EQ(*step({{iop, 1_ts, 6_ts}}), *ot({{1_ts, 6_ts}}));
 }

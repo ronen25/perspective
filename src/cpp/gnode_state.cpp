@@ -577,6 +577,37 @@ t_gstate::get_pkey_dtype() const
 }
 
 t_table_sptr
+t_gstate::get_sorted_pkeyed_table() const
+{
+    typedef boost::unordered_map<t_tscalar, t_uindex> t_mapping;
+    std::map<t_tscalar, t_uindex> ordered(m_mapping.begin(), m_mapping.end());
+    auto sch = m_pkeyed_schema.drop({"psp_op"});
+    auto rv = std::make_shared<t_table>(sch, 0);
+    rv->init();
+    rv->reserve(size());
+
+    auto pkey_col = rv->get_column("psp_pkey");
+    t_colsptrvec icolumns;
+    t_colsptrvec ocolumns;
+
+    for (const t_str& cname: m_tblschema.m_columns) {
+        ocolumns.push_back(rv->get_column(cname));
+        icolumns.push_back(m_table->get_column(cname));
+    }
+
+    for (auto it = ordered.begin(); it != ordered.end(); ++it) {
+        auto ridx = it->second;
+        pkey_col->set_scalar(ridx, it->first);
+        for (t_uindex cidx=0, loop_end=m_tblschema.size(); cidx < loop_end; ++cidx) {
+            auto scalar = icolumns[cidx]->get_scalar(ridx);
+            ocolumns[cidx]->push_back(scalar);
+        }
+    }
+    rv->set_size(size());
+    return rv;
+}
+
+t_table_sptr
 t_gstate::get_pkeyed_table(const t_schema& schema) const
 {
     return t_table_sptr(_get_pkeyed_table(schema));
