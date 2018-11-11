@@ -162,20 +162,6 @@ t_schema::types() const
     return m_types;
 }
 
-t_table_static_ctx
-t_schema::get_table_context() const
-{
-    t_table_static_ctx rv;
-    for (size_t idx = 0, loop_end = m_columns.size(); idx < loop_end; ++idx)
-    {
-        t_column_static_ctx v;
-        v.m_colname = m_columns[idx];
-        v.m_dtype = m_types[idx];
-        rv.m_columns.push_back(v);
-    }
-    return rv;
-}
-
 t_str
 t_schema::str() const
 {

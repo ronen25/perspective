@@ -352,4 +352,13 @@ t_ctxbase<DERIVED_T>::get_data() const
         0, cptr->get_row_count(), 0, cptr->get_column_count());
 }
 
+template <typename CTX_T>
+std::shared_ptr<CTX_T>
+build_ctx(const t_schema& schema, const t_config& cfg)
+{
+    auto rv = std::make_shared<CTX_T>(schema, cfg);
+    rv->init();
+    return rv;
+}
+
 } // end namespace perspective

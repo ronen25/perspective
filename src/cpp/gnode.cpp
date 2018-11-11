@@ -840,11 +840,6 @@ t_gnode::_register_context(const t_str& name, t_ctx_type type, t_int64 ptr)
         flattened = m_state->get_pkeyed_table();
     }
 
-    auto pkeyed_tblcontext = m_state->get_port_schema().get_table_context();
-
-    auto non_pkeyed_tblcontext
-        = m_state->get_table()->get_schema().get_table_context();
-
     switch (type)
     {
         case TWO_SIDED_CONTEXT:
@@ -1420,6 +1415,33 @@ t_gnode::tstep(t_table_csptr input_table)
 {
     _send_and_process(*input_table);
     return get_sorted_pkeyed_table();
+}
+
+void
+t_gnode::register_context(const t_str& name, t_ctx0_sptr ctx)
+{
+    _register_context(
+        name, ZERO_SIDED_CONTEXT, reinterpret_cast<t_int64>(ctx.get()));
+}
+
+void
+t_gnode::register_context(const t_str& name, t_ctx1_sptr ctx)
+{
+    _register_context(
+        name, ONE_SIDED_CONTEXT, reinterpret_cast<t_int64>(ctx.get()));
+}
+
+void
+t_gnode::register_context(const t_str& name, t_ctx2_sptr ctx)
+{
+    _register_context(
+        name, TWO_SIDED_CONTEXT, reinterpret_cast<t_int64>(ctx.get()));
+}
+void
+t_gnode::register_context(const t_str& name, t_ctx_grouped_pkey_sptr ctx)
+{
+    _register_context(
+        name, GROUPED_PKEY_CONTEXT, reinterpret_cast<t_int64>(ctx.get()));
 }
 
 } // end namespace perspective

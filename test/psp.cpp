@@ -174,10 +174,6 @@ typedef test_traits<t_date, DTYPE_DATE> tr_date;
 typedef test_traits<t_time, DTYPE_TIME> tr_time;
 typedef test_traits<t_str, DTYPE_STR> tr_str;
 
-using testing::Types;
-
-#include "test_types.h"
-
 TEST(TABLE, simplest_test)
 {
     t_table tbl(t_schema({"a", "b"}, {DTYPE_INT64, DTYPE_FLOAT64}), 5);
@@ -472,131 +468,465 @@ TEST(SCALAR, lteq_test)
     EXPECT_TRUE(mktscalar<const char*>("b") <= mktscalar<const char*>("b"));
 }
 
+TEST(SCALAR, is_numeric)
+{
+    EXPECT_TRUE(std::all_of(numeric_dtypes.begin(), numeric_dtypes.end(),
+        [](t_dtype t) { return mknull(t).is_numeric(); }));
+    EXPECT_FALSE(mktscalar<const char*>("hello").is_numeric());
+    EXPECT_FALSE(s_none.is_numeric());
+}
 
-template <typename TEST_TRAIT_T>
-class GnodeTest : public ::testing::Test
+TEST(SCALAR, canonical_test)
+{
+    EXPECT_TRUE(std::all_of(numeric_dtypes.begin(), numeric_dtypes.end(),
+        [](t_dtype t) { return t_tscalar::canonical(t).to_double() == 0; }));
+    EXPECT_EQ(mktscalar<const char*>(""), t_tscalar::canonical(DTYPE_STR));
+}
+
+TEST(SCALAR, abs_test)
+{
+    EXPECT_EQ(mktscalar<t_int64>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int64>(-5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int32>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int32>(-5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int16>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int16>(-5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int8>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int8>(-5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float64>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float64>(-5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float32>(5).abs().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float32>(-5).abs().to_double(), 5);
+}
+
+TEST(SCALAR, negate)
+{
+    EXPECT_EQ(mktscalar<t_int64>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_int64>(-5).negate().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int32>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_int32>(-5).negate().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int16>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_int16>(-5).negate().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_int8>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_int8>(-5).negate().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float64>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_float64>(-5).negate().to_double(), 5);
+    EXPECT_EQ(mktscalar<t_float32>(5).negate().to_double(), -5);
+    EXPECT_EQ(mktscalar<t_float32>(-5).negate().to_double(), 5);
+}
+
+TEST(SCALAR, begins_with)
+{
+    EXPECT_TRUE(
+        mktscalar<const char*>("").begins_with(mktscalar<const char*>("")));
+    EXPECT_TRUE(mktscalar<const char*>("abc").begins_with(
+        mktscalar<const char*>("ab")));
+    EXPECT_FALSE(mktscalar<const char*>("ab").begins_with(
+        mktscalar<const char*>("abc")));
+    EXPECT_TRUE(mktscalar<const char*>("aBc").begins_with(
+        mktscalar<const char*>("Ab")));
+    EXPECT_FALSE(s_none.begins_with(mktscalar<const char*>("aBc")));
+    EXPECT_FALSE(mktscalar<const char*>("aBc").begins_with(s_none));
+}
+
+TEST(SCALAR, ends_with)
+{
+    EXPECT_TRUE(
+        mktscalar<const char*>("").ends_with(mktscalar<const char*>("")));
+    EXPECT_TRUE(
+        mktscalar<const char*>("abc").ends_with(mktscalar<const char*>("bc")));
+    EXPECT_FALSE(
+        mktscalar<const char*>("bc").ends_with(mktscalar<const char*>("abc")));
+    EXPECT_TRUE(
+        mktscalar<const char*>("aBc").ends_with(mktscalar<const char*>("bC")));
+    EXPECT_FALSE(s_none.ends_with(mktscalar<const char*>("aBc")));
+    EXPECT_FALSE(mktscalar<const char*>("aBc").ends_with(s_none));
+}
+
+TEST(SCALAR, contains)
+{
+    EXPECT_TRUE(
+        mktscalar<const char*>("").contains(mktscalar<const char*>("")));
+    EXPECT_TRUE(
+        mktscalar<const char*>("abc").contains(mktscalar<const char*>("ab")));
+    EXPECT_FALSE(
+        mktscalar<const char*>("ab").contains(mktscalar<const char*>("abc")));
+    EXPECT_TRUE(
+        mktscalar<const char*>("aBc").contains(mktscalar<const char*>("Ab")));
+    EXPECT_FALSE(s_none.contains(mktscalar<const char*>("aBc")));
+    EXPECT_FALSE(mktscalar<const char*>("aBc").contains(s_none));
+    EXPECT_TRUE(
+        mktscalar<const char*>("aBcd").contains(mktscalar<const char*>("bc")));
+}
+
+class BaseTest : public ::testing::Test
+{
+public:
+    typedef std::vector<t_tscalvec> t_tbldata;
+    typedef std::pair<t_tbldata, t_tbldata> t_stepdata;
+    typedef std::vector<t_stepdata> t_testdata;
+
+protected:
+    virtual t_table_sptr get_step_otable() = 0;
+
+    void
+    run(const t_testdata& d)
+    {
+        for (const auto& sd : d)
+        {
+            t_table itbl(m_ischema, sd.first);
+            t_table expected_otbl(m_oschema, sd.second);
+            m_g->_send_and_process(itbl);
+            auto otbl = get_step_otable();
+            EXPECT_EQ(*otbl, expected_otbl);
+        }
+    }
+
+    t_gnode_sptr m_g;
+    t_schema m_ischema;
+    t_schema m_oschema;
+};
+
+class I64GTest : public BaseTest
 {
 
 public:
-    typedef std::function<t_table_sptr(
-        const t_schema&, const std::vector<t_tscalvec>&)>
-        t_tblfactory;
-    GnodeTest()
+    I64GTest()
     {
         m_ischema = t_schema{{"psp_op", "psp_pkey", "x"},
-            {DTYPE_UINT8, PKEY::dtype, VALUE::dtype}};
-        m_oschema = {{"psp_pkey", "x"}, {PKEY::dtype, VALUE::dtype}};
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
+        m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_INT64}};
         m_g = t_gnode::build(m_ischema);
+        null = mknull(DTYPE_INT64);
+        clear = mkclear(DTYPE_INT64);
     }
 
-    t_table_sptr
-    it(const std::vector<t_tscalvec>& recs) const
+    virtual t_table_sptr
+    get_step_otable()
     {
-        return make_table(m_ischema, recs);
-    }
-
-    t_table_sptr
-    ot(const std::vector<t_tscalvec>& recs) const
-    {
-        return make_table(m_oschema, recs);
-    }
-
-    t_table_sptr
-    make_table(const t_schema& s, const std::vector<t_tscalvec>& recs) const
-    {
-        return std::make_shared<t_table>(s, recs);
-    }
-
-    t_table_sptr
-    step(const std::vector<t_tscalvec>& recs)
-    {
-        return m_g->tstep(it(recs));
+        return m_g->get_sorted_pkeyed_table();
     }
 
 protected:
-    typedef typename TEST_TRAIT_T::pkey PKEY;
-    typedef typename TEST_TRAIT_T::value VALUE;
-    t_schema m_ischema;
-    t_schema m_oschema;
-    t_gnode_sptr m_g;
+    t_tscalar null;
+    t_tscalar clear;
 };
 
-TYPED_TEST_CASE(GnodeTest, all_test_traits);
-
-TYPED_TEST(GnodeTest, clear)
+class I64Ctx1Test : public I64GTest
 {
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::clear}}),
-        *this->ot({{T::pkey::v1, T::value::null}}));
+
+public:
+    I64Ctx1Test()
+    {
+        m_oschema = {{"sum_x", "x"}, {DTYPE_INT64, DTYPE_INT64}};
+        t_config cfg{{"x"}, {"sum_x", AGGTYPE_SUM, "x"}};
+        m_ctx = std::make_shared<t_ctx1>(m_ischema, cfg);
+        m_g->register_context("ctx", m_ctx);
+    }
+
+    virtual t_table_sptr
+    get_step_otable()
+    {
+        return m_ctx->get_table();
+    }
+
+protected:
+    t_ctx1_sptr m_ctx;
+};
+
+// clang-format off
+TEST_F(I64GTest, test_1) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, clear}},
+            {{1_ts, null}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, row_delete)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{dop, T::pkey::v1, T::value::null}}), *this->ot({}));
+TEST_F(I64GTest, test_2) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{dop, 1_ts, null}},
+            {}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_1)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::null}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
+TEST_F(I64GTest, test_3) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_2)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{dop, T::pkey::v1, T::value::null},
-                  {iop, T::pkey::v1, T::value::v2}}),
-        *this->ot({{T::pkey::v1, T::value::v2}}));
+TEST_F(I64GTest, test_4) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{dop, 1_ts, null},
+            {iop, 1_ts, 2_ts}},
+            {{1_ts, 2_ts}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_3)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::null}}),
-        *this->ot({{T::pkey::v1, T::value::null}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::null}}),
-        *this->ot({{T::pkey::v1, T::value::null}}));
+TEST_F(I64GTest, test_5) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_5)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::null}}),
-        *this->ot({{T::pkey::v1, T::value::null}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
+TEST_F(I64GTest, test_6) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        },
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_6)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::null}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
+TEST_F(I64GTest, test_7) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_7)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v1}}),
-        *this->ot({{T::pkey::v1, T::value::v1}}));
-    EXPECT_EQ(*this->step({{iop, T::pkey::v1, T::value::v2}}),
-        *this->ot({{T::pkey::v1, T::value::v2}}));
+TEST_F(I64GTest, test_8) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, 2_ts}},
+            {{1_ts, 2_ts}}
+        }
+    };
+    
+    run(data);
 }
 
-TYPED_TEST(GnodeTest, test_8)
-{
-    typedef TypeParam T;
-    EXPECT_EQ(*this->step({{dop, T::pkey::v1, T::value::null}}), *this->ot({}));
+TEST_F(I64GTest, test_9) {
+    
+    t_testdata data{
+        {
+            {{dop, 1_ts, null}},
+            {}
+        }
+    };
+    
+    run(data);
 }
+
+TEST_F(I64Ctx1Test, test_1) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, null},
+            {1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, null},
+            {1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, clear}},
+            {{1_ts, null}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_2) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{dop, 1_ts, null}},
+            {}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_3) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_4) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{dop, 1_ts, null},
+            {iop, 1_ts, 2_ts}},
+            {{1_ts, 2_ts}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_5) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_6) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, null}}
+        },
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_7) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, null}},
+            {{1_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_8) {
+    
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, null},
+            {1_ts, 1_ts}}
+        },
+        {
+            {{iop, 1_ts, 2_ts}},
+            {{2_ts, null},
+             {2_ts, 1_ts}}
+        }
+    };
+    
+    run(data);
+}
+
+TEST_F(I64Ctx1Test, test_9) {
+    
+    t_testdata data{
+        {
+            {{dop, 1_ts, null}},
+            {{null, null}}
+        }
+    };
+    
+    run(data);
+}
+
+// clang-format on

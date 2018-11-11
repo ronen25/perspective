@@ -55,6 +55,16 @@ struct PERSPECTIVE_EXPORT t_gnode_recipe
 class t_gnode;
 typedef std::shared_ptr<t_gnode> t_gnode_sptr;
 
+class t_ctx0;
+class t_ctx1;
+class t_ctx2;
+class t_ctx_grouped_pkey;
+
+typedef std::shared_ptr<t_ctx0> t_ctx0_sptr;
+typedef std::shared_ptr<t_ctx1> t_ctx1_sptr;
+typedef std::shared_ptr<t_ctx2> t_ctx2_sptr;
+typedef std::shared_ptr<t_ctx_grouped_pkey> t_ctx_grouped_pkey_sptr;
+
 class PERSPECTIVE_EXPORT t_gnode
 {
 public:
@@ -117,6 +127,12 @@ public:
 
     // helper function for tests
     t_table_sptr tstep(t_table_csptr input_table);
+
+    // Gnode will steal a reference to the context
+    void register_context(const t_str& name, t_ctx0_sptr ctx);
+    void register_context(const t_str& name, t_ctx1_sptr ctx);
+    void register_context(const t_str& name, t_ctx2_sptr ctx);
+    void register_context(const t_str& name, t_ctx_grouped_pkey_sptr ctx);
 
 protected:
     void notify_contexts(const t_table& flattened);

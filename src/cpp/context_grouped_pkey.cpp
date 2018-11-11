@@ -161,9 +161,8 @@ t_ctx_grouped_pkey::get_data(t_tvidx start_row, t_tvidx end_row,
         if (m_has_label && ridx > 0)
         {
             // Get pkey
-            auto iters = m_tree->get_pkeys_for_leaf(nidx);
-            tree_value.set(
-                m_state->get_value(iters.first->m_pkey, grouping_label_col));
+            auto pk = m_tree->get_pkey_for_leaf(nidx);
+            tree_value.set(m_state->get_value(pk, grouping_label_col));
         }
 
         tmpvalues[(ridx - ext.m_srow) * ncols] = tree_value;
@@ -355,10 +354,10 @@ t_ctx_grouped_pkey::get_pkeys(const t_uidxpvec& cells) const
 
         if (seen.find(ptidx) == seen.end())
         {
-            auto iters = m_tree->get_pkeys_for_leaf(ptidx);
-            for (auto iter = iters.first; iter != iters.second; ++iter)
+            auto keys = m_tree->get_pkeys_for_leaf(ptidx);
+            for (const auto& k : keys)
             {
-                rval.push_back(iter->m_pkey);
+                rval.push_back(k);
             }
             seen.insert(ptidx);
         }
@@ -370,10 +369,10 @@ t_ctx_grouped_pkey::get_pkeys(const t_uidxpvec& cells) const
             if (seen.find(d) != seen.end())
                 continue;
 
-            auto iters = m_tree->get_pkeys_for_leaf(d);
-            for (auto iter = iters.first; iter != iters.second; ++iter)
+            auto keys = m_tree->get_pkeys_for_leaf(d);
+            for (const auto& k : keys)
             {
-                rval.push_back(iter->m_pkey);
+                rval.push_back(k);
             }
             seen.insert(d);
         }

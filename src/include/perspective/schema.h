@@ -48,7 +48,6 @@ struct PERSPECTIVE_EXPORT t_schema
     t_bool has_column(const t_str& cname) const;
     const t_svec& columns() const;
     const t_dtypevec types() const;
-    t_table_static_ctx get_table_context() const;
     t_str str() const;
     t_schema drop(const t_sset& columns) const;
     t_schema operator+(const t_schema& o) const;

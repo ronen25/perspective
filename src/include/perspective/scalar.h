@@ -430,8 +430,6 @@ mkclear(t_dtype dtype)
     return rval;
 }
 
-t_tscalar mktscalar();
-
 } // end namespace perspective
 
 namespace std

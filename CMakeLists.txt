@@ -46,7 +46,7 @@ endif()
 
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
-set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -fPIC -O0")
+#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -fPIC -O0")
 
 set (SOURCE_FILES
 src/cpp/aggregate.cpp
@@ -167,7 +167,6 @@ if (NOT PSP_WASM_BUILD)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
    psp_build_dep("tbb" "cmake/TBB.txt.in")
    psp_build_dep("benchmark" "cmake/benchmark.txt.in")
-       enable_testing()
    add_subdirectory(test)
    add_subdirectory(bench)
    add_custom_target(gcov
