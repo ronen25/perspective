@@ -127,6 +127,10 @@ src/cpp/vocab.cpp
 )
 
 add_library(psp SHARED ${SOURCE_FILES})
+#if (LINUX)
+target_compile_options(psp PRIVATE -time=build.time)
+#endif()
+
 if (WIN32)
 	target_compile_definitions(psp PUBLIC -DPERSPECTIVE_EXPORTS)
 	foreach(warning 4244 4251 4267 4275 4290 4786 4305 4996)

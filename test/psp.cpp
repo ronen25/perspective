@@ -523,7 +523,7 @@ protected:
     t_ctx1_sptr m_ctx;
 };
 
-/*
+
 // clang-format off
 TEST_F(I64GTest, test_1) {
 
@@ -692,16 +692,23 @@ TEST_F(I64Ctx1Test, test_1) {
 
     run(data);
 }
-*/
-TEST_F(I64Ctx1Test, test_2)
-{
 
-    t_testdata data{{{{iop, 1_ts, 1_ts}}, {{1_ts, null}, {1_ts, 1_ts}}},
-        {{{dop, 1_ts, null}}, {{0_ts, null}}}};
+TEST_F(I64Ctx1Test, test_2) {
+
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts}},
+            {{1_ts, null},
+             {1_ts, 1_ts}}},
+        {
+            {{dop, 1_ts, null}},
+            {{0_ts, null}}
+        }
+    };
 
     run(data);
 }
-/*
+
 TEST_F(I64Ctx1Test, test_3) {
 
     t_testdata data{
@@ -731,7 +738,8 @@ TEST_F(I64Ctx1Test, test_4) {
         {
             {{dop, 1_ts, null},
             {iop, 1_ts, 2_ts}},
-            {{1_ts, 2_ts}}
+            {{2_ts, null},
+             {2_ts, 1_ts}}
         }
     };
 
@@ -822,4 +830,4 @@ TEST_F(I64Ctx1Test, test_9) {
 }
 
 // clang-format on
-*/
+
