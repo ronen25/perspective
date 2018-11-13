@@ -8,7 +8,10 @@ endif()
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 include_directories("${CMAKE_SOURCE_DIR}/src/include")
-
+file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/install")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
@@ -45,7 +48,8 @@ if (PSP_WASM_BUILD)
 endif()
 
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
+
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
 #set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -fPIC -O0")
 
 set (SOURCE_FILES
@@ -72,6 +76,7 @@ src/cpp/context_one.cpp
 src/cpp/context_two.cpp
 src/cpp/context_zero.cpp
 src/cpp/custom_column.cpp
+src/cpp/data.cpp
 src/cpp/date.cpp
 src/cpp/dense_nodes.cpp
 src/cpp/dense_tree_context.cpp
@@ -122,6 +127,13 @@ src/cpp/vocab.cpp
 )
 
 add_library(psp SHARED ${SOURCE_FILES})
+if (WIN32)
+	target_compile_definitions(psp PUBLIC -DPERSPECTIVE_EXPORTS)
+	foreach(warning 4244 4251 4267 4275 4290 4786 4305 4996)
+		SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /wd${warning}")
+	endforeach(warning)
+endif()
+
 set_target_properties(psp PROPERTIES COMPILE_FLAGS "${ASYNC_MODE_FLAGS}")
 
 if (PSP_WASM_BUILD)
@@ -166,9 +178,9 @@ if (NOT PSP_WASM_BUILD)
    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
    psp_build_dep("tbb" "cmake/TBB.txt.in")
-   psp_build_dep("benchmark" "cmake/benchmark.txt.in")
+   #psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)
-   add_subdirectory(bench)
+   #add_subdirectory(bench)
    add_custom_target(gcov
            COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -180,3 +192,4 @@ if (NOT PSP_WASM_BUILD)
            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
            )
 endif()
+

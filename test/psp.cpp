@@ -62,118 +62,7 @@ t_dtypevec common_dtypes{
     DTYPE_STR,
 };
 
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-struct test_traits
-{
-    typedef DATA_T t_data;
-    static perspective::t_dtype dtype;
-    static perspective::t_tscalar null;
-    static perspective::t_tscalar clear;
-    static perspective::t_tscalar zero;
-    static perspective::t_tscalar v1;
-    static perspective::t_tscalar v2;
-};
-
-// String specializations
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_str, perspective::DTYPE_STR>::zero;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_str, perspective::DTYPE_STR>::v1;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_str, perspective::DTYPE_STR>::v2;
-
-// Date specializations
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_date, perspective::DTYPE_DATE>::zero;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_date, perspective::DTYPE_DATE>::v1;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_date, perspective::DTYPE_DATE>::v2;
-
-// Time specializations
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_time, perspective::DTYPE_TIME>::zero;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_time, perspective::DTYPE_TIME>::v1;
-
-template <>
-perspective::t_tscalar
-    test_traits<perspective::t_time, perspective::DTYPE_TIME>::v2;
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_dtype test_traits<DATA_T, DTYPE_T>::dtype = DTYPE_T;
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_tscalar test_traits<DATA_T, DTYPE_T>::null
-    = perspective::mknull(DTYPE_T);
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_tscalar test_traits<DATA_T, DTYPE_T>::clear
-    = perspective::mkclear(DTYPE_T);
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_tscalar test_traits<DATA_T, DTYPE_T>::zero
-    = perspective::mktscalar<DATA_T>(0);
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_tscalar test_traits<DATA_T, DTYPE_T>::v1
-    = perspective::mktscalar<DATA_T>(1);
-
-template <typename DATA_T, perspective::t_dtype DTYPE_T>
-perspective::t_tscalar test_traits<DATA_T, DTYPE_T>::v2
-    = perspective::mktscalar<DATA_T>(2);
-
-// String specializations
-template <>
-t_tscalar test_traits<t_str, DTYPE_STR>::zero = mktscalar<const char*>("");
-
-template <>
-t_tscalar test_traits<t_str, DTYPE_STR>::v1 = mktscalar<const char*>("1");
-
-template <>
-t_tscalar test_traits<t_str, DTYPE_STR>::v2 = mktscalar<const char*>("2");
-
-// Date specializations
-template <>
-t_tscalar test_traits<t_date, DTYPE_DATE>::zero = mktscalar(t_date());
-
-template <>
-t_tscalar test_traits<t_date, DTYPE_DATE>::v1 = mktscalar(t_date(2018, 1, 1));
-
-template <>
-t_tscalar test_traits<t_date, DTYPE_DATE>::v2 = mktscalar(t_date(2018, 2, 2));
-
-// Time specializations
-template <>
-t_tscalar test_traits<t_time, DTYPE_TIME>::zero = mktscalar(t_time(0));
-
-template <>
-t_tscalar test_traits<t_time, DTYPE_TIME>::v1 = mktscalar(t_time(100000));
-
-template <>
-t_tscalar test_traits<t_time, DTYPE_TIME>::v2 = mktscalar(t_time(200000));
-
-typedef test_traits<t_int64, DTYPE_INT64> tr_i64;
-typedef test_traits<t_int64, DTYPE_INT32> tr_i32;
-typedef test_traits<t_uint64, DTYPE_UINT64> tr_u64;
-typedef test_traits<t_float64, DTYPE_FLOAT64> tr_float64;
-typedef test_traits<t_date, DTYPE_DATE> tr_date;
-typedef test_traits<t_time, DTYPE_TIME> tr_time;
-typedef test_traits<t_str, DTYPE_STR> tr_str;
-
+/*
 TEST(TABLE, simplest_test)
 {
     t_table tbl(t_schema({"a", "b"}, {DTYPE_INT64, DTYPE_FLOAT64}), 5);
@@ -558,7 +447,7 @@ TEST(SCALAR, contains)
     EXPECT_TRUE(
         mktscalar<const char*>("aBcd").contains(mktscalar<const char*>("bc")));
 }
-
+*/
 class BaseTest : public ::testing::Test
 {
 public:
@@ -634,9 +523,10 @@ protected:
     t_ctx1_sptr m_ctx;
 };
 
+/*
 // clang-format off
 TEST_F(I64GTest, test_1) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -651,12 +541,12 @@ TEST_F(I64GTest, test_1) {
             {{1_ts, null}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_2) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -667,12 +557,12 @@ TEST_F(I64GTest, test_2) {
             {}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_3) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -683,12 +573,12 @@ TEST_F(I64GTest, test_3) {
             {{1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_4) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -700,12 +590,12 @@ TEST_F(I64GTest, test_4) {
             {{1_ts, 2_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_5) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, null}},
@@ -716,12 +606,12 @@ TEST_F(I64GTest, test_5) {
             {{1_ts, null}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_6) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, null}},
@@ -732,12 +622,12 @@ TEST_F(I64GTest, test_6) {
             {{1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_7) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -748,12 +638,12 @@ TEST_F(I64GTest, test_7) {
             {{1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_8) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -764,24 +654,24 @@ TEST_F(I64GTest, test_8) {
             {{1_ts, 2_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64GTest, test_9) {
-    
+
     t_testdata data{
         {
             {{dop, 1_ts, null}},
             {}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64Ctx1Test, test_1) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -795,51 +685,48 @@ TEST_F(I64Ctx1Test, test_1) {
         },
         {
             {{iop, 1_ts, clear}},
-            {{1_ts, null}}
+            {{1_ts, null},
+            {1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
+*/
+TEST_F(I64Ctx1Test, test_2)
+{
 
-TEST_F(I64Ctx1Test, test_2) {
-    
-    t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {{1_ts, 1_ts}}
-        },
-        {
-            {{dop, 1_ts, null}},
-            {}
-        }
-    };
-    
+    t_testdata data{{{{iop, 1_ts, 1_ts}}, {{1_ts, null}, {1_ts, 1_ts}}},
+        {{{dop, 1_ts, null}}, {{0_ts, null}}}};
+
     run(data);
 }
-
+/*
 TEST_F(I64Ctx1Test, test_3) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, 1_ts}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         },
         {
             {{iop, 1_ts, null}},
-            {{1_ts, 1_ts}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64Ctx1Test, test_4) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, 1_ts}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         },
         {
             {{dop, 1_ts, null},
@@ -847,60 +734,65 @@ TEST_F(I64Ctx1Test, test_4) {
             {{1_ts, 2_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64Ctx1Test, test_5) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, null}},
-            {{1_ts, null}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         },
         {
             {{iop, 1_ts, null}},
             {{1_ts, null}}
         }
     };
-    
+
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_6) {
-    
-    t_testdata data{
-        {
-            {{iop, 1_ts, null}},
-            {{1_ts, null}}
-        },
-        {
-            {{iop, 1_ts, 1_ts}},
-            {{1_ts, 1_ts}}
-        }
-    };
-    
-    run(data);
-}
+//TEST_F(I64Ctx1Test, test_6) {
+//
+//    t_testdata data{
+//        {
+//            {{iop, 1_ts, null}},
+//            {{0, null},
+//             {0, null}}
+//        },
+//        {
+//            {{iop, 1_ts, 1_ts}},
+//            {{1_ts, null},
+//             {1_ts, 1_ts}}
+//        }
+//    };
+//
+//    run(data);
+//}
 
 TEST_F(I64Ctx1Test, test_7) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, 1_ts}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         },
         {
             {{iop, 1_ts, null}},
-            {{1_ts, 1_ts}}
+            {{1_ts, null},
+             {1_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64Ctx1Test, test_8) {
-    
+
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
@@ -913,20 +805,21 @@ TEST_F(I64Ctx1Test, test_8) {
              {2_ts, 1_ts}}
         }
     };
-    
+
     run(data);
 }
 
 TEST_F(I64Ctx1Test, test_9) {
-    
+
     t_testdata data{
         {
             {{dop, 1_ts, null}},
             {{null, null}}
         }
     };
-    
+
     run(data);
 }
 
 // clang-format on
+*/

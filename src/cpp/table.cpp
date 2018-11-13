@@ -783,7 +783,7 @@ t_table::get_scalvec() const
 
 namespace std
 {
-PERSPECTIVE_EXPORT std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const perspective::t_table& t)
 {
     t.pprint(t.size(), &os);

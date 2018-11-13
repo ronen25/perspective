@@ -634,6 +634,8 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
     aggs->reserve(insert_count);
     aggs->set_size(insert_count);
     agg_scount->valid_raw_fill();
+    std::cout << "aggs_pprint" << std::endl;
+    aggs->pprint();
     return std::pair<t_table_sptr, t_table_sptr>(strands, aggs);
 }
 
@@ -749,14 +751,6 @@ t_stree::build_strand_table(const t_table& flattened,
     return std::pair<t_table_sptr, t_table_sptr>(strands, aggs);
 }
 
-t_bool
-t_stree::pivots_changed(t_value_transition t) const
-{
-
-    return t == VALUE_TRANSITION_NEQ_TF || t == VALUE_TRANSITION_NVEQ_FT
-        || t == VALUE_TRANSITION_NEQ_TT;
-}
-
 void
 t_stree::t_stree_p::populate_pkey_idx(const t_dtree_ctx& ctx,
     const t_dtree& dtree, t_uindex dptidx, t_uindex sptidx, t_uindex ndepth,
@@ -849,6 +843,7 @@ t_stree::update_shape_from_static(const t_dtree_ctx& ctx)
             boost::make_tuple(p_sptidx, value));
 
         auto nstrands = *(scount->get_nth<t_int64>(dptidx));
+        std::cout << "sptidx: " << sptidx << " nstrands: " << nstrands << std::endl;
 
         if (iter == m_p->m_nodes->get<by_pidx_hash>().end() && nstrands < 0)
         {
@@ -955,6 +950,8 @@ void
 t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
 {
     const t_table& src_aggtable = ctx.get_aggtable();
+    std::cout << "src_aggtable" << std::endl;
+    src_aggtable.pprint();
 
     t_agg_update_info agg_update_info;
     t_schema aggschema = m_p->m_aggregates->get_schema();
@@ -1861,7 +1858,9 @@ t_tscalar
 t_stree::get_pkey_for_leaf(t_uindex idx) const
 {
     auto iters = m_p->get_pkeys_for_leaf(idx);
+    return mknone();
 }
+
 bool
 t_stree::insert_node(const t_tnode& node)
 {

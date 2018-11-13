@@ -68,7 +68,7 @@ get_sort_orders(const t_sortsvec& vec)
 
 namespace std
 {
-PERSPECTIVE_EXPORT std::ostream&
+inline std::ostream&
 operator<<(std::ostream& os, const perspective::t_sortspec& t)
 {
     using namespace perspective;

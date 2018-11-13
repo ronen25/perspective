@@ -281,15 +281,11 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
             {
                 if (row_pre_existed)
                 {
-                    DATA_T prev_value
-                        = *(scolumn->get_nth<DATA_T>(rlookup.m_idx));
-                    t_bool prev_valid = scolumn->is_valid(rlookup.m_idx);
+                    auto prev_value
+                        = scolumn->get_scalar(rlookup.m_idx);
+                    pcolumn->set_scalar(added_count, prev_value);
 
-                    pcolumn->set_nth<DATA_T>(added_count, prev_value);
-                    pcolumn->set_valid(added_count, prev_valid);
-
-                    ccolumn->set_nth<DATA_T>(added_count, prev_value);
-                    ccolumn->set_valid(added_count, prev_valid);
+                    ccolumn->set_scalar(added_count, prev_value.negate());
                 }
             }
             break;
