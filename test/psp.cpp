@@ -62,7 +62,6 @@ t_dtypevec common_dtypes{
     DTYPE_STR,
 };
 
-/*
 TEST(TABLE, simplest_test)
 {
     t_table tbl(t_schema({"a", "b"}, {DTYPE_INT64, DTYPE_FLOAT64}), 5);
@@ -447,7 +446,7 @@ TEST(SCALAR, contains)
     EXPECT_TRUE(
         mktscalar<const char*>("aBcd").contains(mktscalar<const char*>("bc")));
 }
-*/
+
 class BaseTest : public ::testing::Test
 {
 public:
@@ -763,23 +762,23 @@ TEST_F(I64Ctx1Test, test_5) {
     run(data);
 }
 
-//TEST_F(I64Ctx1Test, test_6) {
-//
-//    t_testdata data{
-//        {
-//            {{iop, 1_ts, null}},
-//            {{0, null},
-//             {0, null}}
-//        },
-//        {
-//            {{iop, 1_ts, 1_ts}},
-//            {{1_ts, null},
-//             {1_ts, 1_ts}}
-//        }
-//    };
-//
-//    run(data);
-//}
+TEST_F(I64Ctx1Test, test_6) {
+
+   t_testdata data{
+       {
+           {{iop, 1_ts, null}},
+           {{0, null},
+            {0, null}}
+       },
+       {
+           {{iop, 1_ts, 1_ts}},
+           {{1_ts, null},
+            {1_ts, 1_ts}}
+       }
+   };
+
+   run(data);
+}
 
 TEST_F(I64Ctx1Test, test_7) {
 

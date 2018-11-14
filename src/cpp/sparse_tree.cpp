@@ -285,12 +285,20 @@ t_stree::get_sortby_value(t_tvidx idx) const
     return iter->m_sort_value;
 }
 
+t_bool
+t_stree::pivots_changed(t_value_transition t) const
+{
+
+    return t == VALUE_TRANSITION_NEQ_TF || t == VALUE_TRANSITION_NVEQ_FT
+        || t == VALUE_TRANSITION_NEQ_TT;
+}
+
 void
 t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
     t_uindex npivots, t_uindex strand_count_idx, t_uindex aggcolsize,
-    t_bool force_current_row, const t_colcptrvec& piv_pcols,
-    const t_colcptrvec& piv_ccols, const t_colcptrvec& agg_pcols,
-    const t_colcptrvec& agg_ccols, t_colptrvec& piv_scols,
+    t_bool force_current_row, const t_colcptrvec& piv_ccols,
+    const t_colcptrvec& piv_tcols, const t_colcptrvec& agg_ccols,
+    const t_colcptrvec& agg_dcols, t_colptrvec& piv_scols,
     t_colptrvec& agg_acols, t_column* agg_scount, t_column* spkey,
     t_uindex& insert_count, t_bool& pivots_neq, const t_svec& pivot_like) const
 {
@@ -308,18 +316,16 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
         }
         pivmap.insert(colname);
 
-        auto pval = piv_pcols[pidx]->get_scalar(idx);
-        auto cval = piv_ccols[pidx]->get_scalar(idx);
         piv_scols[pidx]->push_back(piv_ccols[pidx]->get_scalar(idx));
-
-        if (pval != cval)
-        {
+        const t_uint8* trans_ = piv_tcols[pidx]->get_nth<t_uint8>(idx);
+        t_value_transition trans = static_cast<t_value_transition>(*trans_);
+        if (trans != VALUE_TRANSITION_EQ_TT) {
             all_eq_tt = false;
         }
 
         if (pidx < npivots)
         {
-            pivots_neq = pivots_neq || pval != cval;
+            pivots_neq = pivots_neq || pivots_changed(trans);
         }
     }
 
@@ -334,9 +340,8 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
             }
             else
             {
-                auto tmp = agg_ccols[aggidx]->get_scalar(idx);
                 agg_acols[aggidx]->push_back(
-                    tmp.difference(agg_pcols[aggidx]->get_scalar(idx)));
+                    agg_dcols[aggidx]->get_scalar(idx));
             }
         }
     }
@@ -472,9 +477,9 @@ t_stree::build_strand_table_common(const t_table& flattened,
 // can contain additional rows
 // notably pivot changed rows will be added
 std::pair<t_table_sptr, t_table_sptr>
-t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
-    const t_table& current, const t_aggspecvec& aggspecs,
-    const t_config& config) const
+t_stree::build_strand_table(const t_table& flattened, const t_table& delta,
+    const t_table& prev, const t_table& current, const t_table& transitions,
+    const t_aggspecvec& aggspecs, const t_config& config) const
 {
 
     PSP_TRACE_SENTINEL();
@@ -496,6 +501,7 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
     t_uindex npivotlike = rv.m_npivotlike;
     t_colcptrvec piv_pcols(npivotlike);
     t_colcptrvec piv_ccols(npivotlike);
+    t_colcptrvec piv_tcols(npivotlike);
     t_colptrvec piv_scols(npivotlike);
 
     t_uindex insert_count = 0;
@@ -505,12 +511,14 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
         const t_str& piv = rv.m_strand_schema.m_columns[pidx];
         piv_pcols[pidx] = prev.get_const_column(piv).get();
         piv_ccols[pidx] = current.get_const_column(piv).get();
+        piv_tcols[pidx] = transitions.get_const_column(piv).get();
         piv_scols[pidx] = strands->get_column(piv).get();
     }
 
     t_uindex aggcolsize = rv.m_aggschema.m_columns.size();
     t_colcptrvec agg_ccols(aggcolsize);
     t_colcptrvec agg_pcols(aggcolsize);
+    t_colcptrvec agg_dcols(aggcolsize);
     t_colptrvec agg_acols(aggcolsize);
 
     t_uindex strand_count_idx = 0;
@@ -520,12 +528,14 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
         const t_str& aggcol = rv.m_aggschema.m_columns[aggidx];
         if (aggcol == "psp_strand_count")
         {
+            agg_dcols[aggidx] = 0;
             agg_ccols[aggidx] = 0;
             agg_pcols[aggidx] = 0;
             strand_count_idx = aggidx;
         }
         else
         {
+            agg_dcols[aggidx] = delta.get_const_column(aggcol).get();
             agg_ccols[aggidx] = current.get_const_column(aggcol).get();
             agg_pcols[aggidx] = prev.get_const_column(aggcol).get();
         }
@@ -569,8 +579,8 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
             {
                 // apply current row
                 build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                    strand_count_idx, aggcolsize, true, piv_pcols, piv_ccols,
-                    agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount,
+                    strand_count_idx, aggcolsize, true, piv_ccols, piv_tcols,
+                    agg_ccols, agg_dcols, piv_scols, agg_acols, agg_scount,
                     spkey, insert_count, pivots_neq, rv.m_pivot_like_columns);
             }
             else if (filter_prev && !filter_curr)
@@ -585,8 +595,8 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
             {
                 // should be handled as normal
                 build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                    strand_count_idx, aggcolsize, false, piv_pcols, piv_ccols,
-                    agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount,
+                    strand_count_idx, aggcolsize, false, piv_ccols, piv_tcols,
+                    agg_ccols, agg_dcols, piv_scols, agg_acols, agg_scount,
                     spkey, insert_count, pivots_neq, rv.m_pivot_like_columns);
 
                 if (op == OP_DELETE || !pivots_neq)
@@ -613,8 +623,8 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& prev,
             t_bool pivots_neq;
 
             build_strand_table_phase_1(pkey, op, idx, rv.m_pivsize,
-                strand_count_idx, aggcolsize, false, piv_pcols, piv_ccols,
-                agg_pcols, agg_ccols, piv_scols, agg_acols, agg_scount, spkey,
+                strand_count_idx, aggcolsize, false, piv_ccols, piv_tcols,
+                agg_ccols, agg_dcols, piv_scols, agg_acols, agg_scount, spkey,
                 insert_count, pivots_neq, rv.m_pivot_like_columns);
 
             if (op == OP_DELETE || !pivots_neq)

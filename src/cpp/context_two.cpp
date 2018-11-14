@@ -351,8 +351,9 @@ t_ctx2::reset_sortby()
 }
 
 void
-t_ctx2::notify(
-    const t_table& flattened, const t_table& prev, const t_table& current)
+t_ctx2::notify(const t_table& flattened, const t_table& delta,
+    const t_table& prev, const t_table& current, const t_table& transitions,
+    const t_table& existed)
 {
     psp_log_time(repr() + " notify.enter");
     for (t_uindex tree_idx = 0, loop_end = m_trees.size(); tree_idx < loop_end;
@@ -362,19 +363,22 @@ t_ctx2::notify(
         {
             notify_sparse_tree(rtree(), m_rtraversal, true,
                 m_config.get_aggregates(), m_config.get_sortby_pairs(),
-                m_row_sortby, flattened, prev, current, m_config, *m_state);
+                m_row_sortby, flattened, delta, prev, current, transitions,
+                existed, m_config, *m_state);
         }
         else if (is_ctree_idx(tree_idx))
         {
             notify_sparse_tree(ctree(), m_ctraversal, true,
                 m_config.get_aggregates(), m_config.get_sortby_pairs(),
-                m_column_sortby, flattened, prev, current, m_config, *m_state);
+                m_column_sortby, flattened, delta, prev, current, transitions,
+                existed, m_config, *m_state);
         }
         else
         {
             notify_sparse_tree(m_trees[tree_idx], t_trav_sptr(0), false,
                 m_config.get_aggregates(), m_config.get_sortby_pairs(),
-                t_sortsvec(), flattened, prev, current, m_config, *m_state);
+                t_sortsvec(), flattened, delta, prev, current, transitions,
+                existed, m_config, *m_state);
         }
     }
 

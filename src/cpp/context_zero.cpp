@@ -345,8 +345,9 @@ t_ctx0::sidedness() const
 }
 
 void
-t_ctx0::notify(
-    const t_table& flattened, const t_table& prev, const t_table& curr)
+t_ctx0::notify(const t_table& flattened, const t_table& delta,
+    const t_table& prev, const t_table& curr, const t_table& transitions,
+    const t_table& existed)
 {
     psp_log_time(repr() + " notify.enter");
     t_uindex nrecs = flattened.size();
@@ -355,7 +356,7 @@ t_ctx0::notify(
     const t_column* pkey_col = pkey_sptr.get();
     const t_column* op_col = op_sptr.get();
 
-    t_col_csptr existed_sptr = prev.get_const_column("psp_existed");
+    t_col_csptr existed_sptr = existed.get_const_column("psp_existed");
     const t_column* existed_col = existed_sptr.get();
 
     t_bool delete_encountered = false;
@@ -371,14 +372,14 @@ t_ctx0::notify(
 
             t_uint8 op_ = *(op_col->get_nth<t_uint8>(idx));
             t_op op = static_cast<t_op>(op_);
-            // t_bool existed = *(existed_col->get_nth<t_bool>(idx));
+            t_bool existed = *(existed_col->get_nth<t_bool>(idx));
 
             switch (op)
             {
                 case OP_INSERT:
                 {
                     t_bool filter_curr = msk_curr.get(idx);
-                    t_bool filter_prev = msk_prev.get(idx); // zch && existed;
+                    t_bool filter_prev = msk_prev.get(idx) && existed;
 
                     if (filter_prev)
                     {
@@ -414,7 +415,7 @@ t_ctx0::notify(
             }
         }
         psp_log_time(repr() + " notify.has_filter_path.updated_traversal");
-        calc_step_delta(flattened, prev, curr);
+        calc_step_delta(flattened, prev, curr, transitions);
         m_has_delta = m_deltas->size() > 0 || delete_encountered;
         psp_log_time(repr() + " notify.has_filter_path.exit");
 
@@ -427,8 +428,7 @@ t_ctx0::notify(
             = m_symtable.get_interned_tscalar(pkey_col->get_scalar(idx));
         t_uint8 op_ = *(op_col->get_nth<t_uint8>(idx));
         t_op op = static_cast<t_op>(op_);
-        // TODO t_bool existed = *(existed_col->get_nth<t_bool>(idx));
-        t_bool existed = true;
+        t_bool existed = *(existed_col->get_nth<t_bool>(idx));
 
         switch (op)
         {
@@ -459,14 +459,14 @@ t_ctx0::notify(
     }
 
     psp_log_time(repr() + " notify.no_filter_path.updated_traversal");
-    calc_step_delta(flattened, prev, curr);
+    calc_step_delta(flattened, prev, curr, transitions);
     m_has_delta = m_deltas->size() > 0 || delete_encountered;
     psp_log_time(repr() + " notify.no_filter_path.exit");
 }
 
 void
-t_ctx0::calc_step_delta(
-    const t_table& flattened, const t_table& prev, const t_table& curr)
+t_ctx0::calc_step_delta(const t_table& flattened, const t_table& prev,
+    const t_table& curr, const t_table& transitions)
 {
     t_uindex nrows = flattened.size();
 
@@ -480,19 +480,40 @@ t_ctx0::calc_step_delta(
     for (t_uindex cidx = 0; cidx < ncols; ++cidx)
     {
         t_str col = m_config.col_at(cidx);
+
+        const t_column* tcol = transitions.get_const_column(col).get();
         const t_column* pcol = prev.get_const_column(col).get();
         const t_column* ccol = curr.get_const_column(col).get();
 
         for (t_uindex ridx = 0; ridx < nrows; ++ridx)
         {
-            auto pval = get_interned_tscalar(pkey_col->get_scalar(ridx));
-            auto cval = get_interned_tscalar(pkey_col->get_scalar(ridx));
+            const t_uint8* trans_ = tcol->get_nth<t_uint8>(ridx);
+            t_uint8 trans = *trans_;
+            t_value_transition tr = static_cast<t_value_transition>(trans);
 
-            if (pval != cval)
+            switch (tr)
             {
-                m_deltas->insert(
-                    t_zcdelta(get_interned_tscalar(pkey_col->get_scalar(ridx)),
-                        cidx, pval, cval));
+                case VALUE_TRANSITION_NVEQ_FT:
+                case VALUE_TRANSITION_NEQ_FT:
+                case VALUE_TRANSITION_NEQ_TDT:
+                {
+                    m_deltas->insert(t_zcdelta(
+                        get_interned_tscalar(pkey_col->get_scalar(ridx)), cidx,
+                        mknone(),
+                        get_interned_tscalar(ccol->get_scalar(ridx))));
+                }
+                break;
+                case VALUE_TRANSITION_NEQ_TT:
+                {
+                    m_deltas->insert(t_zcdelta(
+                        get_interned_tscalar(pkey_col->get_scalar(ridx)), cidx,
+                        get_interned_tscalar(pcol->get_scalar(ridx)),
+                        get_interned_tscalar(ccol->get_scalar(ridx))));
+                }
+                break;
+                default:
+                {
+                }
             }
         }
     }

@@ -150,12 +150,13 @@ void
 notify_sparse_tree(t_stree_sptr tree, t_trav_sptr traversal,
     t_bool process_traversal, const t_aggspecvec& aggregates,
     const t_sspvec& tree_sortby, const t_sortsvec& ctx_sortby,
-    const t_table& flattened, const t_table& prev, const t_table& current,
+    const t_table& flattened, const t_table& delta, const t_table& prev,
+    const t_table& current, const t_table& transitions, const t_table& existed,
     const t_config& config, const t_gstate& gstate)
 {
 
     auto strand_values = tree->build_strand_table(
-        flattened, prev, current, aggregates, config);
+        flattened, delta, prev, current, transitions, aggregates, config);
 
     auto strands = strand_values.first;
     auto strand_deltas = strand_values.second;

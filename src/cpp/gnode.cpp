@@ -344,6 +344,7 @@ t_gnode::_process()
         _update_contexts_from_state(*flattened);
         psp_log_time(
             repr() + " _process.init_path.post_update_contexts_from_state");
+        m_oports[PSP_PORT_FLATTENED]->set_table(flattened);
 
         release_inputs();
         psp_log_time(repr() + " _process.init_path.post_release_inputs");
@@ -366,6 +367,10 @@ t_gnode::_process()
 
     t_uindex fnrows = flattened->num_rows();
 
+    t_table_sptr delta = m_oports[PSP_PORT_DELTA]->get_table();
+    delta->clear();
+    delta->reserve(fnrows);
+
     t_table_sptr prev = m_oports[PSP_PORT_PREV]->get_table();
     prev->clear();
     prev->reserve(fnrows);
@@ -373,6 +378,15 @@ t_gnode::_process()
     t_table_sptr current = m_oports[PSP_PORT_CURRENT]->get_table();
     current->clear();
     current->reserve(fnrows);
+
+    t_table_sptr transitions = m_oports[PSP_PORT_TRANSITIONS]->get_table();
+    transitions->clear();
+    transitions->reserve(fnrows);
+
+    t_table_sptr existed = m_oports[PSP_PORT_EXISTED]->get_table();
+    existed->clear();
+    existed->reserve(fnrows);
+    existed->set_size(fnrows);
 
     const t_schema& fschema = flattened->get_schema();
 
@@ -389,8 +403,10 @@ t_gnode::_process()
     t_uindex ncols = sschema.get_num_columns();
 
     t_colcptrvec scolumns(ncols);
+    t_colptrvec dcolumns(ncols);
     t_colptrvec pcolumns(ncols);
     t_colptrvec ccolumns(ncols);
+    t_colptrvec tcolumns(ncols);
 
     t_uidxvec col_translation(stable->num_columns());
     t_uindex count = 0;
@@ -415,9 +431,11 @@ t_gnode::_process()
         scolumns[idx] = stable->get_column(cname).get();
         pcolumns[idx] = prev->get_column(cname).get();
         ccolumns[idx] = current->get_column(cname).get();
+        dcolumns[idx] = delta->get_column(cname).get();
+        tcolumns[idx] = transitions->get_column(cname).get();
     }
 
-    t_column* ecolumn = prev->get_column("psp_existed").get();
+    t_column* ecolumn = existed->get_column("psp_existed").get();
 
     t_tscalar prev_pkey;
     prev_pkey.clear();
@@ -483,8 +501,11 @@ t_gnode::_process()
 
     PSP_VERBOSE_ASSERT(mask_count == added_count, "Expected equality");
 
+    delta->set_size(mask_count);
     prev->set_size(mask_count);
     current->set_size(mask_count);
+    transitions->set_size(mask_count);
+    existed->set_size(mask_count);
 
     psp_log_time(repr() + " _process.noinit_path.post_rlkup_loop");
     if (!m_expr_icols.empty())
@@ -502,8 +523,10 @@ t_gnode::_process()
         {
             auto fcolumn = fcolumns[col_translation[colidx]];
             auto scolumn = scolumns[colidx];
+            auto dcolumn = dcolumns[colidx];
             auto pcolumn = pcolumns[colidx];
             auto ccolumn = ccolumns[colidx];
+            auto tcolumn = tcolumns[colidx];
 
             t_dtype col_dtype = fcolumn->get_dtype();
 
@@ -511,86 +534,100 @@ t_gnode::_process()
             {
                 case DTYPE_INT64:
                 {
-                    _process_helper<t_int64>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_INT32:
                 {
-                    _process_helper<t_int32>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_int32>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_INT16:
                 {
-                    _process_helper<t_int16>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_int16>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_INT8:
                 {
-                    _process_helper<t_int8>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_int8>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_UINT64:
                 {
-                    _process_helper<t_uint64>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint64>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_UINT32:
                 {
-                    _process_helper<t_uint32>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint32>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_UINT16:
                 {
-                    _process_helper<t_uint16>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint16>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_UINT8:
                 {
-                    _process_helper<t_uint8>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_FLOAT64:
                 {
-                    _process_helper<t_float64>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_float64>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_FLOAT32:
                 {
-                    _process_helper<t_float32>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_float32>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_BOOL:
                 {
-                    _process_helper<t_uint8>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_TIME:
                 {
-                    _process_helper<t_int64>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 case DTYPE_DATE:
                 {
-                    _process_helper<t_uint32>(fcolumn, scolumn, pcolumn,
-                        ccolumn, op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_uint32>(fcolumn, scolumn, dcolumn,
+                        pcolumn, ccolumn, tcolumn, op_base, lkup,
+                        prev_pkey_eq_vec, added_offset);
                 }
                 break;
                 case DTYPE_STR:
                 {
-                    _process_helper<t_str>(fcolumn, scolumn, pcolumn, ccolumn,
-                        op_base, lkup, prev_pkey_eq_vec, added_offset);
+                    _process_helper<t_str>(fcolumn, scolumn, dcolumn, pcolumn,
+                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                        added_offset);
                 }
                 break;
                 default:
@@ -625,10 +662,18 @@ t_gnode::_process()
 
     psp_log_time(repr() + " _process.noinit_path.post_update_history");
 
+    m_oports[PSP_PORT_FLATTENED]->set_table(flattened_masked);
+
     if (t_env::log_data_gnode_flattened())
     {
         std::cout << repr() << "gnode_process_flattened_mask" << std::endl;
         flattened_masked->pprint();
+    }
+
+    if (t_env::log_data_gnode_delta())
+    {
+        std::cout << repr() << "gnode_process_delta" << std::endl;
+        delta->pprint();
     }
 
     if (t_env::log_data_gnode_prev())
@@ -641,6 +686,18 @@ t_gnode::_process()
     {
         std::cout << repr() << "gnode_process_current" << std::endl;
         current->pprint();
+    }
+
+    if (t_env::log_data_gnode_transitions())
+    {
+        std::cout << repr() << "gnode_process_transitions" << std::endl;
+        transitions->pprint();
+    }
+
+    if (t_env::log_data_gnode_existed())
+    {
+        std::cout << repr() << "gnode_process_existed" << std::endl;
+        existed->pprint();
     }
 
     if (t_env::log_time_gnode_process())
@@ -1292,9 +1349,10 @@ t_gnode::clear_output_ports()
 template <>
 void
 t_gnode::_process_helper<t_str>(const t_column* fcolumn,
-    const t_column* scolumn, t_column* pcolumn, t_column* ccolumn,
-    const t_uint8* op_base, std::vector<t_rlookup>& lkup,
-    std::vector<t_bool>& prev_pkey_eq_vec, std::vector<t_uindex>& added_vec)
+    const t_column* scolumn, t_column* dcolumn, t_column* pcolumn,
+    t_column* ccolumn, t_column* tcolumn, const t_uint8* op_base,
+    std::vector<t_rlookup>& lkup, std::vector<t_bool>& prev_pkey_eq_vec,
+    std::vector<t_uindex>& added_vec)
 {
     for (t_uindex idx = 0, loop_end = fcolumn->size(); idx < loop_end; ++idx)
     {
@@ -1309,22 +1367,74 @@ t_gnode::_process_helper<t_str>(const t_column* fcolumn,
         {
             case OP_INSERT:
             {
-                auto cur_value = fcolumn->get_scalar(idx);
-                t_tscalar prev_value = row_pre_existed
-                    ? scolumn->get_scalar(rlookup.m_idx)
-                    : mknull(DTYPE_STR);
-                pcolumn->set_scalar(idx, prev_value);
-                ccolumn->set_scalar(
-                    added_count, cur_value.is_valid() ? cur_value : prev_value);
+                row_pre_existed = row_pre_existed && !prev_pkey_eq_vec[idx];
+
+                const char* prev_value = 0;
+                t_bool prev_valid = false;
+
+                auto cur_value = fcolumn->get_nth<const char>(idx);
+                t_str curs(cur_value);
+
+                t_bool cur_valid = fcolumn->is_valid(idx);
+
+                if (row_pre_existed)
+                {
+                    prev_value = scolumn->get_nth<const char>(rlookup.m_idx);
+                    prev_valid = scolumn->is_valid(rlookup.m_idx);
+                }
+
+                t_bool exists = cur_valid;
+                t_bool prev_existed = row_pre_existed && prev_valid;
+                t_bool prev_cur_eq = prev_value && cur_value
+                    && strcmp(prev_value, cur_value) == 0;
+
+                auto trans = calc_transition(prev_existed, row_pre_existed,
+                    exists, prev_valid, cur_valid, prev_cur_eq,
+                    prev_pkey_eq_vec[idx]);
+
+                if (prev_valid)
+                {
+                    pcolumn->set_nth<t_uindex>(added_count,
+                        *(scolumn->get_nth<t_uindex>(rlookup.m_idx)));
+                }
+
+                pcolumn->set_valid(added_count, prev_valid);
+
+                if (cur_valid)
+                {
+                    ccolumn->set_nth<const char*>(added_count, cur_value);
+                }
+
+                if (!cur_valid && prev_valid)
+                {
+                    ccolumn->set_nth<const char*>(added_count, prev_value);
+                }
+
+                ccolumn->set_valid(
+                    added_count, cur_valid ? cur_valid : prev_valid);
+
+                tcolumn->set_nth<t_uint8>(idx, trans);
             }
             break;
             case OP_DELETE:
             {
                 if (row_pre_existed)
                 {
-                    auto prev_value = scolumn->get_scalar(rlookup.m_idx);
-                    pcolumn->set_scalar(added_count, prev_value);
-                    ccolumn->set_scalar(added_count, mknull(DTYPE_STR));
+                    auto prev_value
+                        = scolumn->get_nth<const char>(rlookup.m_idx);
+
+                    t_bool prev_valid = scolumn->is_valid(rlookup.m_idx);
+
+                    pcolumn->set_nth<const char*>(added_count, prev_value);
+
+                    pcolumn->set_valid(added_count, prev_valid);
+
+                    ccolumn->set_nth<const char*>(added_count, prev_value);
+
+                    ccolumn->set_valid(added_count, prev_valid);
+
+                    tcolumn->set_nth<t_uint8>(
+                        added_count, VALUE_TRANSITION_NEQ_TDF);
                 }
             }
             break;
@@ -1346,6 +1456,60 @@ t_ccol_vec
 t_gnode::get_custom_columns() const
 {
     return m_custom_columns;
+}
+
+t_value_transition
+t_gnode::calc_transition(t_bool prev_existed, t_bool row_pre_existed,
+    t_bool exists, t_bool prev_valid, t_bool cur_valid, t_bool prev_cur_eq,
+    t_bool prev_pkey_eq)
+{
+    t_value_transition trans = VALUE_TRANSITION_EQ_FF;
+
+    if (!row_pre_existed && !cur_valid && !t_env::backout_invalid_neq_ft())
+    {
+        trans = VALUE_TRANSITION_NEQ_FT;
+    }
+    else if (row_pre_existed && !prev_valid && !cur_valid
+        && !t_env::backout_eq_invalid_invalid())
+    {
+        trans = VALUE_TRANSITION_EQ_TT;
+    }
+    else if (!prev_existed && !exists)
+    {
+        trans = VALUE_TRANSITION_EQ_FF;
+    }
+    else if (row_pre_existed && exists && !prev_valid && cur_valid
+        && !t_env::backout_nveq_ft())
+    {
+        trans = VALUE_TRANSITION_NVEQ_FT;
+    }
+    else if (prev_existed && exists && prev_cur_eq)
+    {
+        trans = VALUE_TRANSITION_EQ_TT;
+    }
+    else if (!prev_existed && exists)
+    {
+        trans = VALUE_TRANSITION_NEQ_FT;
+    }
+    else if (prev_existed && !exists)
+    {
+        trans = VALUE_TRANSITION_NEQ_TF;
+    }
+
+    else if (prev_existed && exists && !prev_cur_eq)
+    {
+        trans = VALUE_TRANSITION_NEQ_TT;
+    }
+    else if (prev_pkey_eq)
+    {
+        // prev op must have been a delete
+        trans = VALUE_TRANSITION_NEQ_TDT;
+    }
+    else
+    {
+        PSP_COMPLAIN_AND_ABORT("Hit unexpected condition");
+    }
+    return trans;
 }
 
 t_gnode_recipe

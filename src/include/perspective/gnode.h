@@ -90,6 +90,11 @@ public:
     t_table* get_table();
     const t_table* get_table() const;
 
+    t_value_transition
+    calc_transition(t_bool prev_existed, t_bool row_pre_existed,
+    t_bool exists, t_bool prev_valid, t_bool cur_valid, t_bool prev_cur_eq,
+    t_bool prev_pkey_eq);
+
     void pprint() const;
     t_svec get_registered_contexts() const;
     t_schema get_tblschema() const;
@@ -142,7 +147,8 @@ protected:
 
     template <typename CTX_T>
     void notify_context(CTX_T* ctx, const t_table& flattened,
-        const t_table& prev, const t_table& current);
+        const t_table& delta, const t_table& prev, const t_table& current,
+        const t_table& transitions, const t_table& existed);
 
     template <typename CTX_T>
     void update_context_from_state(CTX_T* ctx, const t_table& tbl);
@@ -152,8 +158,9 @@ protected:
 
     template <typename DATA_T>
     void _process_helper(const t_column* fcolumn, const t_column* scolumn,
-        t_column* pcolumn, t_column* ccolumn, const t_uint8* op_base,
-        std::vector<t_rlookup>& lkup, std::vector<t_bool>& prev_pkey_eq_vec,
+        t_column* dcolumn, t_column* pcolumn, t_column* ccolumn,
+        t_column* tcolumn, const t_uint8* op_base, std::vector<t_rlookup>& lkup,
+        std::vector<t_bool>& prev_pkey_eq_vec,
         std::vector<t_uindex>& added_vec);
 
     void _update_contexts_from_state(const t_table& tbl);
@@ -183,28 +190,35 @@ private:
 
 template <>
 void t_gnode::_process_helper<t_str>(const t_column* fcolumn,
-    const t_column* scolumn, t_column* pcolumn, t_column* ccolumn,
-    const t_uint8* op_base, std::vector<t_rlookup>& lkup,
-    std::vector<t_bool>& prev_pkey_eq_vec, std::vector<t_uindex>& added_vec);
+    const t_column* scolumn, t_column* dcolumn, t_column* pcolumn,
+    t_column* ccolumn, t_column* tcolumn, const t_uint8* op_base,
+    std::vector<t_rlookup>& lkup, std::vector<t_bool>& prev_pkey_eq_vec,
+    std::vector<t_uindex>& added_vec);
 
 template <typename CTX_T>
 void
 t_gnode::notify_context(const t_table& flattened, const t_ctx_handle& ctxh)
 {
     CTX_T* ctx = ctxh.get<CTX_T>();
+    const t_table& delta = *(m_oports[PSP_PORT_DELTA]->get_table().get());
     const t_table& prev = *(m_oports[PSP_PORT_PREV]->get_table().get());
     const t_table& current = *(m_oports[PSP_PORT_CURRENT]->get_table().get());
-    notify_context<CTX_T>(ctx, flattened, prev, current);
+    const t_table& transitions
+        = *(m_oports[PSP_PORT_TRANSITIONS]->get_table().get());
+    const t_table& existed = *(m_oports[PSP_PORT_EXISTED]->get_table().get());
+    notify_context<CTX_T>(
+        ctx, flattened, delta, prev, current, transitions, existed);
 }
 
 template <typename CTX_T>
 void
 t_gnode::notify_context(CTX_T* ctx, const t_table& flattened,
-    const t_table& prev, const t_table& current)
+    const t_table& delta, const t_table& prev, const t_table& current,
+    const t_table& transitions, const t_table& existed)
 {
     auto t1 = std::chrono::high_resolution_clock::now();
     ctx->step_begin();
-    ctx->notify(flattened, prev, current);
+    ctx->notify(flattened, delta, prev, current, transitions, existed);
     ctx->step_end();
     if (t_env::log_time_ctx_notify())
     {
@@ -237,9 +251,9 @@ t_gnode::update_context_from_state(CTX_T* ctx, const t_table& flattened)
 template <typename DATA_T>
 void
 t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
-    t_column* pcolumn, t_column* ccolumn, const t_uint8* op_base,
-    std::vector<t_rlookup>& lkup, std::vector<t_bool>& prev_pkey_eq_vec,
-    std::vector<t_uindex>& added_vec)
+    t_column* dcolumn, t_column* pcolumn, t_column* ccolumn, t_column* tcolumn,
+    const t_uint8* op_base, std::vector<t_rlookup>& lkup,
+    std::vector<t_bool>& prev_pkey_eq_vec, std::vector<t_uindex>& added_vec)
 {
     for (t_uindex idx = 0, loop_end = fcolumn->size(); idx < loop_end; ++idx)
     {
@@ -254,6 +268,8 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
         {
             case OP_INSERT:
             {
+                row_pre_existed = row_pre_existed && !prev_pkey_eq_vec[idx];
+
                 DATA_T prev_value;
                 memset(&prev_value, 0, sizeof(DATA_T));
                 t_bool prev_valid = false;
@@ -267,6 +283,18 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
                     prev_valid = scolumn->is_valid(rlookup.m_idx);
                 }
 
+                t_bool exists = cur_valid;
+                t_bool prev_existed = row_pre_existed && prev_valid;
+                t_bool prev_cur_eq = prev_value == cur_value;
+
+                auto trans = calc_transition(prev_existed, row_pre_existed,
+                    exists, prev_valid, cur_valid, prev_cur_eq,
+                    prev_pkey_eq_vec[idx]);
+
+                dcolumn->set_nth<DATA_T>(added_count,
+                    cur_valid ? cur_value - prev_value : DATA_T(0));
+                dcolumn->set_valid(added_count, true);
+
                 pcolumn->set_nth<DATA_T>(added_count, prev_value);
                 pcolumn->set_valid(added_count, prev_valid);
 
@@ -275,17 +303,31 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
 
                 ccolumn->set_valid(
                     added_count, cur_valid ? cur_valid : prev_valid);
+
+                tcolumn->set_nth<t_uint8>(idx, trans);
             }
             break;
             case OP_DELETE:
             {
                 if (row_pre_existed)
                 {
-                    auto prev_value
-                        = scolumn->get_scalar(rlookup.m_idx);
-                    pcolumn->set_scalar(added_count, prev_value);
+                    DATA_T prev_value
+                        = *(scolumn->get_nth<DATA_T>(rlookup.m_idx));
+                    t_bool prev_valid = scolumn->is_valid(rlookup.m_idx);
 
-                    ccolumn->set_scalar(added_count, prev_value.negate());
+                    pcolumn->set_nth<DATA_T>(added_count, prev_value);
+                    pcolumn->set_valid(added_count, prev_valid);
+
+                    ccolumn->set_nth<DATA_T>(added_count, prev_value);
+                    ccolumn->set_valid(added_count, prev_valid);
+
+                    SUPPRESS_WARNINGS_VC(4146)
+                    dcolumn->set_nth<DATA_T>(added_count, -prev_value);
+                    RESTORE_WARNINGS_VC()
+                    dcolumn->set_valid(added_count, true);
+
+                    tcolumn->set_nth<t_uint8>(
+                        added_count, VALUE_TRANSITION_NEQ_TDF);
                 }
             }
             break;
@@ -296,5 +338,6 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
         }
     }
 }
+
 
 } // end namespace perspective

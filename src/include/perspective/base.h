@@ -294,8 +294,12 @@ enum t_value_transition
 
 enum t_gnode_port
 {
-    PSP_PORT_PREV,    // same schema as state
-    PSP_PORT_CURRENT, // same schema as state
+    PSP_PORT_FLATTENED,   // same schema as iport (pkey,op)
+    PSP_PORT_DELTA,       // same schema as state
+    PSP_PORT_PREV,        // same schema as state
+    PSP_PORT_CURRENT,     // same schema as state
+    PSP_PORT_TRANSITIONS, // same schema as state
+    PSP_PORT_EXISTED      // same schema as state
 };
 
 enum t_ctx_feature
