@@ -95,8 +95,17 @@ t_gnode::t_gnode(const t_schema& portschema)
 {
     PSP_TRACE_SENTINEL();
     LOG_CONSTRUCTOR("t_gnode");
-    t_schema oschema = m_tblschema + t_schema{{"psp_existed"}, {DTYPE_BOOL}};
-    m_oschemas = t_schemavec{oschema, oschema}; // prev, curr
+    t_dtypevec trans_types(m_tblschema.size());
+    for (t_uindex idx = 0; idx < trans_types.size(); ++idx)
+    {
+        trans_types[idx] = DTYPE_UINT8;
+    }
+
+    t_schema trans_schema(m_tblschema.columns(), trans_types);
+    t_schema existed_schema(t_svec{"psp_existed"}, t_dtypevec{DTYPE_BOOL});
+
+    m_oschemas = t_schemavec{portschema, m_tblschema, m_tblschema, m_tblschema,
+        trans_schema, existed_schema};
     m_epoch = std::chrono::high_resolution_clock::now();
 }
 
@@ -469,6 +478,7 @@ t_gnode::_process()
         {
             case OP_INSERT:
             {
+                row_pre_existed = row_pre_existed && !prev_pkey_eq_vec[idx];
                 mask.set(idx, true);
                 ecolumn->set_nth(added_count, row_pre_existed);
                 ++added_count;
@@ -514,9 +524,9 @@ t_gnode::_process()
     }
 
 #ifdef PSP_PARALLEL_FOR
-    PSP_PFOR(0, int(ncols), 1,
-        [&fcolumns, &scolumns, &pcolumns, &ccolumns, &col_translation, &op_base,
-            &lkup, &prev_pkey_eq_vec, &added_offset, this](int colidx)
+        [&fcolumns, &scolumns, &dcolumns, &pcolumns, &ccolumns, &tcolumns,
+            &col_translation, &op_base, &lkup, &prev_pkey_eq_vec, &added_offset,
+            this](int colidx)
 #else
     for (t_uindex colidx = 0; colidx < ncols; ++colidx)
 #endif
@@ -1356,6 +1366,7 @@ t_gnode::_process_helper<t_str>(const t_column* fcolumn,
 {
     for (t_uindex idx = 0, loop_end = fcolumn->size(); idx < loop_end; ++idx)
     {
+        pcolumn->borrow_vocabulary(*scolumn);
         t_uint8 op_ = op_base[idx];
         t_op op = static_cast<t_op>(op_);
         t_uindex added_count = added_vec[idx];

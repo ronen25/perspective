@@ -644,8 +644,6 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& delta,
     aggs->reserve(insert_count);
     aggs->set_size(insert_count);
     agg_scount->valid_raw_fill();
-    std::cout << "aggs_pprint" << std::endl;
-    aggs->pprint();
     return std::pair<t_table_sptr, t_table_sptr>(strands, aggs);
 }
 
@@ -853,7 +851,6 @@ t_stree::update_shape_from_static(const t_dtree_ctx& ctx)
             boost::make_tuple(p_sptidx, value));
 
         auto nstrands = *(scount->get_nth<t_int64>(dptidx));
-        std::cout << "sptidx: " << sptidx << " nstrands: " << nstrands << std::endl;
 
         if (iter == m_p->m_nodes->get<by_pidx_hash>().end() && nstrands < 0)
         {
@@ -960,8 +957,6 @@ void
 t_stree::update_aggs_from_static(const t_dtree_ctx& ctx, const t_gstate& gstate)
 {
     const t_table& src_aggtable = ctx.get_aggtable();
-    std::cout << "src_aggtable" << std::endl;
-    src_aggtable.pprint();
 
     t_agg_update_info agg_update_info;
     t_schema aggschema = m_p->m_aggregates->get_schema();
@@ -2491,7 +2486,10 @@ t_stree::pprint() const
     {
         t_tscalvec path;
         get_path(idx, path);
-        std::cout << idx << " --- " << path << " --- ";
+        for (t_uindex space_idx=0; space_idx < path.size(); ++space_idx) {
+            std::cout << "  ";
+        }
+        std::cout << idx << " <" << path << ">";
         for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx)
         {
             std::cout << get_aggregate(idx, aidx) << ", ";
