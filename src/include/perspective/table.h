@@ -171,11 +171,7 @@ private:
     t_bool m_from_recipe;
 };
 
-inline bool
-operator==(const t_table& lhs, const t_table& rhs)
-{
-    return lhs.get_scalvec() == rhs.get_scalvec();
-}
+bool operator==(const t_table& lhs, const t_table& rhs);
 
 template <typename FLATTENED_T>
 void

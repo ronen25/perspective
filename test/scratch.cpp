@@ -18,6 +18,7 @@ main()
     auto c2 = tbl["i"];
     auto d2 = c2->_get_data_lstore();
     int x;
-    std::cout << x << std::endl;
+    auto nll = mknull(DTYPE_FLOAT64);
+    std::cout << nll << std::endl;
     return 0;
 }

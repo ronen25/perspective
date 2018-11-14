@@ -30,6 +30,8 @@ t_tscalar s_none = mktscalar<t_none>(t_none());
 t_tscalar iop = mktscalar<t_uint8>(OP_INSERT);
 t_tscalar dop = mktscalar<t_uint8>(OP_DELETE);
 t_tscalar cop = mktscalar<t_uint8>(OP_CLEAR);
+t_tscalar s_nan32 = mktscalar(std::numeric_limits<t_float32>::quiet_NaN());
+t_tscalar s_nan64 = mktscalar(std::numeric_limits<t_float64>::quiet_NaN());
 
 std::vector<t_dtype> numeric_dtypes{
     DTYPE_INT64,
@@ -476,18 +478,19 @@ protected:
     t_schema m_oschema;
 };
 
-class I64GTest : public BaseTest
+template <t_dtype DTYPE_T>
+class GNodeTest : public BaseTest
 {
 
 public:
-    I64GTest()
+    GNodeTest()
     {
-        m_ischema = t_schema{{"psp_op", "psp_pkey", "x"},
-            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
-        m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_INT64}};
+        m_ischema = t_schema{
+            {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_T}};
+        m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_T}};
         m_g = t_gnode::build(m_ischema);
-        null = mknull(DTYPE_INT64);
-        clear = mkclear(DTYPE_INT64);
+        null = mknull(DTYPE_T);
+        clear = mkclear(DTYPE_T);
     }
 
     virtual t_table_sptr
@@ -501,16 +504,21 @@ protected:
     t_tscalar clear;
 };
 
-class I64Ctx1Test : public I64GTest
+typedef GNodeTest<DTYPE_INT64> I64GnodeTest;
+
+template <typename T, t_dtype DTYPE_T>
+class Ctx1Test : public GNodeTest<DTYPE_T>
 {
 
 public:
-    I64Ctx1Test()
+    Ctx1Test()
     {
-        m_oschema = {{"sum_x", "x"}, {DTYPE_INT64, DTYPE_INT64}};
-        t_config cfg{{"x"}, {"sum_x", AGGTYPE_SUM, "x"}};
-        m_ctx = std::make_shared<t_ctx1>(m_ischema, cfg);
-        m_g->register_context("ctx", m_ctx);
+        this->m_ischema = static_cast<T*>(this)->get_ischema();
+        this->m_g = t_gnode::build(this->m_ischema);
+        this->m_oschema = static_cast<T*>(this)->get_oschema();
+        m_ctx = std::make_shared<t_ctx1>(
+            this->m_ischema, static_cast<T*>(this)->get_config());
+        this->m_g->register_context("ctx", m_ctx);
     }
 
     virtual t_table_sptr
@@ -523,8 +531,101 @@ protected:
     t_ctx1_sptr m_ctx;
 };
 
+#define PSP_DEF_TESTCLASS_ARGS_1(CLASSNAME, DTYPE, AGGNAME, AGGTYPE)           \
+    class CLASSNAME : public Ctx1Test<CLASSNAME, (DTYPE)>                      \
+    {                                                                          \
+    public:                                                                    \
+        t_schema                                                               \
+        get_ischema()                                                          \
+        {                                                                      \
+            return t_schema{{"psp_op", "psp_pkey", "x"},                       \
+                {DTYPE_UINT8, DTYPE_INT64, DTYPE}};                            \
+        }                                                                      \
+        t_schema                                                               \
+        get_oschema()                                                          \
+        {                                                                      \
+            return t_schema{{(AGGNAME), "x"}, {(DTYPE), (DTYPE)}};             \
+        }                                                                      \
+        t_config                                                               \
+        get_config()                                                           \
+        {                                                                      \
+            return t_config{{"x"}, {(AGGNAME), (AGGTYPE), "x"}};               \
+        }                                                                      \
+    };
+
+#define PSP_DEF_TESTCLASS_ARGS_2(CLASSNAME, DTYPE, AGGNAME, AGGTYPE)           \
+    class CLASSNAME : public Ctx1Test<CLASSNAME, (DTYPE)>                      \
+    {                                                                          \
+    public:                                                                    \
+        t_schema                                                               \
+        get_ischema()                                                          \
+        {                                                                      \
+            return t_schema{{"psp_op", "psp_pkey", "x", "y"},                  \
+                {DTYPE_UINT8, DTYPE_INT64, DTYPE, DTYPE}};                     \
+        }                                                                      \
+        t_schema                                                               \
+        get_oschema()                                                          \
+        {                                                                      \
+            return t_schema{{(AGGNAME), "x"}, {(DTYPE), (DTYPE)}};             \
+        }                                                                      \
+        t_config                                                               \
+        get_config()                                                           \
+        {                                                                      \
+            return t_config{{"x"}, {(AGGNAME), (AGGTYPE), "y"}};               \
+        }                                                                      \
+    };
+
+PSP_DEF_TESTCLASS_ARGS_1(I64Ctx1SumTest, DTYPE_INT64, "sum_x", AGGTYPE_SUM);
+
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1CountTest, DTYPE_INT64, "count_y", AGGTYPE_COUNT);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1MeanTest, DTYPE_FLOAT64, "mean_y", AGGTYPE_MEAN);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1UniqueTest, DTYPE_FLOAT64, "unique_y", AGGTYPE_UNIQUE);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AnyTest, DTYPE_FLOAT64, "any_y", AGGTYPE_ANY);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1MedianTest, DTYPE_FLOAT64, "median_y", AGGTYPE_MEDIAN);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1JoinTest, DTYPE_FLOAT64, "join_y", AGGTYPE_JOIN);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1DominantTest, DTYPE_FLOAT64, "dominant_y", AGGTYPE_DOMINANT);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1FirstTest, DTYPE_FLOAT64, "first_y", AGGTYPE_FIRST);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LastTest, DTYPE_FLOAT64, "last_y", AGGTYPE_LAST);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AndTest, DTYPE_FLOAT64, "and_y", AGGTYPE_AND);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1OrTest, DTYPE_FLOAT64, "or_y", AGGTYPE_OR);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LastValueTest, DTYPE_FLOAT64, "last_value_y", AGGTYPE_LAST_VALUE);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1HWMTest, DTYPE_FLOAT64, "hwm_y", AGGTYPE_HIGH_WATER_MARK);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LWMTest, DTYPE_FLOAT64, "lwm_y", AGGTYPE_LOW_WATER_MARK);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1AbsTest, DTYPE_FLOAT64, "abs_y", AGGTYPE_SUM_ABS);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1SumNotNullTest, DTYPE_FLOAT64, "sum_not_null_y",
+    AGGTYPE_SUM_NOT_NULL);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1MeanByCountTest, DTYPE_FLOAT64,
+    "mean_by_count_y", AGGTYPE_MEAN_BY_COUNT);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1IdentityTest, DTYPE_FLOAT64, "identity_y", AGGTYPE_IDENTITY);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctCountTest, DTYPE_FLOAT64,
+    "distinct_count_y", AGGTYPE_DISTINCT_COUNT);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctLeafTest, DTYPE_FLOAT64,
+    "distinct_leaf_y", AGGTYPE_DISTINCT_LEAF);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumParentTest, DTYPE_FLOAT64,
+    "pct_sum_parent_y", AGGTYPE_PCT_SUM_PARENT);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumGrandTotalTest, DTYPE_FLOAT64,
+    "pct_sum_grand_total_y", AGGTYPE_PCT_SUM_GRAND_TOTAL);
+
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1WMeanTest, DTYPE_FLOAT64, "wmean_y", AGGTYPE_WEIGHTED_MEAN);
+
+#undef PSP_DEF_TESTCLASS_ARGS_1
+#undef PSP_DEF_TESTCLASS_ARGS_2
 // clang-format off
-TEST_F(I64GTest, test_1) {
+TEST_F(I64GnodeTest, test_1) {
 
     t_testdata data{
         {
@@ -544,7 +645,7 @@ TEST_F(I64GTest, test_1) {
     run(data);
 }
 
-TEST_F(I64GTest, test_2) {
+TEST_F(I64GnodeTest, test_2) {
 
     t_testdata data{
         {
@@ -560,7 +661,7 @@ TEST_F(I64GTest, test_2) {
     run(data);
 }
 
-TEST_F(I64GTest, test_3) {
+TEST_F(I64GnodeTest, test_3) {
 
     t_testdata data{
         {
@@ -576,7 +677,7 @@ TEST_F(I64GTest, test_3) {
     run(data);
 }
 
-TEST_F(I64GTest, test_4) {
+TEST_F(I64GnodeTest, test_4) {
 
     t_testdata data{
         {
@@ -593,7 +694,7 @@ TEST_F(I64GTest, test_4) {
     run(data);
 }
 
-TEST_F(I64GTest, test_5) {
+TEST_F(I64GnodeTest, test_5) {
 
     t_testdata data{
         {
@@ -609,7 +710,7 @@ TEST_F(I64GTest, test_5) {
     run(data);
 }
 
-TEST_F(I64GTest, test_6) {
+TEST_F(I64GnodeTest, test_6) {
 
     t_testdata data{
         {
@@ -625,7 +726,7 @@ TEST_F(I64GTest, test_6) {
     run(data);
 }
 
-TEST_F(I64GTest, test_7) {
+TEST_F(I64GnodeTest, test_7) {
 
     t_testdata data{
         {
@@ -641,7 +742,7 @@ TEST_F(I64GTest, test_7) {
     run(data);
 }
 
-TEST_F(I64GTest, test_8) {
+TEST_F(I64GnodeTest, test_8) {
 
     t_testdata data{
         {
@@ -657,7 +758,7 @@ TEST_F(I64GTest, test_8) {
     run(data);
 }
 
-TEST_F(I64GTest, test_9) {
+TEST_F(I64GnodeTest, test_9) {
 
     t_testdata data{
         {
@@ -669,7 +770,7 @@ TEST_F(I64GTest, test_9) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_1) {
+TEST_F(I64Ctx1SumTest, test_1) {
 
     t_testdata data{
         {
@@ -692,7 +793,7 @@ TEST_F(I64Ctx1Test, test_1) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_2) {
+TEST_F(I64Ctx1SumTest, test_2) {
 
     t_testdata data{
         {
@@ -708,7 +809,7 @@ TEST_F(I64Ctx1Test, test_2) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_3) {
+TEST_F(I64Ctx1SumTest, test_3) {
 
     t_testdata data{
         {
@@ -726,7 +827,7 @@ TEST_F(I64Ctx1Test, test_3) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_4) {
+TEST_F(I64Ctx1SumTest, test_4) {
 
     t_testdata data{
         {
@@ -745,7 +846,7 @@ TEST_F(I64Ctx1Test, test_4) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_5) {
+TEST_F(I64Ctx1SumTest, test_5) {
 
     t_testdata data{
         {
@@ -763,7 +864,7 @@ TEST_F(I64Ctx1Test, test_5) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_6) {
+TEST_F(I64Ctx1SumTest, test_6) {
 
    t_testdata data{
        {
@@ -782,7 +883,7 @@ TEST_F(I64Ctx1Test, test_6) {
    run(data);
 }
 
-TEST_F(I64Ctx1Test, test_7) {
+TEST_F(I64Ctx1SumTest, test_7) {
 
     t_testdata data{
         {
@@ -800,7 +901,7 @@ TEST_F(I64Ctx1Test, test_7) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_8) {
+TEST_F(I64Ctx1SumTest, test_8) {
 
     t_testdata data{
         {
@@ -818,7 +919,7 @@ TEST_F(I64Ctx1Test, test_8) {
     run(data);
 }
 
-TEST_F(I64Ctx1Test, test_9) {
+TEST_F(I64Ctx1SumTest, test_9) {
 
     t_testdata data{
         {

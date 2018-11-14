@@ -12,6 +12,8 @@ file(MAKE_DIRECTORY "${CMAKE_BINARY_DIR}/install")
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/install)
+set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
+
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
@@ -46,10 +48,6 @@ if (PSP_WASM_BUILD)
 endif()
 
 set(CMAKE_CXX_OUTPUT_EXTENSION_REPLACE ON)
-
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS}-Wno-deprecated-declarations -Wno-deprecated")
-#set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -fprofile-arcs -ftest-coverage -fPIC -O0")
-set(CMAKE_CXX_FLAGS "-Wno-deprecated-declarations -Wno-deprecated")
 
 set (SOURCE_FILES
 src/cpp/aggregate.cpp
@@ -132,7 +130,9 @@ else()
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT PSP_WASM_BUILD)
-	target_compile_options(psp PRIVATE -time=build.time)
+	target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated)
+	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>: -fprofile-arcs -ftest-coverage -fPIC -O0>)
+	target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
 endif()
 
 if (WIN32)

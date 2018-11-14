@@ -801,10 +801,13 @@ t_tscalar::operator bool() const
 t_str
 t_tscalar::to_string(t_bool for_expr) const
 {
-    if (m_status != STATUS_VALID)
-        return t_str("null");
-
     std::stringstream ss;
+    if (m_status != STATUS_VALID)
+    {
+        ss << m_data.m_uint64;
+        return t_str(ss.str());
+    }
+
     switch (m_type)
     {
         case DTYPE_NONE:

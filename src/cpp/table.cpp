@@ -394,7 +394,7 @@ t_table::pprint(t_uindex nrows, std::ostream* os) const
     {
         for (t_uindex cidx = 0; cidx < ncols; ++cidx)
         {
-            (*os) << columns[cidx]->get_scalar(ridx).to_string() << ", ";
+            (*os) << columns[cidx]->get_scalar(ridx).repr() << ", ";
         }
         (*os) << std::endl;
     }
@@ -789,6 +789,13 @@ t_col_sptr t_table::operator[](const t_str& name)
     }
     return m_columns[m_schema.get_colidx(name)];
 }
+
+bool
+operator==(const t_table& lhs, const t_table& rhs)
+{
+    return lhs.get_scalvec() == rhs.get_scalvec();
+}
+
 } // end namespace perspective
 
 namespace std
