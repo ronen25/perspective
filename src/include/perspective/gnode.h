@@ -26,14 +26,6 @@
 namespace perspective
 {
 
-PERSPECTIVE_EXPORT t_tscalar calc_delta(
-    t_value_transition trans, t_tscalar oval, t_tscalar nval);
-
-PERSPECTIVE_EXPORT t_tscalar calc_newer(
-    t_value_transition trans, t_tscalar oval, t_tscalar nval);
-
-PERSPECTIVE_EXPORT t_tscalar calc_negate(t_tscalar val);
-
 struct PERSPECTIVE_EXPORT t_gnode_recipe
 {
     t_gnode_recipe() {}

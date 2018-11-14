@@ -10,6 +10,7 @@
 #include <perspective/first.h>
 #include <perspective/vocab.h>
 #include <unordered_set>
+#include <sstream>
 
 namespace perspective
 {

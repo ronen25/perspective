@@ -11,6 +11,8 @@
 #include <perspective/base.h>
 #include <cstdint>
 #include <limits>
+#include <cstring>
+#include <boost/functional/hash.hpp>
 
 namespace perspective
 {
@@ -30,35 +32,6 @@ is_numeric_type(t_dtype dtype)
         case DTYPE_INT64:
         case DTYPE_FLOAT32:
         case DTYPE_FLOAT64:
-        {
-            return true;
-        }
-        break;
-        default:
-        {
-            return false;
-        }
-    }
-}
-
-bool
-is_linear_order_type(t_dtype dtype)
-{
-    switch (dtype)
-    {
-        case DTYPE_UINT8:
-        case DTYPE_UINT16:
-        case DTYPE_UINT32:
-        case DTYPE_UINT64:
-        case DTYPE_INT8:
-        case DTYPE_INT16:
-        case DTYPE_INT32:
-        case DTYPE_INT64:
-        case DTYPE_FLOAT32:
-        case DTYPE_FLOAT64:
-        case DTYPE_DATE:
-        case DTYPE_TIME:
-        case DTYPE_BOOL:
         {
             return true;
         }
@@ -407,28 +380,30 @@ get_status_descr(t_status status)
     return "";
 }
 
-void
-check_init(t_bool init, const char* file, t_int32 line)
-{
-    PSP_VERBOSE_ASSERT(init, "touching uninited object");
-}
-
-t_bool
-is_neq_transition(t_value_transition t)
-{
-    return t > VALUE_TRANSITION_EQ_TT;
-}
-
 t_uindex
 root_pidx()
 {
     return std::numeric_limits<t_uindex>::max();
 }
 
-t_bool
-is_internal_colname(const t_str& c)
-{
-    return c.compare(t_str("psp_")) == 0;
-}
+
+        bool
+        t_cmp_charptr::operator()(const char* a, const char* b) const
+        {
+            return std::strcmp(a, b) < 0;
+        }
+
+
+        bool
+        t_cchar_umap_cmp::operator()(const char* x, const char* y) const
+        {
+            return strcmp(x, y) == 0;
+        }
+
+        t_uindex
+        t_cchar_umap_hash::operator()(const char* s) const
+        {
+            return boost::hash_range(s, s + std::strlen(s));
+        }
 
 } // end namespace perspective

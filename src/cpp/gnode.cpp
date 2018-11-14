@@ -23,26 +23,6 @@
 namespace perspective
 {
 
-t_tscalar
-calc_delta(t_value_transition trans, t_tscalar oval, t_tscalar nval)
-{
-    return nval.difference(oval);
-}
-
-t_tscalar
-calc_newer(t_value_transition trans, t_tscalar oval, t_tscalar nval)
-{
-    if (nval.is_valid())
-        return nval;
-    return oval;
-}
-
-t_tscalar
-calc_negate(t_tscalar val)
-{
-    return val.negate();
-}
-
 t_gnode::t_gnode(const t_gnode_recipe& recipe)
     : m_mode(recipe.m_mode)
     , m_tblschema(recipe.m_tblschema)
@@ -116,38 +96,6 @@ t_gnode::build(const t_schema& portschema)
     rv->init();
     return rv;
 }
-
-// TODO: re-enable constructor
-// t_gnode::t_gnode(t_gnode_processing_mode mode, const t_schema& tblschema,
-//    const t_schemavec& ischemas, const t_schemavec& oschemas,
-//    const t_ccol_vec& custom_columns)
-//    : m_mode(mode)
-//    , m_tblschema(tblschema)
-//    , m_ischemas(ischemas)
-//    , m_oschemas(oschemas)
-//    , m_init(false)
-//    , m_id(0)
-//    , m_custom_columns(custom_columns)
-//    , m_pool_cleanup([]() {})
-//{
-//    PSP_TRACE_SENTINEL();
-//    LOG_CONSTRUCTOR("t_gnode");
-//
-//    PSP_VERBOSE_ASSERT(mode == NODE_PROCESSING_SIMPLE_DATAFLOW,
-//        "Only simple dataflows supported currently");
-//
-//    PSP_VERBOSE_ASSERT(
-//        m_ischemas.size() == 1, "Single input port supported currently");
-//    m_epoch = std::chrono::high_resolution_clock::now();
-//
-//    for (const auto& ccol : custom_columns)
-//    {
-//        for (const auto& icol : ccol.get_icols())
-//        {
-//            m_expr_icols.insert(icol);
-//        }
-//    }
-//}
 
 t_gnode::~t_gnode()
 {

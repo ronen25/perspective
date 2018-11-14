@@ -16,17 +16,6 @@
 #endif
 #include <perspective/first.h>
 #include <perspective/raw_types.h>
-#include <sstream>
-#include <csignal>
-#include <iostream>
-#include <cstring>
-#include <memory>
-#include <functional>
-#include <algorithm>
-#include <iomanip>
-#include <chrono>
-#include <fstream>
-#include <boost/unordered_map.hpp>
 #include <perspective/portable.h>
 
 namespace perspective
@@ -450,43 +439,25 @@ t_uindex root_pidx();
 struct PERSPECTIVE_EXPORT t_cmp_charptr
 {
     bool
-    operator()(const char* a, const char* b) const
-    {
-        return std::strcmp(a, b) < 0;
-    }
+    operator()(const char* a, const char* b) const;
 };
 
 struct t_cchar_umap_cmp
     : public std::binary_function<const char*, const char*, bool>
 {
-    inline bool
-    operator()(const char* x, const char* y) const
-    {
-        return strcmp(x, y) == 0;
-    }
+    bool
+    operator()(const char* x, const char* y) const;
 };
 
 struct t_cchar_umap_hash
 {
-    inline t_uindex
-    operator()(const char* s) const
-    {
-        return boost::hash_range(s, s + std::strlen(s));
-    }
+    t_uindex
+    operator()(const char* s) const;
 };
 
 t_bool is_internal_colname(const t_str& c);
 
 t_bool is_deterministic_sized(t_dtype dtype);
-
-template <typename DATA_T>
-t_str
-psp_to_str(const DATA_T& s)
-{
-    std::stringstream ss;
-    ss << s;
-    return ss.str();
-}
 
 } // end namespace perspective
 

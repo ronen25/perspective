@@ -18,6 +18,9 @@
 #include <perspective/utils.h>
 #include <perspective/logtime.h>
 #include <sstream>
+#include <fstream>
+
+
 namespace perspective
 {
 

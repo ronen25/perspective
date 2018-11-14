@@ -12,6 +12,9 @@
 #include <perspective/base.h>
 #include <perspective/raii.h>
 #include <sys/mman.h>
+#include <unistd.h>
+
+#include <boost/unordered_map.hpp>
 
 namespace perspective
 {
