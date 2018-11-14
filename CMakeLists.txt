@@ -125,10 +125,15 @@ src/cpp/update_task.cpp
 src/cpp/vocab.cpp
 )
 
-add_library(psp SHARED ${SOURCE_FILES})
-#if (LINUX)
-target_compile_options(psp PRIVATE -time=build.time)
-#endif()
+if (PSP_WASM_BUILD)
+	add_library(psp STATIC ${SOURCE_FILES})
+else()
+	add_library(psp SHARED ${SOURCE_FILES})
+endif()
+
+if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT PSP_WASM_BUILD)
+	target_compile_options(psp PRIVATE -time=build.time)
+endif()
 
 if (WIN32)
 	target_compile_definitions(psp PUBLIC -DPERSPECTIVE_EXPORTS)

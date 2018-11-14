@@ -34,7 +34,7 @@ public:
     t_index close(t_header header, t_tvidx idx);
 
     t_totals get_totals() const;
-    t_tvivec get_ctraversal_indices() const;
+    std::vector<t_tvidx> get_ctraversal_indices() const;
     t_uindex get_num_view_columns() const;
 
     t_tscalvec get_row_path(t_tvidx idx) const;
@@ -56,7 +56,7 @@ public:
         t_uindex start_col, t_uindex end_col) const;
 
 protected:
-    t_cinfovec resolve_cells(const t_uidxpvec& cells) const;
+    t_cinfovec resolve_cells(const std::vector<t_uidxpair>& cells) const;
 
     t_stree_sptr rtree();
     t_stree_csptr rtree() const;

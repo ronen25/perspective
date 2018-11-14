@@ -20,7 +20,6 @@
 #include <sstream>
 #include <fstream>
 
-
 namespace perspective
 {
 
@@ -402,7 +401,7 @@ t_table::pprint(t_uindex nrows, std::ostream* os) const
 }
 
 void
-t_table::pprint(const t_uidxvec& vec) const
+t_table::pprint(const std::vector<t_uindex>& vec) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -440,7 +439,7 @@ t_table::append(const t_table& other)
     t_colcptrvec src_cols;
     t_colptrvec dst_cols;
 
-    t_sset incoming;
+    std::set<t_str> incoming;
 
     for (const auto& cname : other.m_schema.m_columns)
     {
@@ -516,7 +515,7 @@ t_table::filter_cpp(t_filter_op combiner, const t_ftermvec& fterms_) const
 
     t_mask mask(size());
     t_uindex fterm_size = fterms.size();
-    t_uidxvec indices(fterm_size);
+    std::vector<t_uindex> indices(fterm_size);
     t_colcptrvec columns(fterm_size);
 
     for (t_uindex idx = 0; idx < fterm_size; ++idx)

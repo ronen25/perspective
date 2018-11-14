@@ -566,7 +566,7 @@ _fill_col<std::string>(val dcol, t_col_sptr col, t_bool is_arrow)
  *
  */
 void
-_fill_data(t_table_sptr tbl, t_svec ocolnames, val j_data,
+_fill_data(t_table_sptr tbl, std::vector<t_str> ocolnames, val j_data,
     std::vector<t_dtype> odt, t_uint32 offset, t_bool is_arrow)
 {
     std::vector<val> data_cols = vecFromJSArray<val>(j_data);
@@ -674,8 +674,8 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
     t_bool is_delete)
 {
     // Create the input and port schemas
-    t_svec colnames = vecFromJSArray<std::string>(j_colnames);
-    t_dtypevec dtypes = vecFromJSArray<t_dtype>(j_dtypes);
+    std::vector<t_str> colnames = vecFromJSArray<std::string>(j_colnames);
+    std::vector<t_dtype> dtypes = vecFromJSArray<t_dtype>(j_dtypes);
 
     // Create the table
     // TODO assert size > 0
@@ -736,8 +736,8 @@ make_gnode(t_table_sptr table)
 {
     auto iscm = table->get_schema();
 
-    t_svec ocolnames(iscm.columns());
-    t_dtypevec odt(iscm.types());
+    std::vector<t_str> ocolnames(iscm.columns());
+    std::vector<t_dtype> odt(iscm.types());
 
     if (iscm.has_column("psp_pkey"))
     {
@@ -756,7 +756,7 @@ make_gnode(t_table_sptr table)
     t_schema oscm(ocolnames, odt);
 
     // Create a gnode
-    auto gnode = std::make_shared<t_gnode>(oscm, iscm);
+    auto gnode = std::make_shared<t_gnode>(iscm);
     gnode->init();
 
     return gnode;
@@ -1213,22 +1213,19 @@ EMSCRIPTEN_BINDINGS(perspective)
     class_<t_table>("t_table")
         .constructor<t_schema, t_uindex>()
         .smart_ptr<std::shared_ptr<t_table>>("shared_ptr<t_table>")
-        .function<t_column*>(
-            "add_column", &t_table::add_column, allow_raw_pointers())
         .function<void>("pprint", &t_table::pprint)
         .function<unsigned long>("size",
             reinterpret_cast<unsigned long (t_table::*)() const>(
                 &t_table::size));
 
     class_<t_schema>("t_schema")
-        .function<const t_svec&>(
+        .function<const std::vector<t_str>&>(
             "columns", &t_schema::columns, allow_raw_pointers())
-        .function<const t_dtypevec>(
+        .function<const std::vector<t_dtype>>(
             "types", &t_schema::types, allow_raw_pointers());
 
     class_<t_gnode>("t_gnode")
-        .constructor<t_gnode_processing_mode, const t_schema&,
-            const t_schemavec&, const t_schemavec&, const t_ccol_vec&>()
+        .constructor<const t_schema&>()
         .smart_ptr<std::shared_ptr<t_gnode>>("shared_ptr<t_gnode>")
         .function<t_uindex>("get_id",
             reinterpret_cast<t_uindex (t_gnode::*)() const>(&t_gnode::get_id))
@@ -1245,7 +1242,8 @@ EMSCRIPTEN_BINDINGS(perspective)
         .function<t_tscalvec>("get_data", &t_ctx0::get_data)
         .function<t_stepdelta>("get_step_delta", &t_ctx0::get_step_delta)
         .function<t_cellupdvec>("get_cell_delta", &t_ctx0::get_cell_delta)
-        .function<t_svec>("get_column_names", &t_ctx0::get_column_names)
+        .function<std::vector<t_str>>(
+            "get_column_names", &t_ctx0::get_column_names)
         .function<t_dtype>("get_column_dtype", &t_ctx0::get_column_dtype)
         // .function<t_minmaxvec>("get_min_max", &t_ctx0::get_min_max)
         // .function<void>("set_minmax_enabled", &t_ctx0::set_minmax_enabled)
@@ -1262,9 +1260,9 @@ EMSCRIPTEN_BINDINGS(perspective)
             "unity_get_column_name", &t_ctx0::unity_get_column_name)
         .function<t_str>("unity_get_column_display_name",
             &t_ctx0::unity_get_column_display_name)
-        .function<t_svec>(
+        .function<std::vector<t_str>>(
             "unity_get_column_names", &t_ctx0::unity_get_column_names)
-        .function<t_svec>("unity_get_column_display_names",
+        .function<std::vector<t_str>>("unity_get_column_display_names",
             &t_ctx0::unity_get_column_display_names)
         .function<t_uindex>(
             "unity_get_column_count", &t_ctx0::unity_get_column_count)
@@ -1307,9 +1305,9 @@ EMSCRIPTEN_BINDINGS(perspective)
             "unity_get_column_name", &t_ctx1::unity_get_column_name)
         .function<t_str>("unity_get_column_display_name",
             &t_ctx1::unity_get_column_display_name)
-        .function<t_svec>(
+        .function<std::vector<t_str>>(
             "unity_get_column_names", &t_ctx1::unity_get_column_names)
-        .function<t_svec>("unity_get_column_display_names",
+        .function<std::vector<t_str>>("unity_get_column_display_names",
             &t_ctx1::unity_get_column_display_names)
         .function<t_uindex>(
             "unity_get_column_count", &t_ctx1::unity_get_column_count)
@@ -1353,9 +1351,9 @@ EMSCRIPTEN_BINDINGS(perspective)
             "unity_get_column_name", &t_ctx2::unity_get_column_name)
         .function<t_str>("unity_get_column_display_name",
             &t_ctx2::unity_get_column_display_name)
-        .function<t_svec>(
+        .function<std::vector<t_str>>(
             "unity_get_column_names", &t_ctx2::unity_get_column_names)
-        .function<t_svec>("unity_get_column_display_names",
+        .function<std::vector<t_str>>("unity_get_column_display_names",
             &t_ctx2::unity_get_column_display_names)
         .function<t_uindex>(
             "unity_get_column_count", &t_ctx2::unity_get_column_count)
@@ -1386,7 +1384,7 @@ EMSCRIPTEN_BINDINGS(perspective)
         .function<void>("unregister_context", &t_pool::unregister_context)
         .function<t_updctx_vec>(
             "get_contexts_last_updated", &t_pool::get_contexts_last_updated)
-        .function<t_uidxvec>(
+        .function<std::vector<t_uindex>>(
             "get_gnodes_last_updated", &t_pool::get_gnodes_last_updated)
         .function<t_gnode*>(
             "get_gnode", &t_pool::get_gnode, allow_raw_pointers());
@@ -1411,13 +1409,13 @@ EMSCRIPTEN_BINDINGS(perspective)
         .field("columns_changed", &t_stepdelta::columns_changed)
         .field("cells", &t_stepdelta::cells);
 
-    register_vector<t_dtype>("t_dtypevec");
+    register_vector<t_dtype>("std::vector<t_dtype>");
     register_vector<t_cellupd>("t_cellupdvec");
     register_vector<t_aggspec>("t_aggspecvec");
     register_vector<t_tscalar>("t_tscalvec");
     register_vector<std::string>("std::vector<std::string>");
     register_vector<t_updctx>("t_updctx_vec");
-    register_vector<t_uindex>("t_uidxvec");
+    register_vector<t_uindex>("std::vector<t_uindex>");
 
     enum_<t_header>("t_header")
         .value("HEADER_ROW", HEADER_ROW)

@@ -1018,7 +1018,8 @@ t_column::valid_raw_fill()
 }
 
 void
-t_column::copy(const t_column* other, const t_uidxvec& indices, t_uindex offset)
+t_column::copy(const t_column* other, const std::vector<t_uindex>& indices,
+    t_uindex offset)
 {
     PSP_VERBOSE_ASSERT(
         m_dtype == other->get_dtype(), "Cannot copy from diff dtype");
@@ -1108,8 +1109,8 @@ t_column::copy(const t_column* other, const t_uidxvec& indices, t_uindex offset)
 
 template <>
 void
-t_column::copy_helper<const char>(
-    const t_column* other, const t_uidxvec& indices, t_uindex offset)
+t_column::copy_helper<const char>(const t_column* other,
+    const std::vector<t_uindex>& indices, t_uindex offset)
 {
     t_uindex eidx
         = std::min(other->size(), static_cast<t_uindex>(indices.size()));
@@ -1141,11 +1142,6 @@ t_column::fill(std::vector<const char*>& vec, const t_uindex* bidx,
 void
 t_column::verify() const
 {
-    if (is_vlen_dtype(m_dtype) && m_init)
-    {
-        m_vocab->verify();
-    }
-
     verify_size();
 }
 

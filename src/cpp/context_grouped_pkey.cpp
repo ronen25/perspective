@@ -284,7 +284,7 @@ t_ctx_grouped_pkey::get_tree_value(t_ptidx nidx) const
     return m_tree->get_value(nidx);
 }
 
-t_ftnvec
+std::vector<t_ftreenode>
 t_ctx_grouped_pkey::get_flattened_tree(t_tvidx idx, t_depth stop_depth)
 {
     PSP_TRACE_SENTINEL();
@@ -331,7 +331,7 @@ t_ctx_grouped_pkey::set_depth(t_depth depth)
 }
 
 t_tscalvec
-t_ctx_grouped_pkey::get_pkeys(const t_uidxpvec& cells) const
+t_ctx_grouped_pkey::get_pkeys(const std::vector<t_uidxpair>& cells) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -382,7 +382,7 @@ t_ctx_grouped_pkey::get_pkeys(const t_uidxpvec& cells) const
 }
 
 t_tscalvec
-t_ctx_grouped_pkey::get_cell_data(const t_uidxpvec& cells) const
+t_ctx_grouped_pkey::get_cell_data(const std::vector<t_uidxpair>& cells) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -726,7 +726,7 @@ t_ctx_grouped_pkey::rebuild()
     auto aggspecs = m_config.get_aggregates();
     t_uindex naggs = aggspecs.size();
 
-    t_uidxvec aggindices(nrows);
+    std::vector<t_uindex> aggindices(nrows);
 
     for (t_uindex idx = 0; idx < nrows; ++idx)
     {
@@ -787,7 +787,8 @@ t_ctx_grouped_pkey::notify(const t_table& flattened)
 // as agg_indices
 void
 t_ctx_grouped_pkey::get_aggregates_for_sorting(t_uindex nidx,
-    const t_idxvec& agg_indices, t_tscalvec& aggregates, t_ctx2*) const
+    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
+    t_ctx2*) const
 {
     for (t_uindex idx = 0, loop_end = agg_indices.size(); idx < loop_end; ++idx)
     {
@@ -867,13 +868,13 @@ t_ctx_grouped_pkey::unity_get_column_display_name(t_uindex idx) const
     return m_config.col_at(idx);
 }
 
-t_svec
+std::vector<t_str>
 t_ctx_grouped_pkey::unity_get_column_names() const
 {
     return m_config.get_column_names();
 }
 
-t_svec
+std::vector<t_str>
 t_ctx_grouped_pkey::unity_get_column_display_names() const
 {
     return m_config.get_column_names();

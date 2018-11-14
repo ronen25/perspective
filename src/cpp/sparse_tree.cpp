@@ -110,10 +110,10 @@ struct t_stree::t_stree_p
     t_table_sptr m_aggregates;
     t_aggspecvec m_aggspecs;
     t_schema m_schema;
-    t_uidxvec m_agg_freelist;
+    std::vector<t_uindex> m_agg_freelist;
     t_uindex m_cur_aggidx;
-    t_uidxset m_newids;
-    t_uidxset m_newleaves;
+    std::set<t_uindex> m_newids;
+    std::set<t_uindex> m_newleaves;
     t_sidxmap m_smap;
     t_colcptrvec m_aggcols;
     t_uindex m_dotcount;
@@ -234,8 +234,8 @@ t_stree::t_stree_p::init()
     t_tnode node(0, root_pidx(), value, 0, value, 1, 0);
     m_nodes->insert(node);
 
-    t_svec columns;
-    t_dtypevec dtypes;
+    std::vector<t_str> columns;
+    std::vector<t_dtype> dtypes;
 
     for (const auto& spec : m_aggspecs)
     {
@@ -300,10 +300,11 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
     const t_colcptrvec& piv_tcols, const t_colcptrvec& agg_ccols,
     const t_colcptrvec& agg_dcols, t_colptrvec& piv_scols,
     t_colptrvec& agg_acols, t_column* agg_scount, t_column* spkey,
-    t_uindex& insert_count, t_bool& pivots_neq, const t_svec& pivot_like) const
+    t_uindex& insert_count, t_bool& pivots_neq,
+    const std::vector<t_str>& pivot_like) const
 {
     pivots_neq = false;
-    t_sset pivmap;
+    std::set<t_str> pivmap;
     t_bool all_eq_tt = true;
 
     for (t_uindex pidx = 0, ploop_end = pivot_like.size(); pidx < ploop_end;
@@ -378,9 +379,10 @@ t_stree::build_strand_table_phase_2(t_tscalar pkey, t_uindex idx,
     t_uindex npivots, t_uindex strand_count_idx, t_uindex aggcolsize,
     const t_colcptrvec& piv_pcols, const t_colcptrvec& agg_pcols,
     t_colptrvec& piv_scols, t_colptrvec& agg_acols, t_column* agg_scount,
-    t_column* spkey, t_uindex& insert_count, const t_svec& pivot_like) const
+    t_column* spkey, t_uindex& insert_count,
+    const std::vector<t_str>& pivot_like) const
 {
-    t_sset pivmap;
+    std::set<t_str> pivmap;
     for (t_uindex pidx = 0, ploop_end = pivot_like.size(); pidx < ploop_end;
          ++pidx)
     {
@@ -417,7 +419,7 @@ t_stree::build_strand_table_common(const t_table& flattened,
     t_build_strand_table_common_rval rv;
 
     rv.m_flattened_schema = flattened.get_schema();
-    t_sset sschema_colset;
+    std::set<t_str> sschema_colset;
 
     for (const auto& piv : m_p->m_pivots)
     {
@@ -439,7 +441,7 @@ t_stree::build_strand_table_common(const t_table& flattened,
 
     rv.m_pivsize = sschema_colset.size();
 
-    t_sset aggcolset;
+    std::set<t_str> aggcolset;
     for (const auto& aggspec : aggspecs)
     {
         for (const auto& dep : aggspec.get_dependencies())
@@ -937,7 +939,7 @@ void
 t_stree::mark_zero_desc()
 {
     auto zeros = zero_strands();
-    t_uidxset z_desc;
+    std::set<t_uindex> z_desc;
 
     for (auto z : zeros)
     {
@@ -1047,14 +1049,14 @@ t_stree::genidx()
     return m_p->m_curidx++;
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::get_children(t_uindex idx) const
 {
     t_by_pidx_ipair iterators = m_p->m_nodes->get<by_pidx>().equal_range(idx);
 
     t_uindex nchild = std::distance(iterators.first, iterators.second);
 
-    t_uidxvec temp(nchild);
+    std::vector<t_uindex> temp(nchild);
 
     t_index count = 0;
     for (iter_by_pidx iter = iterators.first; iter != iterators.second; ++iter)
@@ -1141,7 +1143,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                     // if we previously had a NaN, add can't make it finite
                     // again; recalculate entire sum in case it is now finite
                     auto pkeys = get_pkeys(nidx);
-                    t_f64vec values;
+                    std::vector<t_float64> values;
                     gstate.read_column(
                         spec.get_dependencies()[0].name(), pkeys, values);
                     new_value.set(std::accumulate(
@@ -1167,7 +1169,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
             case AGGTYPE_MEAN:
             {
                 auto pkeys = get_pkeys(nidx);
-                t_f64vec values;
+                std::vector<t_float64> values;
 
                 gstate.read_column(
                     spec.get_dependencies()[0].name(), pkeys, values, false);
@@ -1192,8 +1194,8 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
             {
                 auto pkeys = get_pkeys(nidx);
 
-                t_f64vec values;
-                t_f64vec weights;
+                std::vector<t_float64> values;
+                std::vector<t_float64> weights;
 
                 gstate.read_column(
                     spec.get_dependencies()[0].name(), pkeys, values);
@@ -1644,11 +1646,11 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
     } // end for
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::zero_strands() const
 {
     auto iterators = m_p->m_nodes->get<by_nstrands>().equal_range(0);
-    t_uidxvec rval;
+    std::vector<t_uindex> rval;
 
     for (auto& iter = iterators.first; iter != iterators.second; ++iter)
     {
@@ -1657,29 +1659,29 @@ t_stree::zero_strands() const
     return rval;
 }
 
-t_uidxset
-t_stree::non_zero_leaves(const t_uidxvec& zero_strands) const
+std::set<t_uindex>
+t_stree::non_zero_leaves(const std::vector<t_uindex>& zero_strands) const
 {
     return non_zero_ids(m_p->m_newleaves, zero_strands);
 }
 
-t_uidxset
-t_stree::non_zero_ids(const t_uidxvec& zero_strands) const
+std::set<t_uindex>
+t_stree::non_zero_ids(const std::vector<t_uindex>& zero_strands) const
 {
     return non_zero_ids(m_p->m_newids, zero_strands);
 }
 
-t_uidxset
-t_stree::non_zero_ids(
-    const t_uidxset& ptiset, const t_uidxvec& zero_strands) const
+std::set<t_uindex>
+t_stree::non_zero_ids(const std::set<t_uindex>& ptiset,
+    const std::vector<t_uindex>& zero_strands) const
 {
-    t_uidxset zeroset;
+    std::set<t_uindex> zeroset;
     for (auto idx : zero_strands)
     {
         zeroset.insert(idx);
     }
 
-    t_uidxset rval;
+    std::set<t_uindex> rval;
 
     for (const auto& newid : ptiset)
     {
@@ -1704,11 +1706,11 @@ t_stree::get_parent_idx(t_uindex ptidx) const
     return iter->m_pidx;
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::get_ancestry(t_uindex idx) const
 {
     t_uindex rpidx = root_pidx();
-    t_uidxvec rval;
+    std::vector<t_uindex> rval;
 
     while (idx != rpidx)
     {
@@ -1797,7 +1799,7 @@ t_stree::resolve_child(t_uindex root, const t_tscalar& datum) const
 }
 
 void
-t_stree::clear_aggregates(const t_uidxvec& indices)
+t_stree::clear_aggregates(const std::vector<t_uindex>& indices)
 {
     auto cols = m_p->m_aggregates->get_columns();
     for (auto c : cols)
@@ -1817,11 +1819,11 @@ t_stree::drop_zero_strands()
 {
     auto iterators = m_p->m_nodes->get<by_nstrands>().equal_range(0);
 
-    t_uidxvec leaves;
+    std::vector<t_uindex> leaves;
 
     auto lst = last_level();
 
-    t_uidxvec node_ids;
+    std::vector<t_uindex> node_ids;
 
     for (auto iter = iterators.first; iter != iterators.second; ++iter)
     {
@@ -1926,7 +1928,7 @@ t_tscalvec
 t_stree::get_pkeys(t_uindex idx) const
 {
     t_tscalvec rval;
-    t_uidxvec leaves = get_leaves(idx);
+    std::vector<t_uindex> leaves = get_leaves(idx);
 
     for (auto leaf : leaves)
     {
@@ -1939,10 +1941,10 @@ t_stree::get_pkeys(t_uindex idx) const
     return rval;
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::get_leaves(t_uindex idx) const
 {
-    t_uidxvec rval;
+    std::vector<t_uindex> rval;
 
     if (is_leaf(idx))
     {
@@ -1967,9 +1969,9 @@ t_stree::get_depth(t_uindex ptidx) const
 
 void
 t_stree::get_drd_indices(
-    t_uindex ridx, t_depth rel_depth, t_uidxvec& leaves) const
+    t_uindex ridx, t_depth rel_depth, std::vector<t_uindex>& leaves) const
 {
-    t_ptipairvec pending;
+    std::vector<t_ptipair> pending;
 
     if (rel_depth == 0)
     {
@@ -2002,11 +2004,11 @@ t_stree::get_drd_indices(
     }
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::get_child_idx(t_uindex idx) const
 {
     t_index num_children = get_num_children(idx);
-    t_uidxvec children(num_children);
+    std::vector<t_uindex> children(num_children);
     auto iterators = m_p->m_nodes->get<by_pidx>().equal_range(idx);
     t_index count = 0;
     while (iterators.first != iterators.second)
@@ -2018,11 +2020,11 @@ t_stree::get_child_idx(t_uindex idx) const
     return children;
 }
 
-t_ptipairvec
+std::vector<t_ptipair>
 t_stree::get_child_idx_depth(t_uindex idx) const
 {
     t_index num_children = get_num_children(idx);
-    t_ptipairvec children(num_children);
+    std::vector<t_ptipair> children(num_children);
     auto iterators = m_p->m_nodes->get<by_pidx>().equal_range(idx);
     t_index count = 0;
     while (iterators.first != iterators.second)
@@ -2036,11 +2038,11 @@ t_stree::get_child_idx_depth(t_uindex idx) const
 }
 
 void
-t_stree::populate_leaf_index(const t_uidxset& leaves)
+t_stree::populate_leaf_index(const std::set<t_uindex>& leaves)
 {
     for (auto nidx : leaves)
     {
-        t_uidxvec ancestry = get_ancestry(nidx);
+        std::vector<t_uindex> ancestry = get_ancestry(nidx);
 
         for (auto ancidx : ancestry)
         {
@@ -2067,12 +2069,12 @@ t_stree::is_leaf(t_uindex nidx) const
     return iter->m_depth == last_level();
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_stree::get_descendents(t_uindex nidx) const
 {
-    t_uidxvec rval;
+    std::vector<t_uindex> rval;
 
-    t_uidxvec queue;
+    std::vector<t_uindex> queue;
     queue.push_back(nidx);
 
     while (!queue.empty())
@@ -2118,8 +2120,9 @@ t_stree::resolve_path(t_uindex root, const t_tscalvec& path) const
 // aggregates should be presized to be same size
 // as agg_indices
 void
-t_stree::get_aggregates_for_sorting(t_uindex nidx, const t_idxvec& agg_indices,
-    t_tscalvec& aggregates, t_ctx2* ctx2) const
+t_stree::get_aggregates_for_sorting(t_uindex nidx,
+    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
+    t_ctx2* ctx2) const
 {
     t_uindex aggidx = get_aggidx(nidx);
     for (t_uindex idx = 0, loop_end = agg_indices.size(); idx < loop_end; ++idx)
@@ -2202,10 +2205,10 @@ t_stree::get_aggregate(t_ptidx idx, t_index aggnum) const
 }
 
 void
-t_stree::get_child_indices(t_ptidx idx, t_ptivec& out_data) const
+t_stree::get_child_indices(t_ptidx idx, std::vector<t_ptidx>& out_data) const
 {
     t_index num_children = get_num_children(idx);
-    t_ptivec temp(num_children);
+    std::vector<t_ptidx> temp(num_children);
     t_by_pidx_ipair iterators = m_p->m_nodes->get<by_pidx>().equal_range(idx);
     t_index count = 0;
     for (iter_by_pidx iter = iterators.first; iter != iterators.second; ++iter)
@@ -2417,10 +2420,10 @@ t_stree::get_num_leaves(t_uindex depth) const
     return std::distance(iterators.first, iterators.second);
 }
 
-t_idxvec
+std::vector<t_index>
 t_stree::get_indices_for_depth(t_uindex depth) const
 {
-    t_idxvec indices;
+    std::vector<t_index> indices;
     std::deque<t_tnode> dft;
     dft.push_front(get_node(0));
     while (!dft.empty())

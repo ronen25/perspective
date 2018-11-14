@@ -11,7 +11,6 @@
 #include <perspective/first.h>
 #include <perspective/raw_types.h>
 
-
 namespace perspective
 {
 inline t_uint32
@@ -26,16 +25,12 @@ upper32(t_uint64 v)
     return v >> 32;
 }
 
-t_str
-str_(int value, const t_str& fill, t_int32 width);
+t_str str_(int value, const t_str& fill, t_int32 width);
 
 t_str str_(int value);
 
 t_str unique_path(const t_str& path_prefix);
 
-t_svec
-split(const t_str& s, char delim);
-
-
+// std::vector<t_str> split(const t_str& s, char delim);
 
 } // namespace perspective

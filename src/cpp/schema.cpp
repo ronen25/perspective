@@ -11,7 +11,6 @@
 #include <perspective/schema.h>
 #include <sstream>
 
-
 namespace perspective
 {
 
@@ -24,7 +23,8 @@ t_schema::t_schema(const t_schema_recipe& recipe)
 {
 }
 
-t_schema::t_schema(const t_svec& columns, const t_dtypevec& types)
+t_schema::t_schema(
+    const std::vector<t_str>& columns, const std::vector<t_dtype>& types)
     : m_columns(columns)
     , m_types(types)
     , m_status_enabled(columns.size())
@@ -38,8 +38,8 @@ t_schema::t_schema(const t_svec& columns, const t_dtypevec& types)
 
     t_str pkey_str("psp_pkey");
     t_str op_str("psp_op");
-    for (t_svec::size_type idx = 0, loop_end = types.size(); idx < loop_end;
-         ++idx)
+    for (std::vector<t_str>::size_type idx = 0, loop_end = types.size();
+         idx < loop_end; ++idx)
     {
         m_colidx_map[columns[idx]] = idx;
         PSP_VERBOSE_ASSERT(m_coldt_map.find(columns[idx]) == m_coldt_map.end(),
@@ -152,13 +152,13 @@ t_schema::has_column(const t_str& colname) const
     return iter != m_colidx_map.end();
 }
 
-const t_svec&
+const std::vector<t_str>&
 t_schema::columns() const
 {
     return m_columns;
 }
 
-const t_dtypevec
+const std::vector<t_dtype>
 t_schema::types() const
 {
     return m_types;
@@ -173,10 +173,10 @@ t_schema::str() const
 }
 
 t_schema
-t_schema::drop(const t_sset& columns) const
+t_schema::drop(const std::set<t_str>& columns) const
 {
-    t_svec cols;
-    t_dtypevec types;
+    std::vector<t_str> cols;
+    std::vector<t_dtype> types;
 
     for (t_uindex idx = 0, loop_end = m_columns.size(); idx < loop_end; ++idx)
     {
@@ -209,8 +209,8 @@ std::ostream&
 operator<<(std::ostream& os, const perspective::t_schema& s)
 {
     using namespace perspective;
-    const t_svec& cols = s.columns();
-    const t_dtypevec& types = s.types();
+    const std::vector<t_str>& cols = s.columns();
+    const std::vector<t_dtype>& types = s.types();
 
     os << "t_schema<\n";
     for (size_t idx = 0, loop_end = cols.size(); idx < loop_end; ++idx)

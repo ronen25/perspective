@@ -35,7 +35,7 @@ public:
     }
 
     t_slice
-    get_data(const t_range& rng, const t_fetchvec& fvec) const
+    get_data(const t_range& rng, const std::vector<t_fetch>& fvec) const
     {
         return m_ctx->unity_get_data(rng, fvec);
     }
@@ -79,11 +79,12 @@ public:
     }
 
     void unity_populate_slice_row(
-        t_slice& s, const t_fetchvec& fvec, t_uindex idx) const;
+        t_slice& s, const std::vector<t_fetch>& fvec, t_uindex idx) const;
     void unity_populate_slice_column(
-        t_slice& s, const t_fetchvec& fvec, t_uindex idx) const;
+        t_slice& s, const std::vector<t_fetch>& fvec, t_uindex idx) const;
 
-    t_slice unity_get_data(const t_range& rng, const t_fetchvec& fvec) const;
+    t_slice unity_get_data(
+        const t_range& rng, const std::vector<t_fetch>& fvec) const;
 
     t_tscalvec get_data() const;
 
@@ -209,7 +210,7 @@ t_ctxbase<DERIVED_T>::get_feature_state(t_ctx_feature feature) const
 template <typename DERIVED_T>
 void
 t_ctxbase<DERIVED_T>::unity_populate_slice_column(
-    t_slice& s, const t_fetchvec& fvec, t_uindex idx) const
+    t_slice& s, const std::vector<t_fetch>& fvec, t_uindex idx) const
 {
     for (auto f : fvec)
     {
@@ -251,7 +252,7 @@ t_ctxbase<DERIVED_T>::unity_populate_slice_column(
 template <typename DERIVED_T>
 void
 t_ctxbase<DERIVED_T>::unity_populate_slice_row(
-    t_slice& s, const t_fetchvec& fvec, t_uindex idx) const
+    t_slice& s, const std::vector<t_fetch>& fvec, t_uindex idx) const
 {
     auto cptr = reinterpret_cast<const DERIVED_T*>(this);
     for (auto f : fvec)
@@ -294,7 +295,7 @@ t_ctxbase<DERIVED_T>::unity_populate_slice_row(
 template <typename DERIVED_T>
 t_slice
 t_ctxbase<DERIVED_T>::unity_get_data(
-    const t_range& rng, const t_fetchvec& fvec) const
+    const t_range& rng, const std::vector<t_fetch>& fvec) const
 {
     auto cptr = reinterpret_cast<const DERIVED_T*>(this);
     t_uindex row_count = cptr->get_row_count();

@@ -135,7 +135,7 @@ t_gstate::update_history(const t_table* tbl)
     t_uindex ncols = m_table->num_columns();
     auto stable = m_table.get();
 
-    t_uidxvec col_translation(stable->num_columns());
+    std::vector<t_uindex> col_translation(stable->num_columns());
 
     t_str opname("psp_op");
     t_str pkeyname("psp_pkey");
@@ -219,7 +219,7 @@ t_gstate::update_history(const t_table* tbl)
     }
 
     /* size is not zero */
-    t_uidxvec stableidx_vec(tbl->num_rows());
+    std::vector<t_uindex> stableidx_vec(tbl->num_rows());
 
     for (t_uindex idx = 0, loop_end = tbl->num_rows(); idx < loop_end; ++idx)
     {
@@ -390,7 +390,7 @@ t_gstate::update_history(const t_table* tbl)
 void
 t_gstate::pprint() const
 {
-    t_uidxvec indices(m_mapping.size());
+    std::vector<t_uindex> indices(m_mapping.size());
     t_uindex idx = 0;
     for (t_mapping::const_iterator iter = m_mapping.begin();
          iter != m_mapping.end(); ++iter)
@@ -448,21 +448,21 @@ t_gstate::read_column(
 }
 
 void
-t_gstate::read_column(
-    const t_str& colname, const t_tscalvec& pkeys, t_f64vec& out_data) const
+t_gstate::read_column(const t_str& colname, const t_tscalvec& pkeys,
+    std::vector<t_float64>& out_data) const
 {
     read_column(colname, pkeys, out_data, true);
 }
 
 void
 t_gstate::read_column(const t_str& colname, const t_tscalvec& pkeys,
-    t_f64vec& out_data, bool include_nones) const
+    std::vector<t_float64>& out_data, bool include_nones) const
 {
     t_index num = pkeys.size();
     t_col_csptr col = m_table->get_const_column(colname);
     const t_column* col_ = col.get();
 
-    t_f64vec rval;
+    std::vector<t_float64> rval;
     for (t_index idx = 0; idx < num; ++idx)
     {
         t_mapping::const_iterator iter = m_mapping.find(pkeys[idx]);

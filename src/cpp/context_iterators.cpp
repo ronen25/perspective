@@ -106,7 +106,7 @@ t_ctx1_tree_iter::t_ctx1_tree_iter(t_ctx1* ctx, t_tvidx root, t_depth depth)
     : m_curidx(0)
     , m_ctx(ctx)
 {
-    m_agg_indices = t_idxvec(ctx->get_aggregates().size());
+    m_agg_indices = std::vector<t_index>(ctx->get_aggregates().size());
 
     for (t_uindex idx = 0, loop_end = m_agg_indices.size(); idx < loop_end;
          ++idx)
@@ -130,8 +130,8 @@ t_ctx1_tree_iter::t_ctx1_tree_iter(t_ctx1* ctx, t_tvidx root, t_depth depth)
     }
 }
 
-t_ctx1_tree_iter::t_ctx1_tree_iter(
-    t_ctx1* ctx, t_tvidx root, t_depth depth, const t_idxvec& aggregates)
+t_ctx1_tree_iter::t_ctx1_tree_iter(t_ctx1* ctx, t_tvidx root, t_depth depth,
+    const std::vector<t_index>& aggregates)
     : m_curidx(0)
     , m_ctx(ctx)
     , m_agg_indices(aggregates)

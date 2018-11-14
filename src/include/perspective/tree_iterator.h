@@ -136,7 +136,7 @@ void
 t_dtiter<TREE_T, CONTAINER_T>::enqueue_children(
     const std::vector<t_uindex>& q, t_ptidx idx)
 {
-    t_ptivec children;
+    std::vector<t_ptidx> children;
     m_tree->get_child_indices(idx, children);
     for (auto cidx : children)
     {
@@ -172,7 +172,7 @@ void
 t_dtiter<TREE_T, CONTAINER_T>::enqueue_children(
     const std::queue<t_uindex>& q, t_ptidx idx)
 {
-    t_ptivec children;
+    std::vector<t_ptidx> children;
     m_tree->get_child_indices(idx, children);
     for (auto cidx : children)
     {

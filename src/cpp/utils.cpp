@@ -27,32 +27,32 @@ unique_path(const t_str& path_prefix)
     return ss.str();
 }
 
-    t_str
-    str_(int value, const t_str& fill, t_int32 width)
-    {
-        std::stringstream ss;
-        ss << std::setfill('0') << std::setw(width) << value;
-        return ss.str();
-    }
+t_str
+str_(int value, const t_str& fill, t_int32 width)
+{
+    std::stringstream ss;
+    ss << std::setfill('0') << std::setw(width) << value;
+    return ss.str();
+}
 
-    t_str
-    str_(int value)
-    {
-        return str_(value, "0", 2);
-    }
+t_str
+str_(int value)
+{
+    return str_(value, "0", 2);
+}
 
-    t_svec
-    split(const t_str& s, char delim)
+std::vector<t_str>
+split(const t_str& s, char delim)
+{
+    std::vector<t_str> elems;
+    std::stringstream ss;
+    ss.str(s);
+    t_str item;
+    while (std::getline(ss, item, delim))
     {
-        t_svec elems;
-        std::stringstream ss;
-        ss.str(s);
-        t_str item;
-        while (std::getline(ss, item, delim))
-        {
-            if (!item.empty())
-                elems.push_back(item);
-        }
-        return elems;
+        if (!item.empty())
+            elems.push_back(item);
     }
+    return elems;
+}
 } // namespace perspective

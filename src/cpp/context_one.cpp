@@ -282,7 +282,7 @@ t_ctx1::get_depth() const
 }
 
 t_tscalvec
-t_ctx1::get_pkeys(const t_uidxpvec& cells) const
+t_ctx1::get_pkeys(const std::vector<t_uidxpair>& cells) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -294,7 +294,7 @@ t_ctx1::get_pkeys(const t_uidxpvec& cells) const
     }
 
     t_tscalvec rval;
-    t_ptivec tindices(cells.size());
+    std::vector<t_ptidx> tindices(cells.size());
     for (const auto& c : cells)
     {
         auto ptidx = m_traversal->get_tree_index(c.first);
@@ -306,7 +306,7 @@ t_ctx1::get_pkeys(const t_uidxpvec& cells) const
 }
 
 t_tscalvec
-t_ctx1::get_cell_data(const t_uidxpvec& cells) const
+t_ctx1::get_cell_data(const std::vector<t_uidxpair>& cells) const
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
@@ -689,10 +689,10 @@ t_ctx1::unity_get_column_display_name(t_uindex idx) const
     return m_config.unity_get_column_display_name(idx);
 }
 
-t_svec
+std::vector<t_str>
 t_ctx1::unity_get_column_names() const
 {
-    t_svec rv;
+    std::vector<t_str> rv;
 
     for (t_uindex idx = 0, loop_end = unity_get_column_count(); idx < loop_end;
          ++idx)
@@ -702,10 +702,10 @@ t_ctx1::unity_get_column_names() const
     return rv;
 }
 
-t_svec
+std::vector<t_str>
 t_ctx1::unity_get_column_display_names() const
 {
-    t_svec rv;
+    std::vector<t_str> rv;
 
     for (t_uindex idx = 0, loop_end = unity_get_column_count(); idx < loop_end;
          ++idx)

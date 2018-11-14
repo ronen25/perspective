@@ -75,14 +75,15 @@ t_gnode::t_gnode(const t_schema& portschema)
 {
     PSP_TRACE_SENTINEL();
     LOG_CONSTRUCTOR("t_gnode");
-    t_dtypevec trans_types(m_tblschema.size());
+    std::vector<t_dtype> trans_types(m_tblschema.size());
     for (t_uindex idx = 0; idx < trans_types.size(); ++idx)
     {
         trans_types[idx] = DTYPE_UINT8;
     }
 
     t_schema trans_schema(m_tblschema.columns(), trans_types);
-    t_schema existed_schema(t_svec{"psp_existed"}, t_dtypevec{DTYPE_BOOL});
+    t_schema existed_schema(
+        std::vector<t_str>{"psp_existed"}, std::vector<t_dtype>{DTYPE_BOOL});
 
     m_oschemas = t_schemavec{portschema, m_tblschema, m_tblschema, m_tblschema,
         trans_schema, existed_schema};
@@ -176,7 +177,7 @@ t_gnode::populate_icols_in_flattened(
 
     t_colcptrvec icols(ncols);
     t_colptrvec ocols(ncols);
-    t_svec cnames(ncols);
+    std::vector<t_str> cnames(ncols);
 
     t_uindex count = 0;
     const t_table* stable = get_table();
@@ -365,7 +366,7 @@ t_gnode::_process()
     t_colptrvec ccolumns(ncols);
     t_colptrvec tcolumns(ncols);
 
-    t_uidxvec col_translation(stable->num_columns());
+    std::vector<t_uindex> col_translation(stable->num_columns());
     t_uindex count = 0;
 
     t_str opname("psp_op");
@@ -406,7 +407,7 @@ t_gnode::_process()
     t_uindex added_count = 0;
 
     t_uint8* op_base = op_col->get_nth<t_uint8>(0);
-    t_uidxvec added_offset(fnrows);
+    std::vector<t_uindex> added_offset(fnrows);
     std::vector<t_rlookup> lkup(fnrows);
     std::vector<t_bool> prev_pkey_eq_vec(fnrows);
 
@@ -760,10 +761,10 @@ t_gnode::_update_contexts_from_state(const t_table& tbl)
     }
 }
 
-t_svec
+std::vector<t_str>
 t_gnode::get_registered_contexts() const
 {
-    t_svec rval;
+    std::vector<t_str> rval;
 
     for (const auto& kv : m_contexts)
     {
@@ -1085,10 +1086,10 @@ t_gnode::release_outputs()
     }
 }
 
-t_svec
+std::vector<t_str>
 t_gnode::get_contexts_last_updated() const
 {
-    t_svec rval;
+    std::vector<t_str> rval;
 
     for (const auto& kv : m_contexts)
     {
@@ -1172,7 +1173,7 @@ t_gnode::get_pkeys() const
 void
 t_gnode::reset()
 {
-    t_svec rval;
+    std::vector<t_str> rval;
 
     for (const auto& kv : m_contexts)
     {
@@ -1487,6 +1488,12 @@ t_gnode::register_context(const t_str& name, t_ctx_grouped_pkey_sptr ctx)
 {
     _register_context(
         name, GROUPED_PKEY_CONTEXT, reinterpret_cast<t_int64>(ctx.get()));
+}
+
+t_schema
+t_gnode::get_tblschema() const
+{
+    return m_tblschema;
 }
 
 } // end namespace perspective

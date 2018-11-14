@@ -181,7 +181,7 @@ t_ctx0::init()
 }
 
 t_tscalvec
-t_ctx0::get_pkeys(const t_uidxpvec& cells) const
+t_ctx0::get_pkeys(const std::vector<t_uidxpair>& cells) const
 {
     if (!m_traversal->validate_cells(cells))
     {
@@ -192,7 +192,7 @@ t_ctx0::get_pkeys(const t_uidxpvec& cells) const
 }
 
 t_tscalvec
-t_ctx0::get_all_pkeys(const t_uidxpvec& cells) const
+t_ctx0::get_all_pkeys(const std::vector<t_uidxpair>& cells) const
 {
     if (!m_traversal->validate_cells(cells))
     {
@@ -203,7 +203,7 @@ t_ctx0::get_all_pkeys(const t_uidxpvec& cells) const
 }
 
 t_tscalvec
-t_ctx0::get_cell_data(const t_uidxpvec& cells) const
+t_ctx0::get_cell_data(const std::vector<t_uidxpair>& cells) const
 {
     if (!m_traversal->validate_cells(cells))
     {
@@ -317,7 +317,7 @@ t_ctx0::get_step_delta(t_tvidx bidx, t_tvidx eidx)
     return rval;
 }
 
-t_svec
+std::vector<t_str>
 t_ctx0::get_column_names() const
 {
     return m_config.get_column_names();
@@ -687,13 +687,13 @@ t_ctx0::unity_get_column_display_name(t_uindex idx) const
     return m_config.col_at(idx);
 }
 
-t_svec
+std::vector<t_str>
 t_ctx0::unity_get_column_names() const
 {
     return m_config.get_column_names();
 }
 
-t_svec
+std::vector<t_str>
 t_ctx0::unity_get_column_display_names() const
 {
     return m_config.get_column_names();

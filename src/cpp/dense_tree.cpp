@@ -18,8 +18,8 @@
 namespace perspective
 {
 
-t_dtree::t_dtree(
-    t_dssptr ds, const t_pivotvec& pivots, const t_sspvec& sortby_colvec)
+t_dtree::t_dtree(t_dssptr ds, const t_pivotvec& pivots,
+    const std::vector<t_sspair>& sortby_colvec)
     : m_dirname("")
     , m_levels_pivoted(0)
     , m_ds(ds)
@@ -45,7 +45,7 @@ t_dtree::get_level_markers(t_uindex idx) const
 }
 
 t_dtree::t_dtree(const t_str& dirname, t_dssptr ds, const t_pivotvec& pivots,
-    t_backing_store backing_store, const t_sspvec& sortby_colvec)
+    t_backing_store backing_store, const std::vector<t_sspair>& sortby_colvec)
     : m_dirname(dirname)
     , m_levels_pivoted(0)
     , m_ds(ds)
@@ -431,7 +431,7 @@ t_dtree::get_pivots() const
 }
 
 void
-t_dtree::get_child_indices(t_ptidx nidx, t_ptivec& v) const
+t_dtree::get_child_indices(t_ptidx nidx, std::vector<t_ptidx>& v) const
 {
     auto nptr = get_node_ptr(nidx);
     for (t_index idx = nptr->m_fcidx + nptr->m_nchild - 1,

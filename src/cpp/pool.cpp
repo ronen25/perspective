@@ -397,11 +397,11 @@ t_pool::flush(t_uindex gnode_id)
     }
 }
 
-t_uidxvec
+std::vector<t_uindex>
 t_pool::get_gnodes_last_updated()
 {
     std::lock_guard<std::mutex> lg(m_mtx);
-    t_uidxvec rv;
+    std::vector<t_uindex> rv;
 
     for (t_uindex idx = 0, loop_end = m_gnodes.size(); idx < loop_end; ++idx)
     {

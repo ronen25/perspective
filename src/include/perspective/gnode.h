@@ -61,9 +61,6 @@ public:
     static t_gnode_sptr build(const t_schema& port_schema);
     t_gnode(const t_gnode_recipe& recipe);
     t_gnode(const t_schema& port_schema);
-    t_gnode(t_gnode_processing_mode mode, const t_schema& tblschema,
-        const t_schemavec& ischemas, const t_schemavec& oschemas,
-        const t_ccol_vec& custom_columns);
     ~t_gnode();
     void init();
 
@@ -83,7 +80,7 @@ public:
         t_bool cur_valid, t_bool prev_cur_eq, t_bool prev_pkey_eq);
 
     void pprint() const;
-    t_svec get_registered_contexts() const;
+    std::vector<t_str> get_registered_contexts() const;
 
     t_streeptr_vec get_trees();
 
@@ -92,7 +89,7 @@ public:
 
     void release_inputs();
     void release_outputs();
-    t_svec get_contexts_last_updated() const;
+    std::vector<t_str> get_contexts_last_updated() const;
 
     void reset();
     t_str repr() const;
@@ -122,6 +119,8 @@ public:
     void register_context(const t_str& name, t_ctx1_sptr ctx);
     void register_context(const t_str& name, t_ctx2_sptr ctx);
     void register_context(const t_str& name, t_ctx_grouped_pkey_sptr ctx);
+
+    t_schema get_tblschema() const;
 
 protected:
     void notify_contexts(const t_table& flattened);
@@ -167,7 +166,7 @@ private:
     t_uindex m_id;
     std::chrono::high_resolution_clock::time_point m_epoch;
     t_ccol_vec m_custom_columns;
-    t_sset m_expr_icols;
+    std::set<t_str> m_expr_icols;
     std::function<void()> m_pool_cleanup;
     t_bool m_was_updated;
 };

@@ -85,8 +85,8 @@ public:
 
     t_invmode get_inv_mode() const;
 
-    t_svec get_input_depnames() const;
-    t_svec get_output_depnames() const;
+    std::vector<t_str> get_input_depnames() const;
+    std::vector<t_str> get_output_depnames() const;
 
     t_col_name_type_vec get_output_specs(const t_schema& schema) const;
     t_col_name_type_vec mk_col_name_type_vec(

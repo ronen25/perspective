@@ -111,7 +111,7 @@ public:
     void pprint() const;
     void pprint(t_uindex nrows, std::ostream* os = 0) const;
     void pprint(const t_str& fname) const;
-    void pprint(const t_uidxvec& vec) const;
+    void pprint(const std::vector<t_uindex>& vec) const;
 
     void append(const t_table& other);
 
@@ -346,7 +346,7 @@ t_table::flatten_helper_1(FLATTENED_T flattened) const
     t_packcomp cmp;
     std::sort(sorted.begin(), sorted.end(), cmp);
 
-    t_idxvec edges;
+    std::vector<t_index> edges;
     edges.push_back(0);
 
     for (t_index idx = 1, loop_end = sorted.size(); idx < loop_end; ++idx)

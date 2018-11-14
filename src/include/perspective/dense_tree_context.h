@@ -52,7 +52,7 @@ private:
     t_aggspecvec m_aggspecs;
     t_table_sptr m_aggregates;
     t_bool m_init;
-    t_sidxmap m_aggspecmap;
+    std::map<t_str, t_index> m_aggspecmap;
 };
 
 } // end namespace perspective

@@ -40,7 +40,8 @@ public:
     void set_expansion_state(const t_pathvec& paths);
     t_tscalar get_tree_value(t_ptidx idx) const;
     t_stree* _get_tree();
-    t_ftnvec get_flattened_tree(t_tvidx idx, t_depth stop_depth);
+    std::vector<t_ftreenode> get_flattened_tree(
+        t_tvidx idx, t_depth stop_depth);
     t_trav_csptr get_traversal() const;
 
     void set_depth(t_depth depth);
@@ -51,8 +52,9 @@ public:
 
     // aggregates should be presized to be same size
     // as agg_indices
-    void get_aggregates_for_sorting(t_uindex nidx, const t_idxvec& agg_indices,
-        t_tscalvec& aggregates, t_ctx2*) const;
+    void get_aggregates_for_sorting(t_uindex nidx,
+        const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
+        t_ctx2*) const;
 
     using t_ctxbase<t_ctx_grouped_pkey>::get_data;
 

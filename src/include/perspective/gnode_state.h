@@ -48,9 +48,9 @@ public:
     void read_column(const t_str& colname, const t_tscalvec& pkeys,
         t_tscalvec& out_data) const;
     void read_column(const t_str& colname, const t_tscalvec& pkeys,
-        t_f64vec& out_data) const;
+        std::vector<t_float64>& out_data) const;
     void read_column(const t_str& colname, const t_tscalvec& pkeys,
-        t_f64vec& out_data, bool include_nones) const;
+        std::vector<t_float64>& out_data, bool include_nones) const;
 
     t_table_sptr get_table();
     t_table_csptr get_table() const;

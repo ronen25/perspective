@@ -53,8 +53,8 @@ t_dtree_ctx::get_num_aggcols() const
 void
 t_dtree_ctx::build_aggregates()
 {
-    t_svec columns;
-    t_dtypevec dtypes;
+    std::vector<t_str> columns;
+    std::vector<t_dtype> dtypes;
 
     t_schema delta_schema = m_strand_deltas->get_schema();
 
@@ -203,7 +203,7 @@ t_dtree_ctx::pprint_strands() const
 
     t_uindex width = 18;
 
-    t_svec colnames = {"psp_pkey", "psp_strand_count"};
+    std::vector<t_str> colnames = {"psp_pkey", "psp_strand_count"};
 
     for (const auto& colname : strand_schema.m_columns)
     {

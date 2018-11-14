@@ -31,7 +31,7 @@ t_tscalar iop = mktscalar<t_uint8>(OP_INSERT);
 t_tscalar dop = mktscalar<t_uint8>(OP_DELETE);
 t_tscalar cop = mktscalar<t_uint8>(OP_CLEAR);
 
-t_dtypevec numeric_dtypes{
+std::vector<t_dtype> numeric_dtypes{
     DTYPE_INT64,
     DTYPE_INT32,
     DTYPE_INT16,
@@ -44,7 +44,7 @@ t_dtypevec numeric_dtypes{
     DTYPE_FLOAT32,
 };
 
-t_dtypevec common_dtypes{
+std::vector<t_dtype> common_dtypes{
     DTYPE_NONE,
     DTYPE_INT64,
     DTYPE_INT32,

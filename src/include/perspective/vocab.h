@@ -39,12 +39,9 @@ public:
     t_lstore_sptr get_extents();
     t_uindex get_vlenidx() const;
     t_uindex nbytes() const;
-    void verify() const;
     void verify_size() const;
     void fill(
         const t_lstore& o_vlen, const t_lstore& o_extents, t_uindex vlenidx);
-    t_extent_pair* get_extents_base();
-    t_uchar* get_vlen_base();
     void set_vlenidx(t_uindex idx);
     void pprint_vocabulary() const;
     void clone(const t_vocab& v);

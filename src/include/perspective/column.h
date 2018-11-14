@@ -211,10 +211,11 @@ public:
     void valid_raw_fill();
 
     template <typename DATA_T>
-    void copy_helper(
-        const t_column* other, const t_uidxvec& indices, t_uindex offset);
+    void copy_helper(const t_column* other,
+        const std::vector<t_uindex>& indices, t_uindex offset);
 
-    void copy(const t_column* other, const t_uidxvec& indices, t_uindex offset);
+    void copy(const t_column* other, const std::vector<t_uindex>& indices,
+        t_uindex offset);
 
     void clear(t_uindex idx);
     void clear(t_uindex idx, t_status status);
@@ -434,13 +435,13 @@ t_column::set_vocabulary(const VOCAB_T& vocab, size_t total_size)
 }
 
 template <>
-void t_column::copy_helper<const char>(
-    const t_column* other, const t_uidxvec& indices, t_uindex offset);
+void t_column::copy_helper<const char>(const t_column* other,
+    const std::vector<t_uindex>& indices, t_uindex offset);
 
 template <typename DATA_T>
 void
-t_column::copy_helper(
-    const t_column* other, const t_uidxvec& indices, t_uindex offset)
+t_column::copy_helper(const t_column* other,
+    const std::vector<t_uindex>& indices, t_uindex offset)
 {
     t_uindex eidx
         = std::min(other->size(), static_cast<t_uindex>(indices.size()));

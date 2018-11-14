@@ -386,24 +386,22 @@ root_pidx()
     return std::numeric_limits<t_uindex>::max();
 }
 
+bool
+t_cmp_charptr::operator()(const char* a, const char* b) const
+{
+    return std::strcmp(a, b) < 0;
+}
 
-        bool
-        t_cmp_charptr::operator()(const char* a, const char* b) const
-        {
-            return std::strcmp(a, b) < 0;
-        }
+bool
+t_cchar_umap_cmp::operator()(const char* x, const char* y) const
+{
+    return strcmp(x, y) == 0;
+}
 
-
-        bool
-        t_cchar_umap_cmp::operator()(const char* x, const char* y) const
-        {
-            return strcmp(x, y) == 0;
-        }
-
-        t_uindex
-        t_cchar_umap_hash::operator()(const char* s) const
-        {
-            return boost::hash_range(s, s + std::strlen(s));
-        }
+t_uindex
+t_cchar_umap_hash::operator()(const char* s) const
+{
+    return boost::hash_range(s, s + std::strlen(s));
+}
 
 } // end namespace perspective

@@ -17,6 +17,7 @@
 #include <perspective/first.h>
 #include <perspective/raw_types.h>
 #include <perspective/portable.h>
+#include <vector>
 
 namespace perspective
 {
@@ -391,10 +392,6 @@ enum t_fmode
     FMODE_JIT_EXPR
 };
 
-typedef std::vector<t_fetch> t_fetchvec;
-
-typedef std::vector<t_sorttype> t_sorttvec;
-
 #ifdef WIN32
 #define PSP_NON_COPYABLE(X)
 #else
@@ -405,12 +402,10 @@ typedef std::vector<t_sorttype> t_sorttvec;
 
 PERSPECTIVE_EXPORT t_str get_error_str();
 PERSPECTIVE_EXPORT bool is_numeric_type(t_dtype dtype);
-PERSPECTIVE_EXPORT bool is_linear_order_type(t_dtype dtype);
 PERSPECTIVE_EXPORT t_str get_dtype_descr(t_dtype dtype);
 PERSPECTIVE_EXPORT t_str get_status_descr(t_status dtype);
 PERSPECTIVE_EXPORT t_uindex get_dtype_size(t_dtype dtype);
 PERSPECTIVE_EXPORT t_bool is_vlen_dtype(t_dtype dtype);
-PERSPECTIVE_EXPORT t_bool is_neq_transition(t_value_transition t);
 
 template <typename T>
 inline std::ostream&
@@ -432,30 +427,23 @@ operator<<(std::ostream& os, const std::pair<FIRST_T, SECOND_T>& p)
     return os;
 }
 
-void check_init(t_bool init, const char* file, t_int32 line);
-
 t_uindex root_pidx();
 
 struct PERSPECTIVE_EXPORT t_cmp_charptr
 {
-    bool
-    operator()(const char* a, const char* b) const;
+    bool operator()(const char* a, const char* b) const;
 };
 
 struct t_cchar_umap_cmp
     : public std::binary_function<const char*, const char*, bool>
 {
-    bool
-    operator()(const char* x, const char* y) const;
+    bool operator()(const char* x, const char* y) const;
 };
 
 struct t_cchar_umap_hash
 {
-    t_uindex
-    operator()(const char* s) const;
+    t_uindex operator()(const char* s) const;
 };
-
-t_bool is_internal_colname(const t_str& c);
 
 t_bool is_deterministic_sized(t_dtype dtype);
 
