@@ -369,7 +369,7 @@ TEST(SCALAR, canonical_test)
     EXPECT_TRUE(std::all_of(numeric_dtypes.begin(), numeric_dtypes.end(),
         [](t_dtype t) { return t_tscalar::canonical(t).to_double() == 0; }));
     // TODO
-    //EXPECT_EQ(mktscalar<const char*>(""), t_tscalar::canonical(DTYPE_STR));
+    // EXPECT_EQ(mktscalar<const char*>(""), t_tscalar::canonical(DTYPE_STR));
 }
 
 TEST(SCALAR, abs_test)
@@ -522,7 +522,6 @@ public:
 protected:
     t_ctx1_sptr m_ctx;
 };
-
 
 // clang-format off
 TEST_F(I64GTest, test_1) {
@@ -832,4 +831,3 @@ TEST_F(I64Ctx1Test, test_9) {
 }
 
 // clang-format on
-

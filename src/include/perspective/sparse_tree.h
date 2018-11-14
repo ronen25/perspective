@@ -277,9 +277,8 @@ protected:
     t_build_strand_table_common_rval build_strand_table_common(
         const t_table& flattened, const t_aggspecvec& aggspecs,
         const t_config& config) const;
-    
-private:
 
+private:
     struct t_stree_p;
     std::unique_ptr<t_stree_p> m_p;
 };

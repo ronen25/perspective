@@ -143,7 +143,8 @@ public:
     void set_capacity(t_uindex idx);
     t_tscalvec get_scalvec() const;
 
-    t_col_sptr operator[] (const t_str& name);
+    t_col_sptr operator[](const t_str& name);
+
 protected:
     template <typename FLATTENED_T>
     void flatten_body(FLATTENED_T flattened) const;

@@ -319,7 +319,8 @@ t_stree::build_strand_table_phase_1(t_tscalar pkey, t_op op, t_uindex idx,
         piv_scols[pidx]->push_back(piv_ccols[pidx]->get_scalar(idx));
         const t_uint8* trans_ = piv_tcols[pidx]->get_nth<t_uint8>(idx);
         t_value_transition trans = static_cast<t_value_transition>(*trans_);
-        if (trans != VALUE_TRANSITION_EQ_TT) {
+        if (trans != VALUE_TRANSITION_EQ_TT)
+        {
             all_eq_tt = false;
         }
 
@@ -2486,7 +2487,8 @@ t_stree::pprint() const
     {
         t_tscalvec path;
         get_path(idx, path);
-        for (t_uindex space_idx=0; space_idx < path.size(); ++space_idx) {
+        for (t_uindex space_idx = 0; space_idx < path.size(); ++space_idx)
+        {
             std::cout << "  ";
         }
         std::cout << idx << " <" << path << ">";

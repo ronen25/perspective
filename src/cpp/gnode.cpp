@@ -531,221 +531,203 @@ t_gnode::_process()
     for (t_uindex colidx = 0; colidx < ncols; ++colidx)
 #endif
         {
-            auto fcolumn = fcolumns[col_translation[colidx]];
-            auto scolumn = scolumns[colidx];
-            auto dcolumn = dcolumns[colidx];
-            auto pcolumn = pcolumns[colidx];
-            auto ccolumn = ccolumns[colidx];
-            auto tcolumn = tcolumns[colidx];
+        auto fcolumn = fcolumns[col_translation[colidx]];
+        auto scolumn = scolumns[colidx];
+        auto dcolumn = dcolumns[colidx];
+        auto pcolumn = pcolumns[colidx];
+        auto ccolumn = ccolumns[colidx];
+        auto tcolumn = tcolumns[colidx];
 
-            t_dtype col_dtype = fcolumn->get_dtype();
+        t_dtype col_dtype = fcolumn->get_dtype();
 
-            switch (col_dtype)
+        switch (col_dtype)
+        {
+            case DTYPE_INT64:
             {
-                case DTYPE_INT64:
-                {
-                    _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_INT32:
-                {
-                    _process_helper<t_int32>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_INT16:
-                {
-                    _process_helper<t_int16>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_INT8:
-                {
-                    _process_helper<t_int8>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_UINT64:
-                {
-                    _process_helper<t_uint64>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_UINT32:
-                {
-                    _process_helper<t_uint32>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_UINT16:
-                {
-                    _process_helper<t_uint16>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_UINT8:
-                {
-                    _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_FLOAT64:
-                {
-                    _process_helper<t_float64>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_FLOAT32:
-                {
-                    _process_helper<t_float32>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_BOOL:
-                {
-                    _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_TIME:
-                {
-                    _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                case DTYPE_DATE:
-                {
-                    _process_helper<t_uint32>(fcolumn, scolumn, dcolumn,
-                        pcolumn, ccolumn, tcolumn, op_base, lkup,
-                        prev_pkey_eq_vec, added_offset);
-                }
-                break;
-                case DTYPE_STR:
-                {
-                    _process_helper<t_str>(fcolumn, scolumn, dcolumn, pcolumn,
-                        ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
-                        added_offset);
-                }
-                break;
-                default:
-                {
-                    PSP_COMPLAIN_AND_ABORT("Unsupported column dtype");
-                }
+                _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
             }
+            break;
+            case DTYPE_INT32:
+            {
+                _process_helper<t_int32>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_INT16:
+            {
+                _process_helper<t_int16>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_INT8:
+            {
+                _process_helper<t_int8>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_UINT64:
+            {
+                _process_helper<t_uint64>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_UINT32:
+            {
+                _process_helper<t_uint32>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_UINT16:
+            {
+                _process_helper<t_uint16>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_UINT8:
+            {
+                _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_FLOAT64:
+            {
+                _process_helper<t_float64>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_FLOAT32:
+            {
+                _process_helper<t_float32>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_BOOL:
+            {
+                _process_helper<t_uint8>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_TIME:
+            {
+                _process_helper<t_int64>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_DATE:
+            {
+                _process_helper<t_uint32>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            case DTYPE_STR:
+            {
+                _process_helper<t_str>(fcolumn, scolumn, dcolumn, pcolumn,
+                    ccolumn, tcolumn, op_base, lkup, prev_pkey_eq_vec,
+                    added_offset);
+            }
+            break;
+            default:
+            {
+                PSP_COMPLAIN_AND_ABORT("Unsupported column dtype");
+            }
+        }
         }
 #ifdef PSP_PARALLEL_FOR
     );
 #endif
 
-    psp_log_time(repr() + " _process.noinit_path.post_process_helper");
+        psp_log_time(repr() + " _process.noinit_path.post_process_helper");
 
-    t_table_sptr flattened_masked = mask.count() == flattened->size()
-        ? flattened
-        : flattened->clone(mask);
-    PSP_GNODE_VERIFY_TABLE(flattened_masked);
+        t_table_sptr flattened_masked = mask.count() == flattened->size()
+            ? flattened
+            : flattened->clone(mask);
+        PSP_GNODE_VERIFY_TABLE(flattened_masked);
 #ifdef PSP_GNODE_VERIFY
-    {
-        auto updated_table = get_table();
-        PSP_GNODE_VERIFY_TABLE(updated_table);
-    }
+        {
+            auto updated_table = get_table();
+            PSP_GNODE_VERIFY_TABLE(updated_table);
+        }
 #endif
-    m_state->update_history(flattened_masked.get());
+        m_state->update_history(flattened_masked.get());
 #ifdef PSP_GNODE_VERIFY
-    {
-        auto updated_table = get_table();
-        PSP_GNODE_VERIFY_TABLE(updated_table);
-    }
+        {
+            auto updated_table = get_table();
+            PSP_GNODE_VERIFY_TABLE(updated_table);
+        }
 #endif
 
-    psp_log_time(repr() + " _process.noinit_path.post_update_history");
+        psp_log_time(repr() + " _process.noinit_path.post_update_history");
 
-    m_oports[PSP_PORT_FLATTENED]->set_table(flattened_masked);
+        m_oports[PSP_PORT_FLATTENED]->set_table(flattened_masked);
 
-    if (t_env::log_data_gnode_flattened())
-    {
-        std::cout << repr() << "gnode_process_flattened_mask" << std::endl;
-        flattened_masked->pprint();
-    }
+        if (t_env::log_data_gnode_flattened())
+        {
+            std::cout << repr() << "gnode_process_flattened_mask" << std::endl;
+            flattened_masked->pprint();
+        }
 
-    if (t_env::log_data_gnode_delta())
-    {
-        std::cout << repr() << "gnode_process_delta" << std::endl;
-        delta->pprint();
-    }
+        if (t_env::log_data_gnode_delta())
+        {
+            std::cout << repr() << "gnode_process_delta" << std::endl;
+            delta->pprint();
+        }
 
-    if (t_env::log_data_gnode_prev())
-    {
-        std::cout << repr() << "gnode_process_prev" << std::endl;
-        prev->pprint();
-    }
+        if (t_env::log_data_gnode_prev())
+        {
+            std::cout << repr() << "gnode_process_prev" << std::endl;
+            prev->pprint();
+        }
 
-    if (t_env::log_data_gnode_current())
-    {
-        std::cout << repr() << "gnode_process_current" << std::endl;
-        current->pprint();
-    }
+        if (t_env::log_data_gnode_current())
+        {
+            std::cout << repr() << "gnode_process_current" << std::endl;
+            current->pprint();
+        }
 
-    if (t_env::log_data_gnode_transitions())
-    {
-        std::cout << repr() << "gnode_process_transitions" << std::endl;
-        transitions->pprint();
-    }
+        if (t_env::log_data_gnode_transitions())
+        {
+            std::cout << repr() << "gnode_process_transitions" << std::endl;
+            transitions->pprint();
+        }
 
-    if (t_env::log_data_gnode_existed())
-    {
-        std::cout << repr() << "gnode_process_existed" << std::endl;
-        existed->pprint();
-    }
+        if (t_env::log_data_gnode_existed())
+        {
+            std::cout << repr() << "gnode_process_existed" << std::endl;
+            existed->pprint();
+        }
 
-    if (t_env::log_time_gnode_process())
-    {
-        auto t2 = std::chrono::high_resolution_clock::now();
-        std::cout << repr() << " gnode_process_time "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(
-                         t2 - t1)
-                         .count()
-                  << std::endl;
-        std::cout << repr() << "gnode_process_time since begin=> "
-                  << std::chrono::duration_cast<std::chrono::milliseconds>(
-                         t2 - m_epoch)
-                         .count()
-                  << std::endl;
-    }
+        if (t_env::log_time_gnode_process())
+        {
+            auto t2 = std::chrono::high_resolution_clock::now();
+            std::cout << repr() << " gnode_process_time "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(
+                             t2 - t1)
+                             .count()
+                      << std::endl;
+            std::cout << repr() << "gnode_process_time since begin=> "
+                      << std::chrono::duration_cast<std::chrono::milliseconds>(
+                             t2 - m_epoch)
+                             .count()
+                      << std::endl;
+        }
 
-    notify_contexts(*flattened_masked);
+        notify_contexts(*flattened_masked);
 
-    psp_log_time(repr() + " _process.noinit_path.exit");
-}
-
-t_table*
-t_gnode::_get_otable(t_uindex portidx)
-{
-    PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-    PSP_VERBOSE_ASSERT(portidx < m_oports.size(), "Invalid port number");
-    return m_oports[portidx]->get_table().get();
-}
-
-t_table*
-t_gnode::_get_itable(t_uindex portidx)
-{
-    PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-    PSP_VERBOSE_ASSERT(portidx < m_iports.size(), "Invalid port number");
-    return m_iports[portidx]->get_table().get();
+        psp_log_time(repr() + " _process.noinit_path.exit");
 }
 
 t_table*
@@ -1070,60 +1052,6 @@ t_gnode::notify_contexts(const t_table& flattened)
     }
 
     psp_log_time(repr() + "notify_contexts.exit");
-}
-
-t_pivotvec
-t_gnode::get_pivots() const
-{
-    PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-
-    t_pivotvec rval;
-
-    for (t_sctxhmap::const_iterator iter = m_contexts.begin();
-         iter != m_contexts.end(); ++iter)
-    {
-        auto ctxh = iter->second;
-
-        switch (ctxh.m_ctx_type)
-        {
-            case TWO_SIDED_CONTEXT:
-            {
-                const t_ctx2* ctx = static_cast<const t_ctx2*>(ctxh.m_ctx);
-                auto pivots = ctx->get_pivots();
-                rval.insert(
-                    std::end(rval), std::begin(pivots), std::end(pivots));
-            }
-            break;
-            case ONE_SIDED_CONTEXT:
-            {
-                const t_ctx1* ctx = static_cast<const t_ctx1*>(ctxh.m_ctx);
-                auto pivots = ctx->get_pivots();
-                rval.insert(
-                    std::end(rval), std::begin(pivots), std::end(pivots));
-            }
-            break;
-            case ZERO_SIDED_CONTEXT:
-            case GROUPED_PKEY_CONTEXT:
-            {
-                // no pivots
-            }
-            break;
-            default:
-            {
-                PSP_COMPLAIN_AND_ABORT("Unexpected context type");
-            }
-            break;
-        }
-    }
-
-    return rval;
-}
-
-t_schema
-t_gnode::get_tblschema() const
-{
-    return m_tblschema;
 }
 
 t_streeptr_vec
@@ -1558,12 +1486,6 @@ void
 t_gnode::set_pool_cleanup(std::function<void()> cleanup)
 {
     m_pool_cleanup = cleanup;
-}
-
-const t_schema&
-t_gnode::get_port_schema() const
-{
-    return m_state->get_port_schema();
 }
 
 t_bool

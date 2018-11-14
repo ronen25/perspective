@@ -779,8 +779,10 @@ t_table::get_scalvec() const
     return rv;
 }
 
-    t_col_sptr t_table::operator[] (const t_str& name) {
-    if (!m_schema.has_column(name)) {
+t_col_sptr t_table::operator[](const t_str& name)
+{
+    if (!m_schema.has_column(name))
+    {
         return t_col_sptr(nullptr);
     }
     return m_columns[m_schema.get_colidx(name)];

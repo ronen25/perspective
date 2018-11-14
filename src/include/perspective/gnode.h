@@ -11,10 +11,8 @@
 #include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/port.h>
-#include <perspective/schema.h>
 #include <perspective/exports.h>
 #include <perspective/context_handle.h>
-#include <perspective/pivot.h>
 #include <perspective/env_vars.h>
 #include <perspective/custom_column.h>
 #include <perspective/shared_ptrs.h>
@@ -85,20 +83,15 @@ public:
     void _register_context(const t_str& name, t_ctx_type type, t_int64 ptr);
     void _unregister_context(const t_str& name);
 
-    t_table* _get_otable(t_uindex portidx);
-    t_table* _get_itable(t_uindex portidx);
     t_table* get_table();
     const t_table* get_table() const;
 
-    t_value_transition
-    calc_transition(t_bool prev_existed, t_bool row_pre_existed,
-    t_bool exists, t_bool prev_valid, t_bool cur_valid, t_bool prev_cur_eq,
-    t_bool prev_pkey_eq);
+    t_value_transition calc_transition(t_bool prev_existed,
+        t_bool row_pre_existed, t_bool exists, t_bool prev_valid,
+        t_bool cur_valid, t_bool prev_cur_eq, t_bool prev_pkey_eq);
 
     void pprint() const;
     t_svec get_registered_contexts() const;
-    t_schema get_tblschema() const;
-    t_pivotvec get_pivots() const;
 
     t_streeptr_vec get_trees();
 
@@ -126,7 +119,6 @@ public:
     t_gnode_recipe get_recipe() const;
     t_bool has_python_dep() const;
     void set_pool_cleanup(std::function<void()> cleanup);
-    const t_schema& get_port_schema() const;
     t_bool was_updated() const;
     void clear_updated();
 
@@ -338,6 +330,5 @@ t_gnode::_process_helper(const t_column* fcolumn, const t_column* scolumn,
         }
     }
 }
-
 
 } // end namespace perspective
