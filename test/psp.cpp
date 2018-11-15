@@ -503,7 +503,6 @@ protected:
 
 typedef GNodeTest<DTYPE_INT64> I64GnodeTest;
 
-
 // clang-format off
 TEST_F(I64GnodeTest, test_1) {
 
@@ -711,156 +710,100 @@ public:
 };
 
 // clang-formant off
-TEST_F(I64Ctx1SumTest, test_1) {
+TEST_F(I64Ctx1SumTest, test_1)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, i64_clear}},
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, i64_clear}},
             // TODO correct
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        }
-    };
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_2) {
+TEST_F(I64Ctx1SumTest, test_2)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{dop, 1_ts, i64_null}},
-            {"Grand Aggregate"_ts, 0_ts}
-        }
-    };
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{dop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_3) {
+TEST_F(I64Ctx1SumTest, test_3)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, i64_null}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        }
-    };
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_4) {
+TEST_F(I64Ctx1SumTest, test_4)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{dop, 1_ts, i64_null},
-            {iop, 1_ts, 2_ts}},
-            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts }
-        }
-    };
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{dop, 1_ts, i64_null}, {iop, 1_ts, 2_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_5) {
+TEST_F(I64Ctx1SumTest, test_5)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, i64_null}},
-            {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}
-        },
-        {
-            {{iop, 2_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, i64_null, 0_ts, 1_ts, 1_ts}
-        }
-    };
+        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}},
+        {{{iop, 2_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, i64_null, 0_ts, 1_ts, 1_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_6) {
-
-   t_testdata data{
-       {
-           {{iop, 1_ts, i64_null}},
-           {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}
-       },
-       {
-           {{iop, 1_ts, 1_ts}},
-           {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}
-       }
-   };
-
-
-   run(data);
-}
-
-TEST_F(I64Ctx1SumTest, test_7) {
+TEST_F(I64Ctx1SumTest, test_6)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, i64_null}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        }
-    };
+        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}},
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_8) {
+TEST_F(I64Ctx1SumTest, test_7)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, 2_ts}},
-            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts }
-        }
-    };
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
 
     run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_9) {
+TEST_F(I64Ctx1SumTest, test_8)
+{
 
     t_testdata data{
-        {
-            {{dop, 1_ts, i64_null}},
-            {"Grand Aggregate"_ts, s_none}
-        }
-    };
+        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, 2_ts}}, {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts}}};
+
+    run(data);
+}
+
+TEST_F(I64Ctx1SumTest, test_9)
+{
+
+    t_testdata data{{{{dop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, s_none}}};
 
     run(data);
 }
 
 // clang-format on
-
-
 
 class I64Ctx1CountTest : public CtxTest<I64Ctx1CountTest, t_ctx1>
 {
@@ -879,36 +822,19 @@ public:
     }
 };
 
-
 // clang-formant off
-TEST_F(I64Ctx1CountTest, test_1) {
+TEST_F(I64Ctx1CountTest, test_1)
+{
 
     t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 1_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{iop, 2_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
-        },
-        {
-            {{dop, 2_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
-        },
-        {
-            {{dop, 1_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 0_ts }
-        }
-    };
+        {{{iop, 1_ts, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 1_ts, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{iop, 2_ts, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts}},
+        {{{dop, 2_ts, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
+        {{{dop, 1_ts, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 0_ts}}};
 
     run(data);
 }
-
 
 class F64Ctx1MeanTest : public CtxTest<F64Ctx1MeanTest, t_ctx1>
 {
@@ -927,48 +853,35 @@ public:
     }
 };
 
-
-TEST_F(F64Ctx1MeanTest, test_1) {
-    t_testdata data{
-        {
-            {},
-            // TODO Fix
-            {"Grand Aggregate"_ts, s_none }
-        }
-    };
+TEST_F(F64Ctx1MeanTest, test_1)
+{
+    t_testdata data{{{},
+        // TODO Fix
+        {"Grand Aggregate"_ts, s_none}}};
 
     run(data);
 }
 
-TEST_F(F64Ctx1MeanTest, test_2) {
-    t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts, 3_ts},
-            {iop, 2_ts, 1_ts, 5_ts},
-            {iop, 3_ts, 1_ts, 4_ts}},
-            // TODO Fix
-            {"Grand Aggregate"_ts, 4._ts, 1_ts, 4._ts }
-        }
-    };
+TEST_F(F64Ctx1MeanTest, test_2)
+{
+    t_testdata data{{{{iop, 1_ts, 1_ts, 3_ts}, {iop, 2_ts, 1_ts, 5_ts},
+                         {iop, 3_ts, 1_ts, 4_ts}},
+        // TODO Fix
+        {"Grand Aggregate"_ts, 4._ts, 1_ts, 4._ts}}};
 
     run(data);
 }
 
-TEST_F(F64Ctx1MeanTest, test_3) {
-    t_testdata data{
-        {
-            {{iop, 1_ts, 1_ts, 3_ts},
-            {iop, 2_ts, 1_ts, i64_null},
-            {iop, 3_ts, 1_ts, 4_ts}},
-            // TODO Fix
-            {"Grand Aggregate"_ts, 3.5_ts, 1_ts, 3.5_ts }
-        }
-    };
+TEST_F(F64Ctx1MeanTest, test_3)
+{
+    t_testdata data{{{{iop, 1_ts, 1_ts, 3_ts}, {iop, 2_ts, 1_ts, i64_null},
+                         {iop, 3_ts, 1_ts, 4_ts}},
+        // TODO Fix
+        {"Grand Aggregate"_ts, 3.5_ts, 1_ts, 3.5_ts}}};
 
     run(data);
 }
 // clang-format on
-
 
 class F64Ctx1UniqueTest : public CtxTest<F64Ctx1UniqueTest, t_ctx1>
 {
@@ -1013,7 +926,6 @@ TEST_F(F64Ctx1UniqueTest, test_2) {
     run(data);
 }
 // clang-format on
-
 
 /*
 \

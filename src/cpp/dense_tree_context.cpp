@@ -12,6 +12,7 @@
 #include <perspective/dense_tree_context.h>
 #include <perspective/dependency.h>
 #include <perspective/schema.h>
+#include <perspective/table.h>
 
 namespace perspective
 {

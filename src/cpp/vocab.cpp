@@ -11,6 +11,7 @@
 #include <perspective/vocab.h>
 #include <unordered_set>
 #include <sstream>
+#include <iostream>
 
 namespace perspective
 {

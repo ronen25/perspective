@@ -8,7 +8,6 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/context_base.h>
 #include <perspective/shared_ptrs.h>
 #include <perspective/path.h>

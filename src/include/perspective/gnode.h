@@ -161,7 +161,7 @@ private:
     t_bool m_init;
     t_port_sptrvec m_iports;
     t_port_sptrvec m_oports;
-    t_sctxhmap m_contexts;
+    std::map<t_str, t_ctx_handle> m_contexts;
     t_gstate_sptr m_state;
     t_uindex m_id;
     std::chrono::high_resolution_clock::time_point m_epoch;

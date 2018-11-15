@@ -9,6 +9,9 @@
 
 #include <perspective/first.h>
 #include <perspective/extract_aggregate.h>
+#include <perspective/scalar.h>
+#include <perspective/column.h>
+#include <perspective/aggspec.h>
 
 namespace perspective
 {

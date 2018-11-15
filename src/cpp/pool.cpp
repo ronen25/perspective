@@ -181,12 +181,6 @@ t_pool::get_trees()
         rval.insert(std::end(rval), std::begin(trees), std::end(trees));
     }
 
-    if (t_env::log_progress())
-    {
-        std::cout << "t_pool.get_trees: "
-                  << " rv => " << rval << std::endl;
-    }
-
     return rval;
 }
 

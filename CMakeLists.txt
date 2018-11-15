@@ -63,7 +63,6 @@ src/cpp/column.cpp
 src/cpp/comparators.cpp
 src/cpp/compat.cpp
 src/cpp/compat_impl_linux.cpp
-src/cpp/compat_impl_osx.cpp
 src/cpp/compat_impl_win.cpp
 src/cpp/config.cpp
 src/cpp/context_base.cpp
@@ -96,7 +95,6 @@ src/cpp/pool.cpp
 src/cpp/port.cpp
 src/cpp/raii.cpp
 src/cpp/raii_impl_linux.cpp
-src/cpp/raii_impl_osx.cpp
 src/cpp/raii_impl_win.cpp
 src/cpp/range.cpp
 src/cpp/rlookup.cpp
@@ -110,7 +108,6 @@ src/cpp/sparse_tree_node.cpp
 src/cpp/step_delta.cpp
 src/cpp/storage.cpp
 src/cpp/storage_impl_linux.cpp
-src/cpp/storage_impl_osx.cpp
 src/cpp/storage_impl_win.cpp
 src/cpp/sym_table.cpp
 src/cpp/table.cpp
@@ -130,12 +127,36 @@ else()
 	add_library(psp SHARED ${SOURCE_FILES} ${HEADER_FILES})
 endif()
 
-if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT PSP_WASM_BUILD)
-	target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated -Wall -pedantic -Werror)
-	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-arcs -ftest-coverage -fPIC -O0>)
+if (UNIX)
+	target_compile_options(psp PRIVATE -Wall -pedantic -Werror)
+	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fPIC -O0>)
 	target_compile_definitions(psp PRIVATE -DPSP_DEBUG)
-	target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
 endif()
+
+if (NOT PSP_WASM_BUILD)
+	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
+		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
+		set(GCOV_CMD "llvm-cov gcov")
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
+		target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated)
+		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-arcs -ftest-coverage>)
+		target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
+		set(GCOV_CMD "gcov")
+	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
+	endif()
+
+	add_custom_target(gcov
+           COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
+           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+           )
+   	add_custom_command(TARGET gcov
+           COMMAND echo "=================== GCOV ===================="
+		   COMMAND gcovr -r ../ --html --html-details --gcov-executable ${GCOV_CMD} -o coverage/index.html
+           COMMAND xdg-open coverage/index.html
+           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+           )
+endif()
+
 
 if (WIN32)
 	target_compile_definitions(psp PUBLIC -DPERSPECTIVE_EXPORTS)
@@ -187,19 +208,9 @@ if (NOT PSP_WASM_BUILD)
    endif()
    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
-   psp_build_dep("tbb" "cmake/TBB.txt.in")
+   #psp_build_dep("tbb" "cmake/TBB.txt.in")
    #psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)
    #add_subdirectory(bench)
-   add_custom_target(gcov
-           COMMAND mkdir -p ${CMAKE_BINARY_DIR}/coverage
-           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-           )
-   add_custom_command(TARGET gcov
-           COMMAND echo "=================== GCOV ===================="
-           COMMAND gcovr -r ../ --html --html-details -o coverage/index.html
-           COMMAND xdg-open coverage/index.html
-           WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-           )
 endif()
 

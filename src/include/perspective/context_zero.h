@@ -8,12 +8,9 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/context_base.h>
 #include <perspective/sort_specification.h>
-#include <perspective/histogram.h>
-#include <perspective/sym_table.h>
 #include <perspective/shared_ptrs.h>
 
 namespace perspective
@@ -50,7 +47,7 @@ private:
     t_ftrav_sptr m_traversal;
     t_sptr_zcdeltas m_deltas;
     t_minmaxvec m_minmax;
-    t_symtable m_symtable;
+    t_symtable_sptr m_symtable;
     t_bool m_has_delta;
 };
 

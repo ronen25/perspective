@@ -9,7 +9,6 @@
 
 #pragma once
 
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/pivot.h>
 #include <perspective/dense_nodes.h>
@@ -17,9 +16,7 @@
 #include <perspective/shared_ptrs.h>
 #include <perspective/tree_iterator.h>
 #include <perspective/column.h>
-#include <sstream>
-#include <csignal>
-#include <queue>
+
 
 // Pass filter in and store the filter on the tree
 // as a shared ptr

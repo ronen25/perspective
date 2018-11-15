@@ -14,7 +14,6 @@
 #include <perspective/column.h>
 #include <perspective/storage.h>
 #include <perspective/scalar.h>
-#include <perspective/tracing.h>
 #include <perspective/utils.h>
 #include <perspective/logtime.h>
 #include <sstream>
@@ -506,13 +505,13 @@ t_table::get_recipe() const
     return rval;
 }
 
-t_mask
-t_table::filter_cpp(t_filter_op combiner, const t_ftermvec& fterms_) const
+t_masksptr
+t_table::filter_cpp(t_filter_op combiner, const t_ftermvec &fterms_) const
 {
     auto self = const_cast<t_table*>(this);
     auto fterms = fterms_;
 
-    t_mask mask(size());
+    auto mask = std::make_shared<t_mask>(size());
     t_uindex fterm_size = fterms.size();
     std::vector<t_uindex> indices(fterm_size);
     t_colcptrvec columns(fterm_size);
@@ -568,7 +567,7 @@ t_table::filter_cpp(t_filter_op combiner, const t_ftermvec& fterms_) const
                     }
                 }
 
-                mask.set(ridx, pass);
+                mask->set(ridx, pass);
             }
         }
         break;
@@ -587,7 +586,7 @@ t_table::filter_cpp(t_filter_op combiner, const t_ftermvec& fterms_) const
                         break;
                     }
                 }
-                mask.set(ridx, pass);
+                mask->set(ridx, pass);
             }
         }
         break;

@@ -8,7 +8,6 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/context_base.h>
 #include <perspective/sort_specification.h>

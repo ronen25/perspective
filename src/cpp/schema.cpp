@@ -10,6 +10,7 @@
 #include <perspective/first.h>
 #include <perspective/schema.h>
 #include <sstream>
+#include <iostream>
 
 namespace perspective
 {

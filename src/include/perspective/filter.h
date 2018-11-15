@@ -8,14 +8,11 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/base.h>
-#include <perspective/raw_types.h>
 #include <perspective/comparators.h>
-#include <perspective/mask.h>
+#include <perspective/shared_ptrs.h>
 #include <perspective/scalar.h>
 #include <perspective/exports.h>
-#include <boost/scoped_ptr.hpp>
 #include <functional>
 #include <set>
 

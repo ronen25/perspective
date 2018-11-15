@@ -17,7 +17,6 @@
 #include <perspective/multi_sort.h>
 #include <perspective/sparse_tree.h>
 #include <perspective/sym_table.h>
-#include <perspective/tracing.h>
 #include <perspective/utils.h>
 #include <perspective/env_vars.h>
 #include <perspective/dense_tree.h>
@@ -552,7 +551,7 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& delta,
 
     t_column* spkey = strands->get_column("psp_pkey").get();
 
-    t_mask msk_prev, msk_curr;
+    t_masksptr msk_prev, msk_curr;
 
     if (config.has_filters())
     {
@@ -567,8 +566,8 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& delta,
         for (t_uindex idx = 0, loop_end = flattened.size(); idx < loop_end;
              ++idx)
         {
-            t_bool filter_prev = msk_prev.get(idx);
-            t_bool filter_curr = msk_curr.get(idx);
+            t_bool filter_prev = msk_prev->get(idx);
+            t_bool filter_curr = msk_curr->get(idx);
 
             t_tscalar pkey = pkey_col->get_scalar(idx);
             t_uint8 op_ = *(op_col->get_nth<t_uint8>(idx));
@@ -714,7 +713,7 @@ t_stree::build_strand_table(const t_table& flattened,
 
     t_column* spkey = strands->get_column("psp_pkey").get();
 
-    t_mask msk;
+    t_masksptr msk;
 
     if (config.has_filters())
     {
@@ -725,7 +724,7 @@ t_stree::build_strand_table(const t_table& flattened,
 
     for (t_uindex idx = 0, loop_end = flattened.size(); idx < loop_end; ++idx)
     {
-        t_bool filter = !has_filters || msk.get(idx);
+        t_bool filter = !has_filters || msk->get(idx);
         t_tscalar pkey = pkey_col->get_scalar(idx);
         t_uint8 op_ = *(op_col->get_nth<t_uint8>(idx));
         t_op op = static_cast<t_op>(op_);

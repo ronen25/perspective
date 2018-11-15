@@ -16,7 +16,6 @@
 #include <perspective/utils.h>
 #include <fcntl.h>
 #include <sys/mman.h>
-#include <sys/mman.h>
 #include <sys/resource.h>
 #include <sys/stat.h>
 #include <sys/syscall.h>

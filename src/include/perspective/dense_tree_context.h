@@ -8,13 +8,11 @@
  */
 
 #pragma once
-#include <perspective/first.h>
-#include <perspective/table.h>
 #include <perspective/aggregate.h>
 #include <perspective/dense_tree.h>
 #include <perspective/aggspec.h>
 #include <perspective/exports.h>
-#include <perspective/filter.h>
+#include <perspective/shared_ptrs.h>
 
 namespace perspective
 {

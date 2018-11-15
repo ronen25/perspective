@@ -19,6 +19,7 @@
 #include <perspective/traversal.h>
 #include <perspective/env_vars.h>
 #include <perspective/filter_utils.h>
+#include <perspective/sym_table.h>
 #include <queue>
 #include <tuple>
 #include <unordered_set>
@@ -44,6 +45,7 @@ t_ctx_grouped_pkey::init()
     m_traversal = std::shared_ptr<t_traversal>(
         new t_traversal(m_tree, m_config.handle_nan_sort()));
     m_minmax = t_minmaxvec(m_config.get_num_aggregates());
+    m_symtable = std::make_shared<t_symtable>();
     m_init = true;
 }
 
@@ -558,7 +560,7 @@ t_ctx_grouped_pkey::rebuild()
     if (m_config.has_filters())
     {
         auto mask = filter_table_for_config(*tbl, m_config);
-        tbl = tbl->clone(mask);
+        tbl = tbl->clone(*mask);
     }
 
     t_str child_col_name = m_config.get_child_pkey_column();
@@ -688,7 +690,7 @@ t_ctx_grouped_pkey::rebuild()
         const t_datum& rec = data[ridx];
         t_uindex pridx = rec.m_is_rchild ? 0 : sortidx_map.at(rec.m_pidx);
 
-        auto sortby_value = m_symtable.get_interned_tscalar(
+        auto sortby_value = m_symtable->get_interned_tscalar(
             sortby_col->get_scalar(rec.m_idx));
 
         t_uindex nidx = ridx + 1;
@@ -696,13 +698,13 @@ t_ctx_grouped_pkey::rebuild()
 
         auto pnode = m_tree->get_node(pidx);
 
-        auto value = m_symtable.get_interned_tscalar(rec.m_child);
+        auto value = m_symtable->get_interned_tscalar(rec.m_child);
 
         t_stnode node(
             nidx, pidx, value, pnode.m_depth + 1, sortby_value, 1, nidx);
 
         m_tree->insert_node(node);
-        m_tree->add_pkey(nidx, m_symtable.get_interned_tscalar(rec.m_pkey));
+        m_tree->add_pkey(nidx, m_symtable->get_interned_tscalar(rec.m_pkey));
 
         auto riter = p_range_map.find(rec.m_child);
 
@@ -787,8 +789,7 @@ t_ctx_grouped_pkey::notify(const t_table& flattened)
 // as agg_indices
 void
 t_ctx_grouped_pkey::get_aggregates_for_sorting(t_uindex nidx,
-    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
-    t_ctx2*) const
+    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates, void*) const
 {
     for (t_uindex idx = 0, loop_end = agg_indices.size(); idx < loop_end; ++idx)
     {

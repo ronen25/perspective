@@ -15,7 +15,6 @@
 #include <perspective/gnode.h>
 #include <perspective/gnode_state.h>
 #include <perspective/mask.h>
-#include <perspective/tracing.h>
 #include <perspective/env_vars.h>
 #include <perspective/logtime.h>
 #include <perspective/utils.h>
@@ -936,13 +935,12 @@ t_gnode::notify_contexts(const t_table& flattened)
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     psp_log_time(repr() + "notify_contexts.enter");
     t_index num_ctx = m_contexts.size();
-    t_sctxhvec ctxhvec(num_ctx);
+    std::vector<t_ctx_handle> ctxhvec(num_ctx);
 
     t_index ctxh_count = 0;
-    for (t_sctxhmap::const_iterator iter = m_contexts.begin();
-         iter != m_contexts.end(); ++iter)
+    for (const auto& context : m_contexts)
     {
-        ctxhvec[ctxh_count] = iter->second;
+        ctxhvec[ctxh_count] = context.second;
         ctxh_count++;
     }
 

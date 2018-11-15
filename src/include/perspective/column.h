@@ -14,9 +14,8 @@
 #include <perspective/exports.h>
 #include <perspective/scalar.h>
 #include <perspective/histogram.h>
-#include <perspective/mask.h>
 #include <perspective/compat.h>
-#include <perspective/vocab.h>
+#include <perspective/shared_ptrs.h>
 #include <functional>
 #include <limits>
 #include <cmath>
@@ -56,7 +55,6 @@ struct t_colstr_sort
     const char* m_str;
 };
 
-typedef std::shared_ptr<t_vocab> t_vocab_sptr;
 
 class t_column;
 
@@ -186,16 +184,14 @@ public:
 
     void pprint() const;
 
-    template <typename DATA_T>
-    void set_nth_body(t_uindex idx, DATA_T elem, t_status status);
+    void set_nth_body(t_uindex idx, const char* elem, t_status status);
 
     t_column_recipe get_recipe() const;
 
     // vocabulary must not contain empty string
     // indices should be > 0
     // scalars will be implicitly understood to be of dtype str
-    template <typename VOCAB_T>
-    void set_vocabulary(const VOCAB_T& vocab, size_t total_size = 0);
+    void set_vocabulary(const std::vector<std::pair<t_tscalar, t_uindex>>& vocab, size_t total_size=0);
 
     void copy_vocabulary(const t_column* other);
 
@@ -403,35 +399,9 @@ t_column::fill(VEC_T& vec, const t_uindex* bidx, const t_uindex* eidx) const
 
 template <typename DATA_T>
 void
-t_column::set_nth_body(t_uindex idx, DATA_T elem, t_status status)
-{
-    COLUMN_CHECK_ACCESS(idx);
-    PSP_VERBOSE_ASSERT(m_dtype == DTYPE_STR, "Setting non string column");
-    t_uindex interned = m_vocab->get_interned(elem);
-    m_data->set_nth<t_uindex>(idx, interned);
-
-    if (is_status_enabled())
-    {
-        m_status->set_nth<t_status>(idx, status);
-    }
-}
-
-template <typename DATA_T>
-void
 t_column::raw_fill(DATA_T v)
 {
     m_data->raw_fill(v);
-}
-
-template <typename VOCAB_T>
-void
-t_column::set_vocabulary(const VOCAB_T& vocab, size_t total_size)
-{
-    if (total_size)
-        m_vocab->reserve(total_size, vocab.size() + 1);
-
-    for (const auto& kv : vocab)
-        m_vocab->get_interned(kv.first.get_char_ptr());
 }
 
 template <>

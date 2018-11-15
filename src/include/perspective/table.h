@@ -10,18 +10,15 @@
 #pragma once
 #include <perspective/first.h>
 #include <perspective/base.h>
-#include <perspective/column.h>
 #include <perspective/schema.h>
 #include <perspective/schema_column.h>
 #include <perspective/exports.h>
-#include <perspective/mask.h>
 #include <perspective/filter.h>
-#include <perspective/compat.h>
+#include <perspective/shared_ptrs.h>
 #ifdef PSP_PARALLEL_FOR
 #include <tbb/parallel_sort.h>
 #include <tbb/tbb.h>
 #endif
-#include <tuple>
 #include <perspective/scalar.h>
 
 namespace perspective
@@ -118,7 +115,7 @@ public:
     void clear();
     void reset();
 
-    t_mask filter_cpp(t_filter_op combiner, const t_ftermvec& fops) const;
+    t_masksptr filter_cpp(t_filter_op combiner, const t_ftermvec &fops) const;
     t_table* clone_(const t_mask& mask) const;
     t_table_sptr clone(const t_mask& mask) const;
     t_table_sptr clone() const;

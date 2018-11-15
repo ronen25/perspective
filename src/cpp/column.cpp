@@ -14,6 +14,8 @@ SUPPRESS_WARNINGS_VC(4505)
 #include <perspective/defaults.h>
 #include <perspective/base.h>
 #include <perspective/sym_table.h>
+#include <perspective/vocab.h>
+#include <perspective/mask.h>
 #include <unordered_set>
 
 namespace perspective
@@ -1194,4 +1196,27 @@ t_column::borrow_vocabulary(const t_column& o)
     m_vocab = const_cast<t_column&>(o).m_vocab;
 }
 
+void
+t_column::set_vocabulary(const std::vector<std::pair<t_tscalar, t_uindex>>& vocab, size_t total_size)
+{
+    if (total_size)
+        m_vocab->reserve(total_size, vocab.size() + 1);
+
+    for (const auto& kv : vocab)
+        m_vocab->get_interned(kv.first.get_char_ptr());
+}
+
+void
+t_column::set_nth_body(t_uindex idx, const char* elem, t_status status)
+{
+    COLUMN_CHECK_ACCESS(idx);
+    PSP_VERBOSE_ASSERT(m_dtype == DTYPE_STR, "Setting non string column");
+    t_uindex interned = m_vocab->get_interned(elem);
+    m_data->set_nth<t_uindex>(idx, interned);
+
+    if (is_status_enabled())
+    {
+        m_status->set_nth<t_status>(idx, status);
+    }
+}
 } // end namespace perspective

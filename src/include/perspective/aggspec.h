@@ -8,7 +8,6 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/dependency.h>
 #include <perspective/exports.h>

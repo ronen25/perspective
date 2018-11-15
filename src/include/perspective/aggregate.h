@@ -8,8 +8,6 @@
  */
 
 #pragma once
-#include <perspective/first.h>
-#include <perspective/raw_types.h>
 #include <perspective/dense_tree.h>
 #include <perspective/aggspec.h>
 #include <perspective/column.h>

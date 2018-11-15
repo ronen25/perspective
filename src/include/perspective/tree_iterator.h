@@ -8,7 +8,6 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/raw_types.h>
 #include <queue>
 #include <vector>

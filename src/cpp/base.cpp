@@ -13,9 +13,25 @@
 #include <limits>
 #include <cstring>
 #include <boost/functional/hash.hpp>
+#include <csignal>
+#include <iostream>
 
 namespace perspective
 {
+
+void
+psp_log(const char* file, t_uint64 line_no, const char* msg)
+{
+    std::stringstream ss;
+    std::cout << file << ":" << line_no << ": " << msg << " : "
+              << perspective::get_error_str();
+}
+
+void
+psp_abort()
+{
+    std::raise(SIGINT);
+}
 
 bool
 is_numeric_type(t_dtype dtype)

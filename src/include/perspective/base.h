@@ -18,8 +18,7 @@
 #include <perspective/raw_types.h>
 #include <perspective/portable.h>
 #include <vector>
-#include <csignal>
-#include <sstream>
+#include <iostream>
 
 namespace perspective
 {
@@ -29,11 +28,9 @@ const t_float64 PSP_TABLE_GROW_RATIO = 1.3;
 
 #ifdef WIN32
 #define PSP_RESTRICT __restrict
-#define PSP_ABORT() DebugBreak()
 #define PSP_THR_LOCAL __declspec(thread)
 #else
 #define PSP_RESTRICT __restrict__
-#define PSP_ABORT() std::raise(SIGINT);
 #define PSP_THR_LOCAL __thread
 #endif
 
@@ -54,6 +51,9 @@ const t_index INVALID_INDEX = -1;
 #define CHAR_BIT 8
 #endif
 
+void psp_log(const char* file, t_uint64 line_no, const char* msg);
+void psp_abort();
+
 //#define PSP_TRACE_SENTINEL() t_trace _psp_trace_sentinel;
 #define PSP_TRACE_SENTINEL()
 #ifdef PSP_DEBUG
@@ -61,20 +61,15 @@ const t_index INVALID_INDEX = -1;
     {                                                                          \
         if (!(COND))                                                           \
         {                                                                      \
-            std::stringstream ss;                                              \
-            ss << __FILE__ << ":" << __LINE__ << ": " << MSG << " : "          \
-               << perspective::get_error_str();                                \
-            perror(ss.str().c_str());                                          \
-            PSP_ABORT();                                                       \
+            psp_log(__FILE__, __LINE__, MSG);                                   \
+            psp_abort();                                                       \
         }                                                                      \
     }
 
 #define PSP_COMPLAIN_AND_ABORT(X)                                              \
     {                                                                          \
-        std::stringstream ss;                                                  \
-        ss << __FILE__ << ":" << __LINE__ << ": " << X;                        \
-        perror(ss.str().c_str());                                              \
-        PSP_ABORT();                                                           \
+        psp_log(__FILE__, __LINE__, X);                                       \
+        psp_abort();                                                           \
     }
 
 #define PSP_ASSERT_SIMPLE_TYPE(X)                                              \
@@ -411,7 +406,7 @@ PERSPECTIVE_EXPORT t_uindex get_dtype_size(t_dtype dtype);
 PERSPECTIVE_EXPORT t_bool is_vlen_dtype(t_dtype dtype);
 
 template <typename T>
-inline std::ostream&
+std::ostream&
 operator<<(std::ostream& os, const std::vector<T>& row)
 {
     for (int i = 0, loop_end = row.size(); i < loop_end; ++i)
@@ -423,7 +418,7 @@ operator<<(std::ostream& os, const std::vector<T>& row)
 }
 
 template <typename FIRST_T, typename SECOND_T>
-inline std::ostream&
+std::ostream&
 operator<<(std::ostream& os, const std::pair<FIRST_T, SECOND_T>& p)
 {
     os << "<" << p.first << ", " << p.second << ">";

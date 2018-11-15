@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <thread>
 #include <sstream>
+#include <iostream>
 
 PSP_THR_LOCAL perspective::t_uindex th_curtime;
 PSP_THR_LOCAL perspective::t_uindex th_curtime_origin;

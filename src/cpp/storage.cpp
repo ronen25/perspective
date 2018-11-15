@@ -23,7 +23,6 @@ SUPPRESS_WARNINGS_VC(4505)
 #include <perspective/raii.h>
 #include <perspective/raw_types.h>
 #include <perspective/storage.h>
-#include <perspective/tracing.h>
 #include <perspective/utils.h>
 #include <perspective/env_vars.h>
 #include <sstream>

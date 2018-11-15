@@ -7,7 +7,6 @@
  *
  */
 
-#include <perspective/first.h>
 #include <perspective/aggspec.h>
 #include <perspective/base.h>
 #include <sstream>

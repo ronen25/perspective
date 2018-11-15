@@ -8,15 +8,11 @@
  */
 
 #pragma once
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/storage.h>
 #include <perspective/exports.h>
-#include <perspective/compat.h>
-#include <perspective/vocab.h>
 #include <functional>
 #include <limits>
-#include <cmath>
 #include <unordered_map>
 
 namespace perspective
