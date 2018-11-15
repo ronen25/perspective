@@ -19,11 +19,10 @@
 namespace perspective
 {
 t_ctx2::t_ctx2()
-    : 
-    m_row_depth(0),
-    m_row_depth_set(false),
-    m_column_depth(0),
-    m_column_depth_set(false)
+    : m_row_depth(0)
+    , m_row_depth_set(false)
+    , m_column_depth(0)
+    , m_column_depth_set(false)
 {
 }
 

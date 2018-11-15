@@ -18,6 +18,9 @@
 namespace perspective
 {
 
+class t_ctx1;
+typedef std::shared_ptr<t_ctx1> t_ctx1_sptr;
+
 class PERSPECTIVE_EXPORT t_ctx1 : public t_ctxbase<t_ctx1>
 {
 public:
@@ -29,7 +32,7 @@ public:
 
 #include <perspective/context_common_decls.h>
 
-    // ASGGrid data interface
+    static t_ctx1_sptr build(const t_schema& s, const t_config& c);
 
     t_index open(t_header header, t_tvidx idx);
     t_index open(t_tvidx idx);
@@ -61,7 +64,6 @@ private:
     t_bool m_depth_set;
 };
 
-typedef std::shared_ptr<t_ctx1> t_ctx1_sptr;
 typedef std::vector<t_ctx1_sptr> t_ctx1_svec;
 
 } // end namespace perspective

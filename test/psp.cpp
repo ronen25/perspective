@@ -22,7 +22,7 @@ using namespace perspective;
 
 t_tscalar bnull = mknull(DTYPE_BOOL);
 t_tscalar snull = mknull(DTYPE_STR);
-t_tscalar i64null = mknull(DTYPE_INT64);
+t_tscalar i64_null = mknull(DTYPE_INT64);
 
 t_tscalar s_true = mktscalar<t_bool>(true);
 t_tscalar s_false = mktscalar<t_bool>(false);
@@ -32,6 +32,9 @@ t_tscalar dop = mktscalar<t_uint8>(OP_DELETE);
 t_tscalar cop = mktscalar<t_uint8>(OP_CLEAR);
 t_tscalar s_nan32 = mktscalar(std::numeric_limits<t_float32>::quiet_NaN());
 t_tscalar s_nan64 = mktscalar(std::numeric_limits<t_float64>::quiet_NaN());
+t_tscalar i64_clear = mkclear(DTYPE_INT64);
+t_tscalar f64_clear = mkclear(DTYPE_FLOAT64);
+t_tscalar str_clear = mkclear(DTYPE_STR);
 
 std::vector<t_dtype> numeric_dtypes{
     DTYPE_INT64,
@@ -447,9 +450,9 @@ TEST(SCALAR, contains)
 class BaseTest : public ::testing::Test
 {
 public:
-    typedef std::vector<t_tscalvec> t_tbldata;
-    typedef std::pair<t_tbldata, t_tbldata> t_stepdata;
-    typedef std::vector<t_stepdata> t_testdata;
+    using t_tbldata = std::vector<t_tscalvec>;
+    using t_stepdata = std::pair<t_tbldata, t_tbldata>;
+    using t_testdata = std::vector<t_stepdata>;
 
 protected:
     virtual t_table_sptr get_step_otable() = 0;
@@ -500,125 +503,7 @@ protected:
 
 typedef GNodeTest<DTYPE_INT64> I64GnodeTest;
 
-template <typename T, t_dtype DTYPE_T>
-class Ctx1Test : public GNodeTest<DTYPE_T>
-{
 
-public:
-    Ctx1Test()
-    {
-        this->m_ischema = static_cast<T*>(this)->get_ischema();
-        this->m_g = t_gnode::build(this->m_ischema);
-        this->m_oschema = static_cast<T*>(this)->get_oschema();
-        m_ctx = std::make_shared<t_ctx1>(
-            this->m_ischema, static_cast<T*>(this)->get_config());
-        m_ctx->init();
-        this->m_g->register_context("ctx", m_ctx);
-    }
-
-    virtual t_table_sptr
-    get_step_otable()
-    {
-        return m_ctx->get_table();
-    }
-
-protected:
-    t_ctx1_sptr m_ctx;
-};
-
-#define PSP_DEF_TESTCLASS_ARGS_1(CLASSNAME, DTYPE, AGGNAME, AGGTYPE)           \
-    class CLASSNAME : public Ctx1Test<CLASSNAME, (DTYPE)>                      \
-    {                                                                          \
-    public:                                                                    \
-        t_schema                                                               \
-        get_ischema()                                                          \
-        {                                                                      \
-            return t_schema{{"psp_op", "psp_pkey", "x"},                       \
-                {DTYPE_UINT8, DTYPE_INT64, DTYPE}};                            \
-        }                                                                      \
-        t_schema                                                               \
-        get_oschema()                                                          \
-        {                                                                      \
-            return t_schema{{(AGGNAME), "x"}, {(DTYPE), (DTYPE)}};             \
-        }                                                                      \
-        t_config                                                               \
-        get_config()                                                           \
-        {                                                                      \
-            return t_config{{"x"}, {(AGGNAME), (AGGTYPE), "x"}};               \
-        }                                                                      \
-    };
-
-#define PSP_DEF_TESTCLASS_ARGS_2(CLASSNAME, DTYPE, AGGNAME, AGGTYPE)           \
-    class CLASSNAME : public Ctx1Test<CLASSNAME, (DTYPE)>                      \
-    {                                                                          \
-    public:                                                                    \
-        t_schema                                                               \
-        get_ischema()                                                          \
-        {                                                                      \
-            return t_schema{{"psp_op", "psp_pkey", "x", "y"},                  \
-                {DTYPE_UINT8, DTYPE_INT64, DTYPE, DTYPE}};                     \
-        }                                                                      \
-        t_schema                                                               \
-        get_oschema()                                                          \
-        {                                                                      \
-            return t_schema{{(AGGNAME), "x"}, {(DTYPE), (DTYPE)}};             \
-        }                                                                      \
-        t_config                                                               \
-        get_config()                                                           \
-        {                                                                      \
-            return t_config{{"x"}, {(AGGNAME), (AGGTYPE), "y"}};               \
-        }                                                                      \
-    };
-
-PSP_DEF_TESTCLASS_ARGS_1(I64Ctx1SumTest, DTYPE_INT64, "sum_x", AGGTYPE_SUM);
-
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1CountTest, DTYPE_INT64, "count_y", AGGTYPE_COUNT);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1MeanTest, DTYPE_FLOAT64, "mean_y", AGGTYPE_MEAN);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1UniqueTest, DTYPE_FLOAT64, "unique_y", AGGTYPE_UNIQUE);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AnyTest, DTYPE_FLOAT64, "any_y", AGGTYPE_ANY);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1MedianTest, DTYPE_FLOAT64, "median_y", AGGTYPE_MEDIAN);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1JoinTest, DTYPE_FLOAT64, "join_y", AGGTYPE_JOIN);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1DominantTest, DTYPE_FLOAT64, "dominant_y", AGGTYPE_DOMINANT);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1FirstTest, DTYPE_FLOAT64, "first_y", AGGTYPE_FIRST);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1LastTest, DTYPE_FLOAT64, "last_y", AGGTYPE_LAST);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AndTest, DTYPE_FLOAT64, "and_y", AGGTYPE_AND);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1OrTest, DTYPE_FLOAT64, "or_y", AGGTYPE_OR);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1LastValueTest, DTYPE_FLOAT64, "last_value_y", AGGTYPE_LAST_VALUE);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1HWMTest, DTYPE_FLOAT64, "hwm_y", AGGTYPE_HIGH_WATER_MARK);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1LWMTest, DTYPE_FLOAT64, "lwm_y", AGGTYPE_LOW_WATER_MARK);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1AbsTest, DTYPE_FLOAT64, "abs_y", AGGTYPE_SUM_ABS);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1SumNotNullTest, DTYPE_FLOAT64, "sum_not_null_y",
-    AGGTYPE_SUM_NOT_NULL);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1MeanByCountTest, DTYPE_FLOAT64,
-    "mean_by_count_y", AGGTYPE_MEAN_BY_COUNT);
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1IdentityTest, DTYPE_FLOAT64, "identity_y", AGGTYPE_IDENTITY);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctCountTest, DTYPE_FLOAT64,
-    "distinct_count_y", AGGTYPE_DISTINCT_COUNT);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctLeafTest, DTYPE_FLOAT64,
-    "distinct_leaf_y", AGGTYPE_DISTINCT_LEAF);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumParentTest, DTYPE_FLOAT64,
-    "pct_sum_parent_y", AGGTYPE_PCT_SUM_PARENT);
-PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumGrandTotalTest, DTYPE_FLOAT64,
-    "pct_sum_grand_total_y", AGGTYPE_PCT_SUM_GRAND_TOTAL);
-
-PSP_DEF_TESTCLASS_ARGS_2(
-    F64Ctx1WMeanTest, DTYPE_FLOAT64, "wmean_y", AGGTYPE_WEIGHTED_MEAN);
-
-#undef PSP_DEF_TESTCLASS_ARGS_1
-#undef PSP_DEF_TESTCLASS_ARGS_2
 // clang-format off
 TEST_F(I64GnodeTest, test_1) {
 
@@ -765,23 +650,82 @@ TEST_F(I64GnodeTest, test_9) {
     run(data);
 }
 
+// clang-format on
+
+#define SELF static_cast<T*>(this)
+
+template <typename T, typename CTX_T>
+class CtxTest : public ::testing::Test
+{
+
+public:
+    using t_tbldata = std::vector<t_tscalvec>;
+    using t_stepdata = std::pair<t_tbldata, t_tscalvec>;
+    using t_testdata = std::vector<t_stepdata>;
+    CtxTest()
+    {
+        this->m_ischema = SELF->get_ischema();
+        this->m_g = t_gnode::build(this->m_ischema);
+        m_ctx = CTX_T::build(this->m_ischema, SELF->get_config());
+        this->m_g->register_context("ctx", m_ctx);
+    }
+
+    t_tscalvec
+    get_data()
+    {
+        return m_ctx->get_table();
+    }
+
+    void
+    run(const t_testdata& d)
+    {
+        for (const auto& sd : d)
+        {
+            t_table itbl(m_ischema, sd.first);
+            this->m_g->_send_and_process(itbl);
+            EXPECT_EQ(this->m_ctx->get_data(), sd.second);
+        }
+    }
+
+protected:
+    std::shared_ptr<CTX_T> m_ctx;
+    t_schema m_ischema;
+    t_gnode_sptr m_g;
+};
+
+class I64Ctx1SumTest : public CtxTest<I64Ctx1SumTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"sum_x", AGGTYPE_SUM, "x"}};
+    }
+};
+
+// clang-formant off
 TEST_F(I64Ctx1SumTest, test_1) {
 
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-            {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-            {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
-            {{iop, 1_ts, clear}},
-            {{1_ts, null},
-            {1_ts, 1_ts}}
+            {{iop, 1_ts, i64_clear}},
+            // TODO correct
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         }
     };
 
@@ -793,11 +737,11 @@ TEST_F(I64Ctx1SumTest, test_2) {
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
         {
-            {{dop, 1_ts, null}},
-            {{0_ts, null}}
+            {{dop, 1_ts, i64_null}},
+            {"Grand Aggregate"_ts, 0_ts}
         }
     };
 
@@ -809,13 +753,11 @@ TEST_F(I64Ctx1SumTest, test_3) {
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
-            {{iop, 1_ts, null}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {{iop, 1_ts, i64_null}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         }
     };
 
@@ -827,14 +769,12 @@ TEST_F(I64Ctx1SumTest, test_4) {
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
-            {{dop, 1_ts, null},
+            {{dop, 1_ts, i64_null},
             {iop, 1_ts, 2_ts}},
-            {{2_ts, null},
-             {2_ts, 2_ts}}
+            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts }
         }
     };
 
@@ -845,14 +785,12 @@ TEST_F(I64Ctx1SumTest, test_5) {
 
     t_testdata data{
         {
-            {{iop, 1_ts, null}},
-            {{0_ts, null},
-             {0_ts, null}}
+            {{iop, 1_ts, i64_null}},
+            {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}
         },
         {
-            {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {{iop, 2_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, i64_null, 0_ts, 1_ts, 1_ts}
         }
     };
 
@@ -863,14 +801,12 @@ TEST_F(I64Ctx1SumTest, test_6) {
 
    t_testdata data{
        {
-           {{iop, 1_ts, null}},
-           {{0_ts, null},
-            {0_ts, null}}
+           {{iop, 1_ts, i64_null}},
+           {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}
        },
        {
            {{iop, 1_ts, 1_ts}},
-           {{1_ts, null},
-            {1_ts, 1_ts}}
+           {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}
        }
    };
 
@@ -883,13 +819,11 @@ TEST_F(I64Ctx1SumTest, test_7) {
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
-            {{iop, 1_ts, null}},
-            {{1_ts, null},
-             {1_ts, 1_ts}}
+            {{iop, 1_ts, i64_null}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         }
     };
 
@@ -901,13 +835,11 @@ TEST_F(I64Ctx1SumTest, test_8) {
     t_testdata data{
         {
             {{iop, 1_ts, 1_ts}},
-            {{1_ts, null},
-            {1_ts, 1_ts}}
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
         },
         {
             {{iop, 1_ts, 2_ts}},
-            {{2_ts, null},
-             {2_ts, 2_ts}}
+            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts }
         }
     };
 
@@ -918,8 +850,8 @@ TEST_F(I64Ctx1SumTest, test_9) {
 
     t_testdata data{
         {
-            {{dop, 1_ts, null}},
-            {{null, null}}
+            {{dop, 1_ts, i64_null}},
+            {"Grand Aggregate"_ts, s_none}
         }
     };
 
@@ -927,3 +859,202 @@ TEST_F(I64Ctx1SumTest, test_9) {
 }
 
 // clang-format on
+
+
+
+class I64Ctx1CountTest : public CtxTest<I64Ctx1CountTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"sum_x", AGGTYPE_SUM, "x"}};
+    }
+};
+
+
+// clang-formant off
+TEST_F(I64Ctx1CountTest, test_1) {
+
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
+        },
+        {
+            {{dop, 2_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
+        {
+            {{dop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 0_ts }
+        }
+    };
+
+    run(data);
+}
+
+
+class F64Ctx1MeanTest : public CtxTest<F64Ctx1MeanTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"mean_x", AGGTYPE_MEAN, "y"}};
+    }
+};
+
+
+TEST_F(F64Ctx1MeanTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            // TODO Fix
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1MeanTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 3_ts},
+            {iop, 2_ts, 1_ts, 5_ts},
+            {iop, 3_ts, 1_ts, 4_ts}},
+            // TODO Fix
+            {"Grand Aggregate"_ts, 4._ts, 1_ts, 4._ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1MeanTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 3_ts},
+            {iop, 2_ts, 1_ts, i64_null},
+            {iop, 3_ts, 1_ts, 4_ts}},
+            // TODO Fix
+            {"Grand Aggregate"_ts, 3.5_ts, 1_ts, 3.5_ts }
+        }
+    };
+
+    run(data);
+}
+// clang-format on
+
+
+class F64Ctx1UniqueTest : public CtxTest<F64Ctx1UniqueTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"mean_x", AGGTYPE_UNIQUE, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1UniqueTest, test_1) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 3_ts},
+            {iop, 2_ts, 1_ts, i64_null},
+            {iop, 3_ts, 1_ts, 4_ts}},
+            {"Grand Aggregate"_ts, "-"_ts, 1_ts, "-"_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1UniqueTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+// clang-format on
+
+
+/*
+\
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1UniqueTest, DTYPE_FLOAT64, "unique_y", AGGTYPE_UNIQUE);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AnyTest, DTYPE_FLOAT64, "any_y", AGGTYPE_ANY);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1MedianTest, DTYPE_FLOAT64, "median_y", AGGTYPE_MEDIAN);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1JoinTest, DTYPE_FLOAT64, "join_y", AGGTYPE_JOIN);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1DominantTest, DTYPE_FLOAT64, "dominant_y", AGGTYPE_DOMINANT);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1FirstTest, DTYPE_FLOAT64, "first_y", AGGTYPE_FIRST);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LastTest, DTYPE_FLOAT64, "last_y", AGGTYPE_LAST);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1AndTest, DTYPE_FLOAT64, "and_y", AGGTYPE_AND);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1OrTest, DTYPE_FLOAT64, "or_y", AGGTYPE_OR);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LastValueTest, DTYPE_FLOAT64, "last_value_y", AGGTYPE_LAST_VALUE);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1HWMTest, DTYPE_FLOAT64, "hwm_y", AGGTYPE_HIGH_WATER_MARK);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1LWMTest, DTYPE_FLOAT64, "lwm_y", AGGTYPE_LOW_WATER_MARK);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1AbsTest, DTYPE_FLOAT64, "abs_y", AGGTYPE_SUM_ABS);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1SumNotNullTest, DTYPE_FLOAT64, "sum_not_null_y",
+    AGGTYPE_SUM_NOT_NULL);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1MeanByCountTest, DTYPE_FLOAT64,
+    "mean_by_count_y", AGGTYPE_MEAN_BY_COUNT);
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1IdentityTest, DTYPE_FLOAT64, "identity_y", AGGTYPE_IDENTITY);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctCountTest, DTYPE_FLOAT64,
+    "distinct_count_y", AGGTYPE_DISTINCT_COUNT);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1DistinctLeafTest, DTYPE_FLOAT64,
+    "distinct_leaf_y", AGGTYPE_DISTINCT_LEAF);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumParentTest, DTYPE_FLOAT64,
+    "pct_sum_parent_y", AGGTYPE_PCT_SUM_PARENT);
+PSP_DEF_TESTCLASS_ARGS_2(F64Ctx1PctSumGrandTotalTest, DTYPE_FLOAT64,
+    "pct_sum_grand_total_y", AGGTYPE_PCT_SUM_GRAND_TOTAL);
+
+PSP_DEF_TESTCLASS_ARGS_2(
+    F64Ctx1WMeanTest, DTYPE_FLOAT64, "wmean_y", AGGTYPE_WEIGHTED_MEAN);
+*/

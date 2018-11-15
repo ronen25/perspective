@@ -138,7 +138,7 @@ t_stree::t_stree_p::t_stree_p(const t_pivotvec& pivots,
     , m_minmax(aggspecs.size())
     , m_has_delta(false)
 {
-    auto g_agg_str = cfg.get_grand_agg_str();
+    const auto& g_agg_str = cfg.get_grand_agg_str();
     m_grand_agg_str = g_agg_str.empty() ? "Grand Aggregate" : g_agg_str;
 }
 
@@ -146,7 +146,9 @@ t_tscalar
 get_dominant(t_tscalvec& values)
 {
     if (values.empty())
+    {
         return mknone();
+    }
 
     std::sort(values.begin(), values.end());
 
@@ -1286,7 +1288,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                     gstate.reduce<std::function<t_tscalar(t_tscalvec&)>>(pkeys,
                         spec.get_dependencies()[0].name(),
                         [](t_tscalvec& values) {
-                            if (values.size() == 0)
+                            if (values.empty())
                             {
                                 return t_tscalar();
                             }
@@ -1296,7 +1298,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                             }
                             else
                             {
-                                t_tscalvec::iterator middle
+                                auto middle
                                     = values.begin() + (values.size() / 2);
 
                                 std::nth_element(
@@ -1325,10 +1327,9 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                             }
 
                             std::stringstream ss;
-                            for (t_tscalset::const_iterator iter = vset.begin();
-                                 iter != vset.end(); ++iter)
+                            for (const auto& set_item : vset)
                             {
-                                ss << *iter << ", ";
+                                ss << set_item << ", ";
                             }
                             return m_p->m_symtable.get_interned_tscalar(
                                 ss.str().c_str());
@@ -1867,7 +1868,7 @@ t_stree::get_pkey_for_leaf(t_uindex idx) const
 {
     auto iters = m_p->get_pkeys_for_leaf(idx);
     if (iters.first == iters.second)
-    return mknone();
+        return mknone();
     return iters.first->m_pkey;
 }
 
@@ -2454,7 +2455,7 @@ t_stree::get_sortby_path(t_uindex idx, t_tscalvec& rval) const
     if (curidx == 0)
         return;
 
-    while (1)
+    while (true)
     {
         iter_by_idx iter = m_p->m_nodes->get<by_idx>().find(curidx);
         rval.push_back(iter->m_sort_value);
