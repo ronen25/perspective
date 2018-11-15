@@ -272,7 +272,7 @@ t_stree::get_value(t_tvidx idx) const
 {
     iter_by_idx iter = m_p->m_nodes->get<by_idx>().find(idx);
     PSP_VERBOSE_ASSERT(
-        iter != m_nodes->get<by_idx>().end(), "Reached end iterator");
+        iter != m_p->m_nodes->get<by_idx>().end(), "Reached end iterator");
     return iter->m_value;
 }
 
@@ -281,7 +281,7 @@ t_stree::get_sortby_value(t_tvidx idx) const
 {
     iter_by_idx iter = m_p->m_nodes->get<by_idx>().find(idx);
     PSP_VERBOSE_ASSERT(
-        iter != m_nodes->get<by_idx>().end(), "Reached end iterator");
+        iter != m_p->m_nodes->get<by_idx>().end(), "Reached end iterator");
     return iter->m_sort_value;
 }
 
@@ -414,7 +414,7 @@ t_stree::build_strand_table_common(const t_table& flattened,
     const t_aggspecvec& aggspecs, const t_config& config) const
 {
     PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    PSP_VERBOSE_ASSERT(m_p->m_init, "touching uninited object");
 
     t_build_strand_table_common_rval rv;
 
@@ -486,7 +486,7 @@ t_stree::build_strand_table(const t_table& flattened, const t_table& delta,
 {
 
     PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    PSP_VERBOSE_ASSERT(m_p->m_init, "touching uninited object");
 
     auto rv = build_strand_table_common(flattened, aggspecs, config);
 
@@ -657,7 +657,7 @@ t_stree::build_strand_table(const t_table& flattened,
     const t_aggspecvec& aggspecs, const t_config& config) const
 {
     PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
+    PSP_VERBOSE_ASSERT(m_p->m_init, "touching uninited object");
 
     auto rv = build_strand_table_common(flattened, aggspecs, config);
 
@@ -1738,7 +1738,7 @@ t_stree::get_aggidx(t_uindex idx) const
 {
     iter_by_idx iter = m_p->m_nodes->get<by_idx>().find(idx);
     PSP_VERBOSE_ASSERT(
-        iter != m_nodes->get<by_idx>().end(), "Failed in get_aggidx");
+        iter != m_p->m_nodes->get<by_idx>().end(), "Failed in get_aggidx");
     return iter->m_aggidx;
 }
 
@@ -1759,7 +1759,7 @@ t_stree::get_node(t_uindex idx) const
 {
     iter_by_idx iter = m_p->m_nodes->get<by_idx>().find(idx);
     PSP_VERBOSE_ASSERT(
-        iter != m_nodes->get<by_idx>().end(), "Failed in get_node");
+        iter != m_p->m_nodes->get<by_idx>().end(), "Failed in get_node");
     return *iter;
 }
 
@@ -1866,7 +1866,9 @@ t_tscalar
 t_stree::get_pkey_for_leaf(t_uindex idx) const
 {
     auto iters = m_p->get_pkeys_for_leaf(idx);
+    if (iters.first == iters.second)
     return mknone();
+    return iters.first->m_pkey;
 }
 
 bool
@@ -2065,7 +2067,7 @@ t_stree::is_leaf(t_uindex nidx) const
 {
     auto iter = m_p->m_nodes->get<by_idx>().find(nidx);
     PSP_VERBOSE_ASSERT(
-        iter != m_nodes->get<by_idx>().end(), "Did not find node");
+        iter != m_p->m_nodes->get<by_idx>().end(), "Did not find node");
     return iter->m_depth == last_level();
 }
 
@@ -2495,7 +2497,7 @@ t_stree::pprint() const
             std::cout << "  ";
         }
         std::cout << idx << " <" << path << ">";
-        for (auto aidx = 0; aidx < get_num_aggcols(); ++aidx)
+        for (t_uindex aidx = 0; aidx < get_num_aggcols(); ++aidx)
         {
             std::cout << get_aggregate(idx, aidx) << ", ";
         }

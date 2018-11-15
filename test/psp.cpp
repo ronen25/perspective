@@ -101,12 +101,6 @@ TEST(STORAGE, constructor)
     ASSERT_TRUE(s.empty());
 }
 
-TEST(STORAGE, uninited_get)
-{
-    t_lstore s;
-    ASSERT_EQ(nullptr, s.get_ptr(0));
-}
-
 TEST(STORAGE, extend_1)
 {
     t_lstore s;
@@ -278,20 +272,20 @@ TEST(SCALAR, scalar_repr)
         mktscalar<t_time>(t_time(0)).repr(), "time:v:1970-01-01 00:00:00.000");
     EXPECT_EQ(mktscalar<const char*>("").repr(), "str:v:");
 
-    EXPECT_EQ(mknull(DTYPE_NONE).repr(), "none:i:null");
-    EXPECT_EQ(mknull(DTYPE_INT64).repr(), "i64:i:null");
-    EXPECT_EQ(mknull(DTYPE_INT32).repr(), "i32:i:null");
-    EXPECT_EQ(mknull(DTYPE_INT16).repr(), "i16:i:null");
-    EXPECT_EQ(mknull(DTYPE_INT8).repr(), "i8:i:null");
-    EXPECT_EQ(mknull(DTYPE_UINT64).repr(), "u64:i:null");
-    EXPECT_EQ(mknull(DTYPE_UINT32).repr(), "u32:i:null");
-    EXPECT_EQ(mknull(DTYPE_UINT16).repr(), "u16:i:null");
-    EXPECT_EQ(mknull(DTYPE_UINT8).repr(), "u8:i:null");
-    EXPECT_EQ(mknull(DTYPE_FLOAT64).repr(), "f64:i:null");
-    EXPECT_EQ(mknull(DTYPE_FLOAT32).repr(), "f32:i:null");
-    EXPECT_EQ(mknull(DTYPE_DATE).repr(), "date:i:null");
-    EXPECT_EQ(mknull(DTYPE_TIME).repr(), "time:i:null");
-    EXPECT_EQ(mknull(DTYPE_STR).repr(), "str:i:null");
+    EXPECT_EQ(mknull(DTYPE_NONE).repr(), "none:i:0");
+    EXPECT_EQ(mknull(DTYPE_INT64).repr(), "i64:i:0");
+    EXPECT_EQ(mknull(DTYPE_INT32).repr(), "i32:i:0");
+    EXPECT_EQ(mknull(DTYPE_INT16).repr(), "i16:i:0");
+    EXPECT_EQ(mknull(DTYPE_INT8).repr(), "i8:i:0");
+    EXPECT_EQ(mknull(DTYPE_UINT64).repr(), "u64:i:0");
+    EXPECT_EQ(mknull(DTYPE_UINT32).repr(), "u32:i:0");
+    EXPECT_EQ(mknull(DTYPE_UINT16).repr(), "u16:i:0");
+    EXPECT_EQ(mknull(DTYPE_UINT8).repr(), "u8:i:0");
+    EXPECT_EQ(mknull(DTYPE_FLOAT64).repr(), "f64:i:0");
+    EXPECT_EQ(mknull(DTYPE_FLOAT32).repr(), "f32:i:0");
+    EXPECT_EQ(mknull(DTYPE_DATE).repr(), "date:i:0");
+    EXPECT_EQ(mknull(DTYPE_TIME).repr(), "time:i:0");
+    EXPECT_EQ(mknull(DTYPE_STR).repr(), "str:i:0");
 }
 
 TEST(SCALAR, scalar_str)
@@ -518,6 +512,7 @@ public:
         this->m_oschema = static_cast<T*>(this)->get_oschema();
         m_ctx = std::make_shared<t_ctx1>(
             this->m_ischema, static_cast<T*>(this)->get_config());
+        m_ctx->init();
         this->m_g->register_context("ctx", m_ctx);
     }
 

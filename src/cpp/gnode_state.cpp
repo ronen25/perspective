@@ -579,7 +579,6 @@ t_gstate::get_pkey_dtype() const
 t_table_sptr
 t_gstate::get_sorted_pkeyed_table() const
 {
-    typedef boost::unordered_map<t_tscalar, t_uindex> t_mapping;
     std::map<t_tscalar, t_uindex> ordered(m_mapping.begin(), m_mapping.end());
     auto sch = m_pkeyed_schema.drop({"psp_op"});
     auto rv = std::make_shared<t_table>(sch, 0);

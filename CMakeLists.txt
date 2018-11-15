@@ -130,8 +130,9 @@ else()
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT PSP_WASM_BUILD)
-	target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated)
-	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>: -fprofile-arcs -ftest-coverage -fPIC -O0>)
+	target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated -Wall -pedantic -Werror)
+	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-arcs -ftest-coverage -fPIC -O0>)
+	target_compile_definitions(psp PRIVATE -DPSP_DEBUG)
 	target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
 endif()
 

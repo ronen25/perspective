@@ -18,6 +18,8 @@
 #include <perspective/raw_types.h>
 #include <perspective/portable.h>
 #include <vector>
+#include <csignal>
+#include <sstream>
 
 namespace perspective
 {
@@ -51,6 +53,7 @@ const t_index INVALID_INDEX = -1;
 #ifndef CHAR_BIT
 #define CHAR_BIT 8
 #endif
+
 //#define PSP_TRACE_SENTINEL() t_trace _psp_trace_sentinel;
 #define PSP_TRACE_SENTINEL()
 #ifdef PSP_DEBUG

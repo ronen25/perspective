@@ -185,7 +185,7 @@ t_traversal::sort_by(const t_config& config, const t_sortsvec& sortby,
             t_multisorter sorter(sortelems, sort_orders, m_handle_nan_sort);
             argsort(sorted_idx, sorter);
 
-            auto nchild = n_changed;
+            t_index nchild = n_changed;
             t_index ndesc = head.m_ndesc;
 
             // Fast path - if none of heads children are
@@ -194,10 +194,10 @@ t_traversal::sort_by(const t_config& config, const t_sortsvec& sortby,
             {
                 // Set contiguous block in traversal for
                 // children
-                auto bidx = h_ntvidx + 1;
-                auto eidx = bidx + nchild;
+                t_uindex bidx = h_ntvidx + 1;
+                t_uindex eidx = bidx + nchild;
 
-                for (t_index idx = bidx; idx < eidx; idx++)
+                for (t_uindex idx = bidx; idx < eidx; idx++)
                 {
                     t_index cidx = sorted_idx[idx - bidx];
                     t_tvidx c_otvidx = h_children[cidx].first;

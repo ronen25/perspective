@@ -27,8 +27,7 @@ namespace perspective
 {
 
 t_ctx_grouped_pkey::t_ctx_grouped_pkey()
-    : m_depth_set(false)
-    , m_depth(0)
+    : m_depth(0), m_depth_set(false)
 {
 }
 

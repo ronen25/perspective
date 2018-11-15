@@ -82,10 +82,9 @@ t_table::t_table(const t_schema& s, const std::vector<t_tscalvec>& v)
     PSP_TRACE_SENTINEL();
     LOG_CONSTRUCTOR("t_table");
     auto ncols = s.size();
-    t_uindex nrows = -1;
     PSP_VERBOSE_ASSERT(
         std::all_of(v.begin(), v.end(),
-            [ncols](const t_scalvec& vec) { return vec.size() == ncols; }),
+            [ncols](const t_tscalvec& vec) { return vec.size() == ncols; }),
         "Mismatched row size found");
     set_capacity(v.size());
     init();
