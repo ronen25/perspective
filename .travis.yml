@@ -1,0 +1,60 @@
+language: cpp
+
+env:
+  global:
+    - LINUX_DIST=xenial
+    - CXX_FLAGS="-Wall -pedantic -Werror"
+    - RUN_TESTS=true
+    - COVERAGE=false
+
+matrix:
+  include:
+    - os: linux
+      dist: xenial
+      sudo: true
+      compiler: gcc
+      addons:
+       apt:
+         packages:
+           - gcc
+           - g++
+           - gcov
+           - clang
+           - valgrind
+           - lcov
+           - cmake
+           - python-pip
+           - libboost-dev
+    
+before_install:
+    - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
+    - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
+
+install:
+    - echo ${PATH}
+    - echo ${CXX}
+    - ${CXX} --version
+    - ${CXX} -v
+    - sudo pip install codecov
+
+script:
+    ############################################################################
+    # Build main and tests
+    ############################################################################
+     - mkdir -p build
+     - cp -r /usr/include/boost src/include
+     - cd build
+     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Debug .. 
+     - make -j 2
+     - valgrind ./install/psp_test
+
+after_success:
+  - cd ${TRAVIS_BUILD_DIR}/build
+  - codecov -t d3521bcc-0b7e-4f21-aa3c-f4a6f62e4692
+
+notifications:
+  email:
+    - perspective.notify@gmail.com
+env:
+  global:
+  - LANG="en_US.UTF-8"
