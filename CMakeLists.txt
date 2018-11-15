@@ -123,10 +123,11 @@ src/cpp/update_task.cpp
 src/cpp/vocab.cpp
 )
 
+file(GLOB HEADER_FILES src/include/perspective/*.h)
 if (PSP_WASM_BUILD)
-	add_library(psp STATIC ${SOURCE_FILES})
+	add_library(psp STATIC ${SOURCE_FILES} ${HEADER_FILES})
 else()
-	add_library(psp SHARED ${SOURCE_FILES})
+	add_library(psp SHARED ${SOURCE_FILES} ${HEADER_FILES})
 endif()
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU" AND NOT PSP_WASM_BUILD)
