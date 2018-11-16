@@ -11,6 +11,9 @@
 #include <perspective/table.h>
 #include <perspective/test_utils.h>
 #include <perspective/context_one.h>
+#include <perspective/context_two.h>
+#include <perspective/context_zero.h>
+#include <perspective/context_grouped_pkey.h>
 #include <perspective/node_processor.h>
 #include <perspective/storage.h>
 #include <perspective/none.h>
@@ -1453,5 +1456,51 @@ TEST_F(F64Ctx1WMeanTest, test_4) {
 
 //     run(data);
 // }
+
+// clang-format on
+
+class I64Ctx2SumTest : public CtxTest<I64Ctx2SumTest, t_ctx2>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "a", "b", "x"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_STR, DTYPE_STR, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"a"}, {"b"}, {{"sum_x", AGGTYPE_SUM, "x"}},
+            TOTALS_HIDDEN, FILTER_OP_AND, {}};
+    }
+};
+
+// clang-format off
+TEST_F(I64Ctx2SumTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(I64Ctx2SumTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 2_ts, "0"_ts, "1"_ts, 0_ts},
+            {iop, 3_ts, "1"_ts, "0"_ts, 0_ts},
+            {iop, 4_ts, "1"_ts, "1"_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 0_ts, 1_ts, "0"_ts, 0_ts, 0_ts, "1"_ts, 0_ts, 1_ts}
+        }
+    };
+
+    run(data);
+}
 
 // clang-format on

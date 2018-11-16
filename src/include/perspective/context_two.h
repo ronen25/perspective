@@ -24,7 +24,6 @@ class PERSPECTIVE_EXPORT t_ctx2 : public t_ctxbase<t_ctx2>
 public:
 #include <perspective/context_common_decls.h>
     t_ctx2();
-
     t_ctx2(const t_schema& schema, const t_config& config);
 
     ~t_ctx2();

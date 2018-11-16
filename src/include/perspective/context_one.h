@@ -31,8 +31,6 @@ public:
 
 #include <perspective/context_common_decls.h>
 
-    static t_ctx1_sptr build(const t_schema& s, const t_config& c);
-
     t_index open(t_header header, t_tvidx idx);
     t_index open(t_tvidx idx);
     t_index close(t_tvidx idx);

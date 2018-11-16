@@ -50,7 +50,8 @@ public:
     typedef DERIVED_T t_derived;
 
     t_ctxbase();
-
+    static std::shared_ptr<DERIVED_T> build(
+        const t_schema& schema, const t_config& config);
     t_ctxbase(const t_schema& schema, const t_config& config);
 
     void set_name(const t_str& name);
@@ -97,6 +98,15 @@ protected:
     std::vector<t_bool> m_features;
     t_minmaxvec m_minmax;
 };
+
+template <typename DERIVED_T>
+std::shared_ptr<DERIVED_T>
+t_ctxbase<DERIVED_T>::build(const t_schema& schema, const t_config& config)
+{
+    auto rv = std::make_shared<DERIVED_T>(schema, config);
+    rv->init();
+    return rv;
+}
 
 template <typename DERIVED_T>
 t_ctxbase<DERIVED_T>::t_ctxbase()

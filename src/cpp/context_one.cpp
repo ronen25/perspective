@@ -788,12 +788,4 @@ t_ctx1::get_table() const
     return tbl;
 }
 
-t_ctx1_sptr
-t_ctx1::build(const t_schema& s, const t_config& c)
-{
-    auto rv = std::make_shared<t_ctx1>(s, c);
-    rv->init();
-    return rv;
-}
-
 } // end namespace perspective
