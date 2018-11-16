@@ -55,7 +55,6 @@ struct t_colstr_sort
     const char* m_str;
 };
 
-
 class t_column;
 
 typedef std::shared_ptr<t_column> t_col_sptr;
@@ -191,7 +190,9 @@ public:
     // vocabulary must not contain empty string
     // indices should be > 0
     // scalars will be implicitly understood to be of dtype str
-    void set_vocabulary(const std::vector<std::pair<t_tscalar, t_uindex>>& vocab, size_t total_size=0);
+    void set_vocabulary(
+        const std::vector<std::pair<t_tscalar, t_uindex>>& vocab,
+        size_t total_size = 0);
 
     void copy_vocabulary(const t_column* other);
 

@@ -370,34 +370,6 @@ t_aggspec::get_agg_two_weight() const
     return m_agg_two_weight;
 }
 
-t_invmode
-t_aggspec::get_inv_mode() const
-{
-    return m_invmode;
-}
-
-std::vector<t_str>
-t_aggspec::get_input_depnames() const
-{
-    std::vector<t_str> rval;
-    for (const auto d : m_dependencies)
-    {
-        rval.push_back(d.name());
-    }
-    return rval;
-}
-
-std::vector<t_str>
-t_aggspec::get_output_depnames() const
-{
-    std::vector<t_str> rval;
-    for (const auto d : m_dependencies)
-    {
-        rval.push_back(d.name());
-    }
-    return rval;
-}
-
 t_col_name_type_vec
 t_aggspec::get_output_specs(const t_schema& schema) const
 {

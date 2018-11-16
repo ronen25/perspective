@@ -12,7 +12,6 @@
 #include <perspective/base.h>
 #include <memory>
 
-
 namespace perspective
 {
 class t_ftrav;

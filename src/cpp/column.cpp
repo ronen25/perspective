@@ -1197,7 +1197,8 @@ t_column::borrow_vocabulary(const t_column& o)
 }
 
 void
-t_column::set_vocabulary(const std::vector<std::pair<t_tscalar, t_uindex>>& vocab, size_t total_size)
+t_column::set_vocabulary(
+    const std::vector<std::pair<t_tscalar, t_uindex>>& vocab, size_t total_size)
 {
     if (total_size)
         m_vocab->reserve(total_size, vocab.size() + 1);

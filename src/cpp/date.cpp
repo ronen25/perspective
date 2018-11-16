@@ -15,7 +15,6 @@
 #include <algorithm>
 #include <boost/functional/hash.hpp>
 
-
 namespace perspective
 {
 
@@ -163,8 +162,9 @@ t_date::str() const
     return ss.str();
 }
 
- size_t
-hash_value(const t_date& d) {
+size_t
+hash_value(const t_date& d)
+{
     boost::hash<t_uint32> hasher;
     return hasher(d.m_storage);
 }

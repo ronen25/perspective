@@ -115,7 +115,6 @@ public:
 private:
     t_stree_csptr m_tree;
     std::shared_ptr<std::vector<t_tvnode>> m_nodes;
-    t_tvidx m_curidx;
     t_bool m_handle_nan_sort;
 };
 

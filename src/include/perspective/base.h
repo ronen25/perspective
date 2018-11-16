@@ -61,14 +61,14 @@ void psp_abort();
     {                                                                          \
         if (!(COND))                                                           \
         {                                                                      \
-            psp_log(__FILE__, __LINE__, MSG);                                   \
+            psp_log(__FILE__, __LINE__, MSG);                                  \
             psp_abort();                                                       \
         }                                                                      \
     }
 
 #define PSP_COMPLAIN_AND_ABORT(X)                                              \
     {                                                                          \
-        psp_log(__FILE__, __LINE__, X);                                       \
+        psp_log(__FILE__, __LINE__, X);                                        \
         psp_abort();                                                           \
     }
 

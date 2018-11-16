@@ -506,7 +506,7 @@ t_table::get_recipe() const
 }
 
 t_masksptr
-t_table::filter_cpp(t_filter_op combiner, const t_ftermvec &fterms_) const
+t_table::filter_cpp(t_filter_op combiner, const t_ftermvec& fterms_) const
 {
     auto self = const_cast<t_table*>(this);
     auto fterms = fterms_;

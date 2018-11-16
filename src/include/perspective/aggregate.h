@@ -312,7 +312,7 @@ t_aggregate::build_aggregate()
 
     std::vector<t_raw_data> buffer(icptr_size);
     const t_column* lcptr = m_tree.get_leaf_cptr();
-    const t_uindex* base_lcptr = lcptr->get<const t_uindex>(0);
+    auto base_lcptr = lcptr->get<const t_uindex>(0);
 
     for (t_index level_idx = n_levels; level_idx > -1; level_idx--)
     {

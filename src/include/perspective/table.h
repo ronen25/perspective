@@ -115,7 +115,7 @@ public:
     void clear();
     void reset();
 
-    t_masksptr filter_cpp(t_filter_op combiner, const t_ftermvec &fops) const;
+    t_masksptr filter_cpp(t_filter_op combiner, const t_ftermvec& fops) const;
     t_table* clone_(const t_mask& mask) const;
     t_table_sptr clone(const t_mask& mask) const;
     t_table_sptr clone() const;

@@ -30,7 +30,7 @@ typedef std::vector<t_col_name_type> t_col_name_type_vec;
 
 struct PERSPECTIVE_EXPORT t_aggspec_recipe
 {
-    t_aggspec_recipe() {}
+    t_aggspec_recipe() = default;
     t_str m_name;
     t_str m_disp_name;
     t_aggtype m_agg;
@@ -81,11 +81,6 @@ public:
 
     t_float64 get_agg_one_weight() const;
     t_float64 get_agg_two_weight() const;
-
-    t_invmode get_inv_mode() const;
-
-    std::vector<t_str> get_input_depnames() const;
-    std::vector<t_str> get_output_depnames() const;
 
     t_col_name_type_vec get_output_specs(const t_schema& schema) const;
     t_col_name_type_vec mk_col_name_type_vec(

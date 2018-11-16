@@ -11,24 +11,14 @@
 #include <perspective/portable.h>
 SUPPRESS_WARNINGS_VC(4503)
 
-#include <perspective/first.h>
 #include <perspective/base.h>
 #include <perspective/exports.h>
-#include <perspective/sort_specification.h>
 #include <perspective/sparse_tree_node.h>
 #include <perspective/pivot.h>
 #include <perspective/aggspec.h>
 #include <perspective/step_delta.h>
 #include <perspective/min_max.h>
-#include <perspective/mask.h>
-#include <perspective/sym_table.h>
 #include <perspective/shared_ptrs.h>
-#include <perspective/table.h>
-#include <vector>
-#include <algorithm>
-#include <deque>
-#include <sstream>
-#include <queue>
 #include <perspective/tree_iterator.h>
 
 namespace perspective

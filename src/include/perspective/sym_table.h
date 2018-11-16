@@ -34,7 +34,6 @@ private:
     t_mapping m_mapping;
 };
 
-
 const t_char* get_interned_cstr(const t_char* s);
 t_tscalar get_interned_tscalar(const t_char* s);
 t_tscalar get_interned_tscalar(const t_tscalar& s);

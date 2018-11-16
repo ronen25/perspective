@@ -136,12 +136,10 @@ endif()
 if (NOT PSP_WASM_BUILD)
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
 		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
-		set(GCOV_CMD "llvm-cov gcov")
 	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated)
 		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-arcs -ftest-coverage>)
 		target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
-		set(GCOV_CMD "gcov")
 	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
 	endif()
 
@@ -151,7 +149,7 @@ if (NOT PSP_WASM_BUILD)
            )
    	add_custom_command(TARGET gcov
            COMMAND echo "=================== GCOV ===================="
-		   COMMAND gcovr -r ../ --html --html-details --gcov-executable ${GCOV_CMD} -o coverage/index.html
+		   COMMAND gcovr -r ../ --html --html-details -o coverage/index.html
            COMMAND xdg-open coverage/index.html
            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
            )

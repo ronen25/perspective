@@ -789,7 +789,8 @@ t_ctx_grouped_pkey::notify(const t_table& flattened)
 // as agg_indices
 void
 t_ctx_grouped_pkey::get_aggregates_for_sorting(t_uindex nidx,
-    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates, void*) const
+    const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
+    void*) const
 {
     for (t_uindex idx = 0, loop_end = agg_indices.size(); idx < loop_end; ++idx)
     {

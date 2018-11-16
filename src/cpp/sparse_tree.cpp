@@ -19,7 +19,6 @@
 #include <perspective/sym_table.h>
 #include <perspective/utils.h>
 #include <perspective/env_vars.h>
-#include <perspective/dense_tree.h>
 #include <perspective/dense_tree_context.h>
 #include <perspective/gnode_state.h>
 #include <perspective/config.h>
@@ -1328,7 +1327,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                             std::stringstream ss;
                             for (const auto& set_item : vset)
                             {
-                                ss << set_item << ", ";
+                                ss << set_item.to_string() << ", ";
                             }
                             return m_p->m_symtable.get_interned_tscalar(
                                 ss.str().c_str());
@@ -1582,7 +1581,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                 new_value.set(
                     gstate.reduce<std::function<t_uint32(t_tscalvec&)>>(pkeys,
                         spec.get_dependencies()[0].name(),
-                        [this](t_tscalvec& values) {
+                        [](t_tscalvec& values) {
                             std::unordered_set<t_tscalar> vset;
                             for (const auto& v : values)
                             {

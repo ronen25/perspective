@@ -17,7 +17,6 @@
 #include <perspective/tree_iterator.h>
 #include <perspective/column.h>
 
-
 // Pass filter in and store the filter on the tree
 // as a shared ptr
 

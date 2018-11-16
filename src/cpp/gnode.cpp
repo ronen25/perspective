@@ -116,18 +116,14 @@ t_gnode::init()
 
     for (t_uindex idx = 0, loop_end = m_ischemas.size(); idx < loop_end; ++idx)
     {
-        t_port_sptr port
-            = std::make_shared<t_port>(PORT_MODE_PKEYED, m_ischemas[idx]);
+        t_port_sptr port = std::make_shared<t_port>(m_ischemas[idx]);
         port->init();
         m_iports.push_back(port);
     }
 
     for (t_uindex idx = 0, loop_end = m_oschemas.size(); idx < loop_end; ++idx)
     {
-        t_port_mode mode = idx == 0 ? PORT_MODE_PKEYED : PORT_MODE_RAW;
-
-        t_port_sptr port = std::make_shared<t_port>(mode, m_oschemas[idx]);
-
+        t_port_sptr port = std::make_shared<t_port>(m_oschemas[idx]);
         port->init();
         m_oports.push_back(port);
     }

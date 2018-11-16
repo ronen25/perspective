@@ -30,7 +30,4 @@ struct PERSPECTIVE_EXPORT t_argsort_comparator
     t_sorttype m_sort_type;
 };
 
-PERSPECTIVE_EXPORT void simple_argsort(
-    t_tscalvec& v, std::vector<t_index>& output, const t_sorttype& sort_type);
-
 } // namespace perspective

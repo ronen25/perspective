@@ -14,7 +14,6 @@
 #include <perspective/traversal_nodes.h>
 #include <perspective/sort_specification.h>
 
-
 namespace perspective
 {
 
@@ -51,7 +50,8 @@ public:
     // aggregates should be presized to be same size
     // as agg_indices
     void get_aggregates_for_sorting(t_uindex nidx,
-        const std::vector<t_index>& agg_indices, t_tscalvec& aggregates, void*) const;
+        const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
+        void*) const;
 
     using t_ctxbase<t_ctx_grouped_pkey>::get_data;
 
