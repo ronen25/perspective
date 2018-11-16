@@ -1459,6 +1459,514 @@ TEST_F(F64Ctx1WMeanTest, test_4) {
 
 // clang-format on
 
+class F64Ctx1FirstTest : public CtxTest<F64Ctx1FirstTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y", "z"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"},
+            {"first_y", "first_y", AGGTYPE_FIRST,
+                {{"y", DEPTYPE_COLUMN}, {"z", DEPTYPE_COLUMN}},
+                SORTTYPE_DESCENDING}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1FirstTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1FirstTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts, 4_ts},
+            {iop, 2_ts, 1_ts, 2_ts, 3_ts},
+            {iop, 3_ts, 1_ts, 3_ts, 2_ts},
+            {iop, 4_ts, 1_ts, 4_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
+class F64Ctx1LastTest : public CtxTest<F64Ctx1LastTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y", "z"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"},
+            {"first_y", "first_y", AGGTYPE_LAST,
+                {{"y", DEPTYPE_COLUMN}, {"z", DEPTYPE_COLUMN}},
+                SORTTYPE_DESCENDING}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1LastTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1LastTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts, 4_ts},
+            {iop, 2_ts, 1_ts, 2_ts, 3_ts},
+            {iop, 3_ts, 1_ts, 3_ts, 2_ts},
+            {iop, 4_ts, 1_ts, 4_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 4_ts, 1_ts, 4_ts }
+        }
+    };
+
+    run(data);
+}
+// clang-format on
+
+class F64Ctx1HWMTest : public CtxTest<F64Ctx1HWMTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"hwm_y", AGGTYPE_HIGH_WATER_MARK, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1HWMTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1HWMTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1HWMTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 2_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
+class F64Ctx1LWMTest : public CtxTest<F64Ctx1LWMTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"lwm_y", AGGTYPE_LOW_WATER_MARK, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1LWMTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1LWMTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1LWMTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 5_ts}},
+            {"Grand Aggregate"_ts, 5_ts, 1_ts, 5_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 3_ts}},
+            {"Grand Aggregate"_ts, 3_ts, 1_ts, 3_ts }
+        },
+        {
+            {{iop, 3_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+// clang-format on
+
+class F64Ctx1AndTest : public CtxTest<F64Ctx1AndTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"and_y", AGGTYPE_AND, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1AndTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1AndTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, s_true, 1_ts, s_true }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1AndTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts},
+            {iop, 2_ts, 1_ts, 0_ts}},
+            {"Grand Aggregate"_ts, s_false, 1_ts, s_false }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
+class F64Ctx1OrTest : public CtxTest<F64Ctx1OrTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"or_y", AGGTYPE_OR, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1OrTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1OrTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1OrTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts},
+            {iop, 2_ts, 1_ts, 0_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1OrTest, test_4) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 0_ts},
+            {iop, 2_ts, 1_ts, 0_ts}},
+            {"Grand Aggregate"_ts, 0_ts, 1_ts, 0_ts }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
+class F64Ctx1LastValueTest : public CtxTest<F64Ctx1LastValueTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"last_value_y", AGGTYPE_LAST_VALUE, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1LastValueTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1LastValueTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1LastValueTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 2_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
+        },
+        {
+            {{iop, 3_ts, 1_ts, 3_ts}},
+            {"Grand Aggregate"_ts, 3_ts, 1_ts, 3_ts }
+        },
+        {
+            {{iop, 2_ts, 1_ts, 2_ts}},
+            {"Grand Aggregate"_ts, 2_ts, 1_ts, 2_ts }
+        },
+
+    };
+
+    run(data);
+}
+// clang-format on
+
+class F64Ctx1AbsTest : public CtxTest<F64Ctx1AbsTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"sum_abs_y", AGGTYPE_SUM_ABS, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1AbsTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1AbsTest, test_2) {
+    auto minus_2 = mktscalar<t_int64>(-2);
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1_ts},
+            {iop, 2_ts, minus_2, minus_2}},
+            {"Grand Aggregate"_ts, 3_ts, minus_2, 2_ts, 1_ts, 1_ts  }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
+class F64Ctx1SumNotNullTest : public CtxTest<F64Ctx1SumNotNullTest, t_ctx1>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "x", "y"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64, DTYPE_FLOAT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"x"}, {"sum_not_null_y", AGGTYPE_SUM_NOT_NULL, "y"}};
+    }
+};
+
+// clang-format off
+
+TEST_F(F64Ctx1SumNotNullTest, test_1) {
+    t_testdata data{
+        {
+            {},
+            {"Grand Aggregate"_ts, s_none}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1SumNotNullTest, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1._ts}},
+            {"Grand Aggregate"_ts, 1._ts, 1_ts, 1._ts }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(F64Ctx1SumNotNullTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, 1_ts, 1._ts},
+            {iop, 2_ts, 1_ts, s_nan64}},
+            {"Grand Aggregate"_ts, 1._ts, 1_ts, 1._ts }
+        }
+    };
+
+    run(data);
+}
+
+// clang-format on
+
 class I64Ctx2SumTest : public CtxTest<I64Ctx2SumTest, t_ctx2>
 {
 public:
@@ -1497,6 +2005,27 @@ TEST_F(I64Ctx2SumTest, test_2) {
             {iop, 3_ts, "1"_ts, "0"_ts, 0_ts},
             {iop, 4_ts, "1"_ts, "1"_ts, 1_ts}},
             {"Grand Aggregate"_ts, 0_ts, 1_ts, "0"_ts, 0_ts, 0_ts, "1"_ts, 0_ts, 1_ts}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(I64Ctx2SumTest, test_3) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 2_ts, "0"_ts, "1"_ts, 0_ts},
+            {iop, 3_ts, "1"_ts, "0"_ts, 0_ts},
+            {iop, 4_ts, "1"_ts, "1"_ts, 1_ts}},
+            {"Grand Aggregate"_ts, 0_ts, 1_ts, "0"_ts, 0_ts, 0_ts, "1"_ts, 0_ts, 1_ts}
+        },
+        {
+            {{iop, 1_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 2_ts, "0"_ts, "1"_ts, 1_ts},
+            {iop, 3_ts, "1"_ts, "0"_ts, 1_ts},
+            {iop, 4_ts, "1"_ts, "1"_ts, 0_ts}},
+            {"Grand Aggregate"_ts, 1_ts, 1_ts, "0"_ts, 0_ts, 1_ts, "1"_ts, 1_ts, 0_ts}
         }
     };
 

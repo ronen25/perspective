@@ -1506,7 +1506,7 @@ t_stree::update_agg_table(t_uindex nidx, t_agg_update_info& info,
                             rval.m_type = values[0].m_type;
                             for (const auto& v : values)
                             {
-                                if (rval.is_nan())
+                                if (v.is_nan())
                                     continue;
                                 rval = rval.add(v);
                             }
