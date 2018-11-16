@@ -2067,10 +2067,35 @@ TEST_F(Ctx0Test, test_1) {
 TEST_F(Ctx0Test, test_2) {
     t_testdata data{
         {
-            {{iop, 1_ts, "0"_ts, "0"_ts, 0_ts},
-            {iop, 2_ts, "1"_ts, "1"_ts, 1_ts},
-            {iop, 3_ts, "2"_ts, "2"_ts, 2_ts},
-            {iop, 4_ts, "3"_ts, "3"_ts, 3_ts}},
+            {{iop, 0_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 1_ts, "1"_ts, "1"_ts, 1_ts},
+            {iop, 2_ts, "2"_ts, "2"_ts, 2_ts},
+            {iop, 3_ts, "3"_ts, "3"_ts, 3_ts}},
+            {
+                "0"_ts, "0"_ts, 0_ts,
+                "1"_ts, "1"_ts, 1_ts,
+                "2"_ts, "2"_ts, 2_ts,
+                "3"_ts, "3"_ts, 3_ts
+            }
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(Ctx0Test, test_3) {
+    t_testdata data{
+        {
+            {{iop, 0_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 1_ts, "1"_ts, "1"_ts, 1_ts}},
+            {
+                "0"_ts, "0"_ts, 0_ts,
+                "1"_ts, "1"_ts, 1_ts,
+            }
+        },
+        {
+            {{iop, 2_ts, "2"_ts, "2"_ts, 2_ts},
+            {iop, 3_ts, "3"_ts, "3"_ts, 3_ts}},
             {
                 "0"_ts, "0"_ts, 0_ts,
                 "1"_ts, "1"_ts, 1_ts,
