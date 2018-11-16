@@ -2033,3 +2033,53 @@ TEST_F(I64Ctx2SumTest, test_3) {
 }
 
 // clang-format on
+
+class Ctx0Test : public CtxTest<Ctx0Test, t_ctx0>
+{
+public:
+    t_schema
+    get_ischema()
+    {
+        return t_schema{{"psp_op", "psp_pkey", "a", "b", "c"},
+            {DTYPE_UINT8, DTYPE_INT64, DTYPE_STR, DTYPE_STR, DTYPE_INT64}};
+    }
+
+    t_config
+    get_config()
+    {
+        return t_config{{"a", "b", "c"}, FILTER_OP_AND, {}};
+    }
+};
+
+// clang-format off
+
+TEST_F(Ctx0Test, test_1) {
+    t_testdata data{
+        {
+            {},
+            {}
+        }
+    };
+
+    run(data);
+}
+
+TEST_F(Ctx0Test, test_2) {
+    t_testdata data{
+        {
+            {{iop, 1_ts, "0"_ts, "0"_ts, 0_ts},
+            {iop, 2_ts, "1"_ts, "1"_ts, 1_ts},
+            {iop, 3_ts, "2"_ts, "2"_ts, 2_ts},
+            {iop, 4_ts, "3"_ts, "3"_ts, 3_ts}},
+            {
+                "0"_ts, "0"_ts, 0_ts,
+                "1"_ts, "1"_ts, 1_ts,
+                "2"_ts, "2"_ts, 2_ts,
+                "3"_ts, "3"_ts, 3_ts
+            }
+        }
+    };
+
+    run(data);
+}
+// clang-format on
