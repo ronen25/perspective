@@ -14,7 +14,6 @@ matrix:
       sudo: true
       compiler:
         - gcc
-        - clang
       addons:
        apt:
          packages:
