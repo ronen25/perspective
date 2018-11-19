@@ -80,11 +80,9 @@ struct test_traits
 {
     typedef DATA_T t_data;
     typedef typename t_accumulation_type<DATA_T>::type t_accum_type;
-    inline static const perspective::t_dtype dtype = type_to_dtype<DATA_T>();
-    inline static const perspective::t_tscalar null
-        = perspective::mknull(test_traits<DATA_T>::dtype);
-    inline static const perspective::t_tscalar clear
-        = perspective::mkclear(test_traits<DATA_T>::dtype);
+    static const perspective::t_dtype dtype;
+    static const perspective::t_tscalar null;
+    static const perspective::t_tscalar clear;
     static const perspective::t_tscalar zero;
     static const perspective::t_tscalar v1;
     static const perspective::t_tscalar v2;
@@ -96,6 +94,8 @@ struct test_traits
         return mktscalar<t_accum_type>(v);
     }
 };
+
+
 // String specializations
 template <>
 const perspective::t_tscalar test_traits<perspective::t_str>::zero;
@@ -117,6 +117,15 @@ template <>
 const perspective::t_tscalar test_traits<perspective::t_time>::v1;
 template <>
 const perspective::t_tscalar test_traits<perspective::t_time>::v2;
+
+template <typename DATA_T>
+const perspective::t_dtype test_traits<DATA_T>::dtype = type_to_dtype<DATA_T>();
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::null = perspective::mknull(test_traits<DATA_T>::dtype);
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::clear = perspective::mkclear(test_traits<DATA_T>::dtype);
 
 template <typename DATA_T>
 const perspective::t_tscalar test_traits<DATA_T>::zero
