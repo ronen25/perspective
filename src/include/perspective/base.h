@@ -400,6 +400,7 @@ enum t_fmode
 
 PERSPECTIVE_EXPORT t_str get_error_str();
 PERSPECTIVE_EXPORT bool is_numeric_type(t_dtype dtype);
+PERSPECTIVE_EXPORT bool is_floating_point(t_dtype dtype);
 PERSPECTIVE_EXPORT t_str get_dtype_descr(t_dtype dtype);
 PERSPECTIVE_EXPORT t_str get_status_descr(t_status dtype);
 PERSPECTIVE_EXPORT t_uindex get_dtype_size(t_dtype dtype);
@@ -444,6 +445,58 @@ struct t_cchar_umap_hash
 };
 
 t_bool is_deterministic_sized(t_dtype dtype);
+
+template <typename T>
+t_dtype
+type_to_dtype()
+{
+    return DTYPE_NONE;
+}
+
+template <>
+t_dtype type_to_dtype<t_int64>();
+
+template <>
+t_dtype type_to_dtype<t_int32>();
+
+template <>
+t_dtype type_to_dtype<t_int16>();
+
+template <>
+t_dtype type_to_dtype<t_int8>();
+
+template <>
+t_dtype type_to_dtype<t_uint64>();
+
+template <>
+t_dtype type_to_dtype<t_uint32>();
+
+template <>
+t_dtype type_to_dtype<t_uint16>();
+
+template <>
+t_dtype type_to_dtype<t_uint8>();
+
+template <>
+t_dtype type_to_dtype<t_float64>();
+
+template <>
+t_dtype type_to_dtype<t_float32>();
+
+template <>
+t_dtype type_to_dtype<t_bool>();
+
+class t_date;
+class t_time;
+
+template <>
+t_dtype type_to_dtype<t_time>();
+
+template <>
+t_dtype type_to_dtype<t_date>();
+
+template <>
+t_dtype type_to_dtype<t_str>();
 
 } // end namespace perspective
 

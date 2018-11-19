@@ -7,8 +7,11 @@
  *
  */
 
+#include <perspective/base.h>
 #include <perspective/config.h>
 #include <perspective/table.h>
+#include <perspective/date.h>
+#include <perspective/time.h>
 #include <perspective/test_utils.h>
 #include <perspective/context_one.h>
 #include <perspective/context_two.h>
@@ -71,6 +74,102 @@ std::vector<t_dtype> common_dtypes{
     DTYPE_DATE,
     DTYPE_STR,
 };
+
+template <typename DATA_T>
+struct test_traits
+{
+    typedef DATA_T t_data;
+    typedef typename t_accumulation_type<DATA_T>::type t_accum_type;
+    inline static const perspective::t_dtype dtype = type_to_dtype<DATA_T>();
+    inline static const perspective::t_tscalar null
+        = perspective::mknull(test_traits<DATA_T>::dtype);
+    inline static const perspective::t_tscalar clear
+        = perspective::mkclear(test_traits<DATA_T>::dtype);
+    static const perspective::t_tscalar zero;
+    static const perspective::t_tscalar v1;
+    static const perspective::t_tscalar v2;
+
+    static t_tscalar
+    acc_s(t_int64 v)
+    {
+        t_accum_type v_(v);
+        return mktscalar<t_accum_type>(v);
+    }
+};
+// String specializations
+template <>
+const perspective::t_tscalar test_traits<perspective::t_str>::zero;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_str>::v1;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_str>::v2;
+// Date specializations
+template <>
+const perspective::t_tscalar test_traits<perspective::t_date>::zero;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_date>::v1;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_date>::v2;
+// Time specializations
+template <>
+const perspective::t_tscalar test_traits<perspective::t_time>::zero;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_time>::v1;
+template <>
+const perspective::t_tscalar test_traits<perspective::t_time>::v2;
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::zero
+    = perspective::mktscalar<DATA_T>(0);
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::v1
+    = perspective::mktscalar<DATA_T>(1);
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::v2
+    = perspective::mktscalar<DATA_T>(2);
+
+// String specializations
+template <>
+const t_tscalar test_traits<t_str>::zero = mktscalar<const char*>("");
+template <>
+const t_tscalar test_traits<t_str>::v1 = mktscalar<const char*>("1");
+template <>
+const t_tscalar test_traits<t_str>::v2 = mktscalar<const char*>("2");
+
+// Date specializations
+template <>
+const t_tscalar test_traits<t_date>::zero = mktscalar(t_date());
+template <>
+const t_tscalar test_traits<t_date>::v1 = mktscalar(t_date(2018, 1, 1));
+template <>
+const t_tscalar test_traits<t_date>::v2 = mktscalar(t_date(2018, 1, 1));
+
+// Time specializations
+template <>
+const t_tscalar test_traits<t_time>::zero = mktscalar(t_time(0));
+template <>
+const t_tscalar test_traits<t_time>::v1 = mktscalar(t_time(100000));
+template <>
+const t_tscalar test_traits<t_time>::v2 = mktscalar(t_time(200000));
+
+typedef test_traits<t_int64> tr_i64;
+typedef test_traits<t_int32> tr_i32;
+typedef test_traits<t_int16> tr_i16;
+typedef test_traits<t_int8> tr_i8;
+typedef test_traits<t_uint64> tr_u64;
+typedef test_traits<t_uint32> tr_u32;
+typedef test_traits<t_uint16> tr_u16;
+typedef test_traits<t_uint8> tr_u8;
+typedef test_traits<t_float64> tr_float64;
+typedef test_traits<t_float32> tr_float32;
+
+typedef test_traits<t_date> tr_date;
+typedef test_traits<t_time> tr_time;
+typedef test_traits<t_str> tr_str;
+typedef test_traits<t_bool> tr_bool;
+
+typedef ::testing::Types<tr_i64, tr_i32, tr_i16, tr_i8, tr_float64, tr_float32>
+    tl_numeric_types;
 
 TEST(TABLE, simplest_test)
 {
@@ -697,14 +796,18 @@ protected:
     t_gnode_sptr m_g;
 };
 
-class I64Ctx1SumTest : public CtxTest<I64Ctx1SumTest, t_ctx1>
+template <typename T>
+class Ctx1SumTest : public CtxTest<Ctx1SumTest<T>, t_ctx1>
 {
 public:
+    using t_tbldata = typename CtxTest<Ctx1SumTest<T>, t_ctx1>::t_tbldata;
+    using t_stepdata = typename CtxTest<Ctx1SumTest<T>, t_ctx1>::t_stepdata;
+    using t_testdata = typename CtxTest<Ctx1SumTest<T>, t_ctx1>::t_testdata;
     t_schema
     get_ischema()
     {
-        return t_schema{{"psp_op", "psp_pkey", "x"},
-            {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
+        return t_schema{
+            {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, T::dtype}};
     }
 
     t_config
@@ -714,98 +817,131 @@ public:
     }
 };
 
+TYPED_TEST_CASE(Ctx1SumTest, tl_numeric_types);
+
 // clang-formant off
-TEST_F(I64Ctx1SumTest, test_1)
+TYPED_TEST(Ctx1SumTest, test_1)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{iop, 1_ts, i64_clear}},
-            // TODO correct
-            {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{iop, 1_ts, T::clear}},
+            {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}} // TODO: correct
+    };
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_2)
+TYPED_TEST(Ctx1SumTest, test_2)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_0 = T::acc_s(0);
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{dop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{dop, 1_ts, T::null}}, {"Grand Aggregate"_ts, acc_0}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_3)
+TYPED_TEST(Ctx1SumTest, test_3)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{iop, 1_ts, T::null}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_4)
+TYPED_TEST(Ctx1SumTest, test_4)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{dop, 1_ts, i64_null}, {iop, 1_ts, 2_ts}},
-            {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{dop, 1_ts, T::null}, {iop, 1_ts, T::v2}},
+            {"Grand Aggregate"_ts, T::acc_s(2), T::v2, T::acc_s(2)}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_5)
+TYPED_TEST(Ctx1SumTest, test_5)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_0 = T::acc_s(0);
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}},
-        {{{iop, 2_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 1_ts, i64_null, 0_ts, 1_ts, 1_ts}}};
+        {{{iop, 1_ts, T::null}}, {"Grand Aggregate"_ts, acc_0, T::null, acc_0}},
+        {{{iop, 2_ts, T::v1}},
+            {"Grand Aggregate"_ts, acc_1, T::null, acc_0, T::v1, acc_1}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_6)
+TYPED_TEST(Ctx1SumTest, test_6)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_0 = T::acc_s(0);
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 0_ts, i64_null, 0_ts}},
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
+        {{{iop, 1_ts, T::null}}, {"Grand Aggregate"_ts, acc_0, T::null, acc_0}},
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_7)
+TYPED_TEST(Ctx1SumTest, test_7)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{iop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{iop, 1_ts, T::null}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_8)
+TYPED_TEST(Ctx1SumTest, test_8)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
+    auto acc_2 = T::acc_s(2);
 
     t_testdata data{
-        {{{iop, 1_ts, 1_ts}}, {"Grand Aggregate"_ts, 1_ts, 1_ts, 1_ts}},
-        {{{iop, 1_ts, 2_ts}}, {"Grand Aggregate"_ts, 2_ts, 2_ts, 2_ts}}};
+        {{{iop, 1_ts, T::v1}}, {"Grand Aggregate"_ts, acc_1, T::v1, acc_1}},
+        {{{iop, 1_ts, T::v2}}, {"Grand Aggregate"_ts, acc_2, T::v2, acc_2}}};
 
-    run(data);
+    this->run(data);
 }
 
-TEST_F(I64Ctx1SumTest, test_9)
+TYPED_TEST(Ctx1SumTest, test_9)
 {
+    using t_testdata = typename Ctx1SumTest<TypeParam>::t_testdata;
+    using T = TypeParam;
+    auto acc_1 = T::acc_s(1);
 
     t_testdata data{{{{dop, 1_ts, i64_null}}, {"Grand Aggregate"_ts, s_none}}};
 
-    run(data);
+    this->run(data);
 }
 
 // clang-format on
@@ -2108,3 +2244,89 @@ TEST_F(Ctx0Test, test_3) {
     run(data);
 }
 // clang-format on
+
+TEST(LOG_TEST, test_1) { psp_log(__FILE__, __LINE__, "log_test"); }
+
+TEST(IS_FLOATING_POINT, test_1)
+{
+    EXPECT_TRUE(perspective::is_floating_point(DTYPE_FLOAT64));
+    EXPECT_TRUE(perspective::is_floating_point(DTYPE_FLOAT32));
+    EXPECT_FALSE(perspective::is_floating_point(DTYPE_INT64));
+    EXPECT_FALSE(perspective::is_floating_point(DTYPE_INT32));
+    EXPECT_FALSE(perspective::is_floating_point(DTYPE_INT16));
+    EXPECT_FALSE(perspective::is_floating_point(DTYPE_INT8));
+}
+
+TEST(TYPE_TO_DTYPE, test_time)
+{
+    EXPECT_EQ(type_to_dtype<t_time>(), DTYPE_TIME);
+    EXPECT_EQ(type_to_dtype<t_date>(), DTYPE_DATE);
+    EXPECT_EQ(type_to_dtype<t_str>(), DTYPE_STR);
+}
+
+TEST(GNODE_TEST, get_registered_contexts)
+{
+    t_schema sch{{"psp_op", "psp_pkey", "s", "i"},
+        {DTYPE_UINT8, DTYPE_INT64, DTYPE_STR, DTYPE_INT64}};
+    auto gn = t_gnode::build(sch);
+
+    auto ctx0 = t_ctx0::build(sch, t_config{{"s"}});
+    auto ctx1 = t_ctx1::build(sch, t_config({"s"}, {AGGTYPE_SUM, "i"}));
+    auto ctx2
+        = t_ctx2::build(sch, t_config({"s"}, {"i"}, {{AGGTYPE_SUM, "i"}}));
+
+    gn->register_context("ctx0", ctx0);
+    gn->register_context("ctx1", ctx1);
+    gn->register_context("ctx2", ctx2);
+
+    auto step = [&gn, &sch](const std::vector<t_tscalvec>& data) {
+        t_table tbl(sch, data);
+        gn->_send_and_process(tbl);
+    };
+
+    step({
+        {iop, 1_ts, "a"_ts, 1_ts},
+        {iop, 2_ts, "b"_ts, 2_ts},
+    });
+
+    EXPECT_EQ(gn->get_registered_contexts().size(), 3);
+    EXPECT_EQ(gn->get_contexts_last_updated().size(), 3);
+
+    auto recipe = gn->get_recipe();
+    auto gn2 = t_gnode(recipe);
+
+    EXPECT_TRUE(gn->was_updated());
+
+    auto pkeys = gn->get_pkeys();
+    std::sort(pkeys.begin(), pkeys.end());
+    t_tscalvec expected_pkeys{1_ts, 2_ts};
+    EXPECT_EQ(pkeys, expected_pkeys);
+
+    EXPECT_EQ(gn->get_table()->size(), 2);
+
+    step({
+        {iop, 1_ts, "a"_ts, 2_ts},
+        {iop, 2_ts, "b"_ts, 4_ts},
+    });
+
+    auto ctx0_delta = ctx0->get_step_delta(0, ctx0->get_row_count());
+    auto ctx1_delta = ctx1->get_step_delta(0, ctx1->get_row_count());
+    auto ctx2_delta = ctx2->get_step_delta(0, ctx2->get_row_count());
+
+    auto ctx0_pkeys = ctx0->get_pkeys({{0, 0}});
+    t_tscalvec expected_ctx0_pkeys{1_ts};
+    EXPECT_EQ(ctx0_pkeys, expected_ctx0_pkeys);
+
+    ctx0->sort_by(t_sortsvec{{0, SORTTYPE_DESCENDING}});
+    EXPECT_EQ(ctx0->get_cell_data({{0, 0}}), t_tscalvec{"b"_ts});
+
+    auto trees = gn->get_trees();
+    t_table_sptr pkeyed_table(gn->_get_pkeyed_table());
+    EXPECT_EQ(gn->get_custom_columns().size(), 0);
+    gn->_unregister_context("ctx0");
+    gn->_unregister_context("ctx1");
+    gn->_unregister_context("ctx2");
+    EXPECT_EQ(gn->get_registered_contexts().size(), 0);
+
+    gn->reset();
+}

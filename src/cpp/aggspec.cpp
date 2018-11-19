@@ -315,16 +315,12 @@ get_simple_accumulator_type(t_dtype coltype)
         case DTYPE_INT32:
         case DTYPE_INT16:
         case DTYPE_INT8:
-        {
-            return DTYPE_INT64;
-        }
-        break;
         case DTYPE_UINT64:
         case DTYPE_UINT32:
         case DTYPE_UINT16:
         case DTYPE_UINT8:
         {
-            return DTYPE_UINT64;
+            return DTYPE_INT64;
         }
         case DTYPE_FLOAT64:
         case DTYPE_FLOAT32:

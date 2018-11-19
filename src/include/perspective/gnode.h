@@ -148,7 +148,6 @@ protected:
 
     void _update_contexts_from_state(const t_table& tbl);
     void _update_contexts_from_state();
-    void clear_deltas();
 
 private:
     void populate_icols_in_flattened(

@@ -104,4 +104,61 @@ typedef std::pair<t_float64, t_float64> t_f64pair;
 typedef t_uindex t_stridx;
 typedef std::pair<t_stridx, t_stridx> t_stridxpair;
 
+template <typename T>
+struct t_accumulation_type
+{
+    using type = T;
+};
+
+template <>
+struct t_accumulation_type<t_int32>
+{
+    using type = t_int64;
+};
+
+template <>
+struct t_accumulation_type<t_int16>
+{
+    using type = t_int64;
+};
+
+template <>
+struct t_accumulation_type<t_int8>
+{
+    using type = t_int64;
+};
+
+template <>
+struct t_accumulation_type<t_uint64>
+{
+    using type = t_int64;
+};
+template <>
+struct t_accumulation_type<t_uint32>
+{
+    using type = t_int64;
+};
+template <>
+struct t_accumulation_type<t_uint16>
+{
+    using type = t_int64;
+};
+template <>
+struct t_accumulation_type<t_uint8>
+{
+    using type = t_int64;
+};
+
+template <>
+struct t_accumulation_type<t_float32>
+{
+    using type = t_float64;
+};
+
+template <>
+struct t_accumulation_type<t_bool>
+{
+    using type = t_int64;
+};
+
 } // end namespace perspective

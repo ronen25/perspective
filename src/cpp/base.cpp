@@ -420,4 +420,104 @@ t_cchar_umap_hash::operator()(const char* s) const
     return boost::hash_range(s, s + std::strlen(s));
 }
 
+template <>
+t_dtype
+type_to_dtype<t_int64>()
+{
+    return DTYPE_INT64;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_int32>()
+{
+    return DTYPE_INT32;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_int16>()
+{
+    return DTYPE_INT16;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_int8>()
+{
+    return DTYPE_INT8;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_uint64>()
+{
+    return DTYPE_UINT64;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_uint32>()
+{
+    return DTYPE_UINT32;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_uint16>()
+{
+    return DTYPE_UINT16;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_uint8>()
+{
+    return DTYPE_UINT8;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_float64>()
+{
+    return DTYPE_FLOAT64;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_float32>()
+{
+    return DTYPE_FLOAT32;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_bool>()
+{
+    return DTYPE_BOOL;
+}
+
+class t_date;
+class t_time;
+
+template <>
+t_dtype
+type_to_dtype<t_time>()
+{
+    return DTYPE_TIME;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_date>()
+{
+    return DTYPE_DATE;
+}
+
+template <>
+t_dtype
+type_to_dtype<t_str>()
+{
+    return DTYPE_STR;
+}
 } // end namespace perspective

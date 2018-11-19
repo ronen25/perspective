@@ -30,6 +30,6 @@ t_str str_(int value);
 
 t_str unique_path(const t_str& path_prefix);
 
-// std::vector<t_str> split(const t_str& s, char delim);
+std::vector<t_str> split(const t_str& s, char delim);
 
 } // namespace perspective

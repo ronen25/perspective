@@ -211,46 +211,6 @@ t_gnode::populate_icols_in_flattened(
 }
 
 void
-t_gnode::clear_deltas()
-{
-    PSP_TRACE_SENTINEL();
-    PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
-
-    for (auto& kv : m_contexts)
-    {
-        switch (kv.second.m_ctx_type)
-        {
-            case TWO_SIDED_CONTEXT:
-            {
-                static_cast<t_ctx2*>(kv.second.m_ctx)->clear_deltas();
-            }
-            break;
-            case ONE_SIDED_CONTEXT:
-            {
-                static_cast<t_ctx1*>(kv.second.m_ctx)->clear_deltas();
-            }
-            break;
-            case ZERO_SIDED_CONTEXT:
-            {
-                static_cast<t_ctx0*>(kv.second.m_ctx)->clear_deltas();
-            }
-            break;
-            case GROUPED_PKEY_CONTEXT:
-            {
-                static_cast<t_ctx_grouped_pkey*>(kv.second.m_ctx)
-                    ->clear_deltas();
-            }
-            break;
-            default:
-            {
-                PSP_COMPLAIN_AND_ABORT("Unexpected context type");
-            }
-            break;
-        }
-    }
-}
-
-void
 t_gnode::_process()
 {
     PSP_TRACE_SENTINEL();

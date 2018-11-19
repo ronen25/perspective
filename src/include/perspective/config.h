@@ -64,6 +64,9 @@ public:
 
     // ctx2
     t_config(const std::vector<t_str>& row_pivots,
+        const std::vector<t_str>& col_pivots, const t_aggspecvec& aggregates);
+
+    t_config(const std::vector<t_str>& row_pivots,
         const std::vector<t_str>& col_pivots, const t_aggspecvec& aggregates,
         const t_totals totals, t_filter_op combiner, const t_ftermvec& fterms);
 
@@ -76,6 +79,7 @@ public:
         const t_ftermvec& fterms);
 
     // t_ctx0
+    t_config(const std::vector<t_str>& detail_columns);
     t_config(const std::vector<t_str>& detail_columns, t_filter_op combiner,
         const t_ftermvec& fterms);
 
