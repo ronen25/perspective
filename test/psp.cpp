@@ -26,8 +26,6 @@
 #include <gtest/gtest.h>
 #include <limits>
 #include <cmath>
-#include <rapidcheck.h>
-#include <rapidcheck/gtest.h>
 #include <sstream>
 
 using namespace perspective;
