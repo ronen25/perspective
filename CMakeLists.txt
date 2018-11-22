@@ -203,28 +203,11 @@ function (psp_build_dep name cmake_file)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
-	file(GLOB_RECURSE
-       FLATBUFFER_SCHEMAS
-       ${CMAKE_SOURCE_DIR}/schemas/flatbuffers/*.fbs)
-
    if (WIN32)
        set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
    endif()
    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
-   psp_build_dep("flatbuffers" "cmake/flatbuffers.txt.in")
-   set(FB_INCLUDE_DIRS ${CMAKE_SOURCE_DIR}/schemas/flatbuffers)
-   build_flatbuffers(
-	   "${FLATBUFFER_SCHEMAS}"
-	   "${FB_INCLUDE_DIRS}"
-	   flatbuffer_schemas
-	   "" # targets schemas should depend on
-	   "${CMAKE_SOURCE_DIR}/src/include/schemas/flatbuffers"
-	   ""
-	   ""
-	)
-
-	add_dependencies(psp flatbuffer_schemas)
    #psp_build_dep("tbb" "cmake/TBB.txt.in")
    #psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)
