@@ -170,7 +170,7 @@ t_tscalar::canonical(t_dtype dtype)
         break;
         case DTYPE_BOOL:
         {
-            rval.set(t_bool(0));
+            rval.set(false);
         }
         break;
         case DTYPE_NONE:
@@ -354,26 +354,22 @@ t_tscalar::abs() const
     {
         case DTYPE_INT64:
         {
-            t_int64 v = std::abs(to_double());
-            rval.set(v);
+            rval.set(static_cast<t_int64>(std::abs(to_double())));
         }
         break;
         case DTYPE_INT32:
         {
-            t_int32 v = std::abs(to_double());
-            rval.set(v);
+            rval.set(static_cast<t_int32>(std::abs(to_double())));
         }
         break;
         case DTYPE_INT16:
         {
-            t_int16 v = std::abs(to_double());
-            rval.set(v);
+            rval.set(static_cast<t_int16>(std::abs(to_double())));
         }
         break;
         case DTYPE_INT8:
         {
-            t_int8 v = std::abs(to_double());
-            rval.set(v);
+            rval.set(static_cast<t_int8>(std::abs(to_double())));
         }
         break;
         case DTYPE_UINT64:
@@ -1142,12 +1138,12 @@ t_tscalar::to_int64() const
         break;
         case DTYPE_FLOAT64:
         {
-            return get<t_float64>();
+            return static_cast<t_int64>(get<t_float64>());
         }
         break;
         case DTYPE_FLOAT32:
         {
-            return get<t_float32>();
+            return static_cast<t_int64>(get<t_float32>());
         }
         break;
         case DTYPE_DATE:
@@ -1582,8 +1578,7 @@ t_tscalar::coerce_numeric<t_bool>() const
         rv.set(false);
         return rv;
     }
-    t_bool v = static_cast<t_bool>(m_data.m_uint64);
-    rv.set(v);
+    rv.set(static_cast<t_bool>(m_data.m_uint64));
     return rv;
 }
 

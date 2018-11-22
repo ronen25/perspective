@@ -598,7 +598,7 @@ t_gstate::get_sorted_pkeyed_table() const
     for (auto it = ordered.begin(); it != ordered.end(); ++it)
     {
         auto ridx = it->second;
-        pkey_col->set_scalar(ridx, it->first);
+        pkey_col->push_back(it->first);
         for (t_uindex cidx = 0, loop_end = m_tblschema.size(); cidx < loop_end;
              ++cidx)
         {

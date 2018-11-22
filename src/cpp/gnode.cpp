@@ -361,7 +361,7 @@ t_gnode::_process()
 
     t_uindex added_count = 0;
 
-    t_uint8* op_base = op_col->get_nth<t_uint8>(0);
+    auto op_base = op_col->get_nth<t_uint8>(0);
     std::vector<t_uindex> added_offset(fnrows);
     std::vector<t_rlookup> lkup(fnrows);
     std::vector<t_bool> prev_pkey_eq_vec(fnrows);
@@ -578,7 +578,7 @@ t_gnode::_process()
 
         m_oports[PSP_PORT_FLATTENED]->set_table(flattened_masked);
 
-        if (t_env::log_data_gnode_flattened())
+        if (t_env::log_data_gnode_flattened_mask())
         {
             std::cout << repr() << "gnode_process_flattened_mask" << std::endl;
             flattened_masked->pprint();

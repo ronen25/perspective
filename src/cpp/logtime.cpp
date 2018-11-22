@@ -54,5 +54,4 @@ psp_log_time(const t_str& s)
        << curmem - prev_curmem << " msg: " << s;
     std::cout << ss.str() << std::endl;
 }
-
 } // end namespace perspective
