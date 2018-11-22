@@ -126,6 +126,14 @@ t_config::t_config(const std::vector<t_str>& row_pivots,
 
 // ctx2
 t_config::t_config(const std::vector<t_str>& row_pivots,
+    const std::vector<t_str>& col_pivots, const t_aggspecvec& aggregates)
+    : t_config(
+          row_pivots, col_pivots, aggregates, TOTALS_HIDDEN, FILTER_OP_AND, {})
+
+{
+}
+
+t_config::t_config(const std::vector<t_str>& row_pivots,
     const std::vector<t_str>& col_pivots, const t_aggspecvec& aggregates,
     const t_totals totals, t_filter_op combiner, const t_ftermvec& fterms)
     : m_aggregates(aggregates)
@@ -200,6 +208,11 @@ t_config::t_config(const std::vector<t_str>& row_pivots,
 }
 
 // t_ctx0
+t_config::t_config(const std::vector<t_str>& detail_columns)
+    : t_config(detail_columns, FILTER_OP_AND, {})
+{
+}
+
 t_config::t_config(const std::vector<t_str>& detail_columns,
     t_filter_op combiner, const t_ftermvec& fterms)
     : m_detail_columns(detail_columns)

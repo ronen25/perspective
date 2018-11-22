@@ -74,38 +74,6 @@ t_column::t_column(const t_column_recipe& recipe)
     }
 }
 
-void
-t_column::column_copy_helper(const t_column& other)
-{
-    m_dtype = other.m_dtype;
-    m_init = false;
-    m_isvlen = other.m_isvlen;
-    m_data.reset(new t_lstore(other.m_data->get_recipe()));
-    m_vocab.reset(new t_vocab(other.m_vocab->get_vlendata()->get_recipe(),
-        other.m_vocab->get_extents()->get_recipe()));
-    m_status.reset(new t_lstore(other.m_status->get_recipe()));
-
-    m_size = other.m_size;
-    m_status_enabled = other.m_status_enabled;
-    m_from_recipe = false;
-}
-
-t_column::t_column(const t_column& c)
-{
-    PSP_VERBOSE_ASSERT(this != &c, "Assigning self");
-    column_copy_helper(c);
-    m_init = false;
-}
-
-t_column&
-t_column::operator=(const t_column& c)
-{
-    PSP_VERBOSE_ASSERT(this != &c, "Assigning self");
-    column_copy_helper(c);
-    m_init = false;
-    return *this;
-}
-
 t_column::t_column(
     t_dtype dtype, t_bool missing_enabled, const t_lstore_recipe& a)
     : t_column(dtype, missing_enabled, a, a.m_capacity / get_dtype_size(dtype))
@@ -963,7 +931,7 @@ t_column::pprint_vocabulary() const
 t_col_sptr
 t_column::clone() const
 {
-    auto rval = std::make_shared<t_column>(*this);
+    auto rval = std::make_shared<t_column>(m_dtype, is_status_enabled(), m_data->capacity() / get_dtype_size(m_dtype));
     rval->init();
     rval->set_size(size());
     rval->m_data->fill(*m_data);
@@ -992,7 +960,7 @@ t_column::clone(const t_mask& mask) const
         return clone();
     }
 
-    auto rval = std::make_shared<t_column>(*this);
+    auto rval = std::make_shared<t_column>(m_dtype, is_status_enabled(), m_data->capacity() / get_dtype_size(m_dtype));
     rval->init();
     rval->set_size(mask.size());
 

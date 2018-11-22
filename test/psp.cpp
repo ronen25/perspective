@@ -7,6 +7,7 @@
  *
  */
 
+#include <random>
 #include <perspective/config.h>
 #include <perspective/table.h>
 #include <perspective/test_utils.h>
@@ -18,9 +19,13 @@
 #include <perspective/storage.h>
 #include <perspective/none.h>
 #include <perspective/gnode.h>
+#include <perspective/sym_table.h>
 #include <gtest/gtest.h>
 #include <limits>
 #include <cmath>
+#include <rapidcheck.h>
+#include <rapidcheck/gtest.h>
+#include <sstream>
 
 using namespace perspective;
 
@@ -36,7 +41,6 @@ t_tscalar dop = mktscalar<t_uint8>(OP_DELETE);
 t_tscalar cop = mktscalar<t_uint8>(OP_CLEAR);
 t_tscalar s_nan32 = mktscalar(std::numeric_limits<t_float32>::quiet_NaN());
 t_tscalar s_nan64 = mktscalar(std::numeric_limits<t_float64>::quiet_NaN());
-t_tscalar s_negnan64 = mktscalar(double(0) / double(0));
 t_tscalar i64_clear = mkclear(DTYPE_INT64);
 t_tscalar f64_clear = mkclear(DTYPE_FLOAT64);
 t_tscalar str_clear = mkclear(DTYPE_STR);
@@ -861,8 +865,7 @@ public:
 TEST_F(F64Ctx1MeanTest, test_1)
 {
     t_testdata data{{{},
-        // TODO Fix
-        {"Grand Aggregate"_ts, s_none}}};
+        {"Grand Aggregate"_ts, s_nan64}}};
 
     run(data);
 }
@@ -1341,7 +1344,7 @@ TEST_F(F64Ctx1PctSumGrandTotalTest, test_1) {
     t_testdata data{
         {
             {},
-            {"Grand Aggregate"_ts, s_negnan64 }
+            {"Grand Aggregate"_ts, s_nan64 }
         }
     };
 
@@ -1398,7 +1401,7 @@ TEST_F(F64Ctx1WMeanTest, test_1) {
     t_testdata data{
         {
             {},
-            {"Grand Aggregate"_ts, s_none }
+            {"Grand Aggregate"_ts, s_nan64 }
         }
     };
 
@@ -1435,7 +1438,7 @@ TEST_F(F64Ctx1WMeanTest, test_4) {
             {{iop, 1_ts, 1_ts, 3_ts},
             {iop, 2_ts, i64_null, 1_ts},
             {iop, 3_ts, 1_ts, 1_ts}},
-            {"Grand Aggregate"_ts, 2._ts, i64_null, s_none, 1_ts, 2._ts }
+            {"Grand Aggregate"_ts, 2._ts, i64_null, s_nan64, 1_ts, 2._ts }
         }
     };
 

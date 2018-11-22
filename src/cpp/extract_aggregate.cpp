@@ -22,6 +22,8 @@ extract_aggregate(const t_aggspec& aggspec, const t_column* aggcol,
 {
     static t_str non_unique("-");
 
+    auto maybe_nan = [](t_float64 v) { return std::isnan(v) ? std::numeric_limits<double>::quiet_NaN() : v; };
+
     switch (aggspec.agg())
     {
         case AGGTYPE_PCT_SUM_PARENT:
@@ -34,16 +36,16 @@ extract_aggregate(const t_aggspec& aggspec, const t_column* aggcol,
             }
 
             t_tscalar pv = aggcol->get_scalar(pridx);
-            return mktscalar<t_float64>(
-                100.0 * (cv.to_double() / pv.to_double()));
+            auto v = 100.0 * (cv.to_double() / pv.to_double());
+            return mktscalar<t_float64>(maybe_nan(v));
         }
         break;
         case AGGTYPE_PCT_SUM_GRAND_TOTAL:
         {
             t_tscalar cv = aggcol->get_scalar(ridx);
             t_tscalar pv = aggcol->get_scalar(ROOT_AGGIDX);
-            return mktscalar<t_float64>(
-                100.0 * (cv.to_double() / pv.to_double()));
+            auto v = 100.0 * (cv.to_double() / pv.to_double());
+            return mktscalar<t_float64>(maybe_nan(v));
         }
         break;
         case AGGTYPE_SUM:
@@ -91,19 +93,10 @@ extract_aggregate(const t_aggspec& aggspec, const t_column* aggcol,
         case AGGTYPE_WEIGHTED_MEAN:
         case AGGTYPE_MEAN:
         {
-            const t_f64pair* pair = aggcol->get_nth<t_f64pair>(ridx);
-            t_tscalar rval;
+            auto pair = aggcol->get_nth<t_f64pair>(ridx);
             t_float64 second = pair->second;
-            if (second > 0)
-            {
-                t_float64 mean = pair->first / second;
-                rval.set(mean);
-            }
-            else
-            {
-                rval.set(t_none());
-            }
-            return rval;
+            t_float64 v = pair->first / second;
+            return mktscalar<t_float64>(maybe_nan(v));
         }
         break;
         default:

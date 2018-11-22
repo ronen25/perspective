@@ -21,6 +21,7 @@
 #include <emscripten/bind.h>
 #include <emscripten/val.h>
 #include <perspective/sym_table.h>
+#include <perspective/vocab.h>
 #include <codecvt>
 
 using namespace perspective;

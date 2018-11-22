@@ -30,7 +30,7 @@ if (PSP_WASM_BUILD)
 		-s NO_EXIT_RUNTIME=1 \
 		-s NO_FILESYSTEM=1 \
 		-s ALLOW_MEMORY_GROWTH=1 \
-		-s NO_DYNAMIC_EXECUTION=2 \
+		-s DYNAMIC_EXECUTION=2 \
 		-s EXPORTED_FUNCTIONS=\"['_main']\" \
 	")
 
@@ -127,15 +127,15 @@ else()
 	add_library(psp SHARED ${SOURCE_FILES} ${HEADER_FILES})
 endif()
 
-if (UNIX)
-	target_compile_options(psp PRIVATE -Wall -pedantic -Werror)
-	target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fPIC -O0>)
-	target_compile_definitions(psp PRIVATE -DPSP_DEBUG)
-endif()
-
 if (NOT PSP_WASM_BUILD)
+    if (UNIX)
+        target_compile_options(psp PRIVATE -Wall -pedantic) #-Werror
+        target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fPIC -O0>)
+    endif()
+    target_compile_definitions(psp PRIVATE $<$<CONFIG:DEBUG>:D_GLIBCXX_DEBUG PSP_DEBUG>)
 	if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
-		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
+		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-instr-generate -fcoverage-mapping>)
+        target_link_libraries(psp PRIVATE $<$<CONFIG:DEBUG>:--coverage>)
 	elseif ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "GNU")
 		target_compile_options(psp PRIVATE -time=build.time -Wno-deprecated-declarations -Wno-deprecated)
 		target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fprofile-arcs -ftest-coverage>)
@@ -197,7 +197,9 @@ function (psp_build_dep name cmake_file)
 	add_subdirectory(${CMAKE_BINARY_DIR}/${name}-src
 			${CMAKE_BINARY_DIR}/${name}-build
 			EXCLUDE_FROM_ALL)
+	include_directories(${CMAKE_BINARY_DIR}/${name}-src/extras/gtest/include)
     include_directories(${CMAKE_BINARY_DIR}/${name}-src/include)
+	include_directories(${CMAKE_BINARY_DIR}/${name}-src)
 endfunction()
 
 if (NOT PSP_WASM_BUILD)
@@ -206,6 +208,8 @@ if (NOT PSP_WASM_BUILD)
    endif()
    set(BENCHMARK_ENABLE_TESTING OFF CACHE BOOL "" FORCE)
    psp_build_dep("googletest" "cmake/GTest.txt.in")
+   psp_build_dep("rapidcheck" "cmake/rapidcheck.txt.in")
+   #psp_build_dep("backward" "cmake/backward.txt.in")
    #psp_build_dep("tbb" "cmake/TBB.txt.in")
    #psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)

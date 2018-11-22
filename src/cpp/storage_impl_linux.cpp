@@ -9,7 +9,7 @@
 
 #include <perspective/first.h>
 
-#ifdef __linux__
+#if defined(__linux__) || defined(PSP_ENABLE_WASM)
 #include <perspective/base.h>
 #include <perspective/raw_types.h>
 #include <perspective/storage.h>

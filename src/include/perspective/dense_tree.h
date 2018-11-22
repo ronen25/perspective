@@ -74,9 +74,9 @@ private:
     t_dssptr m_ds;
     std::vector<t_uidxpair> m_levels;
     t_pivotvec m_pivots;
-    t_column m_leaves;
+    t_col_sptr m_leaves;
     t_tnodevec m_nodes;
-    t_colvec m_values;
+    t_colsptrvec m_values;
     t_uindex m_nidx;
     t_backing_store m_backing_store;
     t_bool m_init;

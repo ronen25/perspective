@@ -77,6 +77,7 @@ typedef std::shared_ptr<const t_column> t_col_csptr;
 
 class PERSPECTIVE_EXPORT t_column
 {
+    PSP_NON_COPYABLE(t_column);
 public:
 #ifdef PSP_DBG_MALLOC
     PSP_NEW_DELETE(t_column)
@@ -91,9 +92,6 @@ public:
     ~t_column();
 
     void column_copy_helper(const t_column& other);
-
-    t_column(const t_column& c);
-    t_column& operator=(const t_column&);
 
     void init();
 

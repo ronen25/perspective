@@ -95,7 +95,7 @@ public:
     t_str repr() const;
     void clear_input_ports();
     void clear_output_ports();
-
+    
     t_table* _get_pkeyed_table() const;
     t_table_sptr get_sorted_pkeyed_table() const;
 
@@ -216,18 +216,18 @@ t_gnode::notify_context(CTX_T* ctx, const t_table& flattened,
 
 template <typename CTX_T>
 void
-t_gnode::update_context_from_state(CTX_T* ctx, const t_table& flattened)
+t_gnode::update_context_from_state(CTX_T* ctx, const t_table& tbl)
 {
     PSP_TRACE_SENTINEL();
     PSP_VERBOSE_ASSERT(m_init, "touching uninited object");
     PSP_VERBOSE_ASSERT(m_mode == NODE_PROCESSING_SIMPLE_DATAFLOW,
         "Only simple dataflows supported currently");
 
-    if (flattened.size() == 0)
+    if (tbl.size() == 0)
         return;
 
     ctx->step_begin();
-    ctx->notify(flattened);
+    ctx->notify(tbl);
     ctx->step_end();
 }
 
