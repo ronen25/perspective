@@ -117,6 +117,7 @@ t_aggspec::t_aggspec(const t_str& aggname, const t_str& disp_aggname,
 {
 }
 
+#ifdef PSP_ENABLE_WASM
 t_aggspec::t_aggspec(const t_str& name, t_aggtype agg,
     const t_depvec& dependencies, emscripten::val& kernel)
     : m_name(name)
@@ -126,6 +127,7 @@ t_aggspec::t_aggspec(const t_str& name, t_aggtype agg,
     , m_kernel(new t_kernel(kernel))
 {
 }
+#endif
 
 t_aggspec::~t_aggspec() {}
 

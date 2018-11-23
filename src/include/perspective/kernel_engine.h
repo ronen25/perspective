@@ -8,9 +8,10 @@
 #include <emscripten.h>
 #include <emscripten/val.h>
 typedef emscripten::val t_kernel;
-#endif
-
 namespace em = emscripten;
+#else
+typedef perspective::t_str t_kernel;
+#endif
 
 namespace perspective
 {
@@ -40,9 +41,10 @@ t_kernel_evaluator::reduce(
 template <typename T>
 T
 t_kernel_evaluator::reduce(
-    t_uindex idx, const t_str& name, t_uindex depth, std::vector<T> data)
+    const t_kernel& fn, t_uindex lvl_depth, std::vector<T> data)
 {
     PSP_COMPLAIN_AND_ABORT("Not implemented");
+    return T();
 }
 #endif
 
