@@ -49,10 +49,8 @@ t_str cwd();
 
 PERSPECTIVE_EXPORT t_int64 get_page_size();
 
-#ifndef PSP_ENABLE_WASM
 PERSPECTIVE_EXPORT t_int64 psp_curtime();
 PERSPECTIVE_EXPORT t_int64 psp_curmem();
-#endif
 PERSPECTIVE_EXPORT void* psp_dbg_malloc(size_t size);
 PERSPECTIVE_EXPORT void psp_dbg_free(void* mem);
 

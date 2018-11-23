@@ -1,4 +1,6 @@
 ---
+Language: JavaScript
+ColumnLimit:     80
 Language:        Cpp
 # BasedOnStyle:  WebKit
 AccessModifierOffset: -4

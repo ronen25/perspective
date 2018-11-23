@@ -31,11 +31,12 @@ if (PSP_WASM_BUILD)
 		-s NO_FILESYSTEM=1 \
 		-s ALLOW_MEMORY_GROWTH=1 \
 		-s DYNAMIC_EXECUTION=2 \
+		-s ASSERTIONS=2 \
 		-s EXPORTED_FUNCTIONS=\"['_main']\" \
 	")
 
     set(CMAKE_CXX_FLAGS_DEBUG " \
-        -O1 \
+        -O0 \
         -g4 \
         -s SAFE_HEAP=1 \
         -s DISABLE_EXCEPTION_CATCHING=0 \
@@ -84,6 +85,7 @@ src/cpp/flat_traversal.cpp
 src/cpp/gnode.cpp
 src/cpp/gnode_state.cpp
 src/cpp/histogram.cpp
+src/cpp/kernel_engine.cpp
 src/cpp/logtime.cpp
 src/cpp/mask.cpp
 src/cpp/min_max.cpp
@@ -165,18 +167,40 @@ endif()
 
 set_target_properties(psp PROPERTIES COMPILE_FLAGS "${ASYNC_MODE_FLAGS}")
 
+set(PSP_DIST_DIR ${CMAKE_SOURCE_DIR}/dist)
+
 if (PSP_WASM_BUILD)
 	add_executable(perspective.async src/cpp/main.cpp)
 	target_link_libraries(perspective.async psp "${ASYNC_MODE_FLAGS}")
 	set_target_properties(perspective.async PROPERTIES COMPILE_FLAGS "${ASYNC_MODE_FLAGS}")
-	set_target_properties(perspective.async PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build/")
 	set_target_properties(perspective.async PROPERTIES OUTPUT_NAME "psp.async")
 
 	add_executable(perspective.sync src/cpp/main.cpp)
 	target_link_libraries(perspective.sync psp "${SYNC_MODE_FLAGS}")
 	set_target_properties(perspective.sync PROPERTIES COMPILE_FLAGS "${SYNC_MODE_FLAGS}")
-	set_target_properties(perspective.sync PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./build/")
 	set_target_properties(perspective.sync PROPERTIES OUTPUT_NAME "psp.sync")
+
+	add_custom_target(jsbuild
+           COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/dist/js/lib
+		   COMMAND mkdir -p ${CMAKE_SOURCE_DIR}/dist/js/staging
+           WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+
+	add_custom_command(TARGET jsbuild
+           COMMAND echo "=================== JSBUILD ===================="
+		   COMMAND cp build/install/psp.sync.wasm dist/js/
+		   COMMAND cp build/install/psp.async.wasm dist/js/
+		   COMMAND cp build/install/psp.async.js dist/js/staging
+		   COMMAND cp build/install/psp.sync.js dist/js/staging
+		   COMMAND cat dist/js/staging/pre dist/js/staging/psp.async.js dist/js/staging/post > bindings/typescript/psp.async.js
+		   COMMAND cat dist/js/staging/pre dist/js/staging/psp.sync.js dist/js/staging/post > bindings/typescript/psp.sync.js
+		   COMMAND rm dist/js/staging/psp.async.js
+		   COMMAND rm dist/js/staging/psp.sync.js
+		   COMMAND yarn build
+		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    )
+
+	add_dependencies(jsbuild perspective.sync perspective.async)
 endif()
 
 

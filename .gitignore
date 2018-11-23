@@ -124,3 +124,11 @@ src/include/boost
 obj
 .vs
 wasm_build
+dist
+
+
+bindings/typescript/psp.async.js
+bindings/typescript/psp.sync.js
+
+yarn.lock
+tmp

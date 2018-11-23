@@ -117,6 +117,16 @@ t_aggspec::t_aggspec(const t_str& aggname, const t_str& disp_aggname,
 {
 }
 
+t_aggspec::t_aggspec(const t_str& name, t_aggtype agg,
+    const t_depvec& dependencies, emscripten::val& kernel)
+    : m_name(name)
+    , m_disp_name(name)
+    , m_agg(agg)
+    , m_dependencies(dependencies)
+    , m_kernel(new t_kernel(kernel))
+{
+}
+
 t_aggspec::~t_aggspec() {}
 
 t_str
@@ -290,6 +300,10 @@ t_aggspec::agg_str() const
         {
             return "pct_sum_grand_total";
         }
+        case AGGTYPE_UDF_JS_REDUCE_FLOAT64:
+        {
+            return "js_reduce_float64";
+        }
         default:
         {
             PSP_COMPLAIN_AND_ABORT("Unknown agg type");
@@ -377,6 +391,7 @@ t_aggspec::get_output_specs(const t_schema& schema) const
         case AGGTYPE_PCT_SUM_GRAND_TOTAL:
         case AGGTYPE_MUL:
         case AGGTYPE_SUM_NOT_NULL:
+        case AGGTYPE_UDF_JS_REDUCE_FLOAT64:
         {
             t_dtype coltype = schema.get_dtype(m_dependencies[0].name());
             return mk_col_name_type_vec(

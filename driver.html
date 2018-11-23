@@ -1,0 +1,73 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Perspective</title>
+</head>
+
+<body>
+  <script src="dist/js/perspective.js"></script>
+  <script>
+    let engine = new perspective.Engine();
+
+    let index = "desk:ticker";
+    let schema = {
+      "desk:ticker": "string",
+      "ticker": "string",
+      "desk": "string",
+      "pnl": "float",
+      "pos": "float",
+      "lastUpdate": "date"
+    };
+
+    let table = engine.table(schema, { index: index });
+
+    let view = table.view({
+      row_pivot: ["desk"],
+      //column_pivot: ["ticker"],
+      aggregate: [{ op: "sum", column: "pnl" }, { op: "avg", column: "pnl" }],
+      sort: [[1, "desc"]],
+      filter: [["desk", "!=", "Moe"]]
+    });
+
+    let TICKERS = ["AAPL.N", "AMZN.N", "QQQ.N", "NVDA.N", "TSLA.N", "FB.N", "MSFT.N",
+      "TLT.N", "XIV.N", "YY.N", "CSCO.N", "GOOGL.N", "PCLN.N"];
+
+    let DESKS = ["Homer", "Marge", "Bart", "Lisa", "Maggie", "Moe", "Lenny", "Carl", "Krusty"];
+
+    let insert = (count) => {
+      let rows = [];
+      for (let x = 0; x < count; x++) {
+        let desk = DESKS[Math.floor(Math.random() * DESKS.length)];
+        let ticker = TICKERS[Math.floor(Math.random() * TICKERS.length)];
+        let desk_ticker = `${desk}:${ticker}`;
+
+        rows.push({
+          "desk:ticker": desk_ticker,
+          "ticker": ticker,
+          "desk": desk,
+          "pnl": Math.random() * 5e6 - 2.5e6,
+          "pos": Math.random() * 5e4,
+          "lastUpdate": new Date()
+        });
+      }
+      table.update(rows);
+    }
+
+    view.subscribe((result) => {
+      console.log(result);
+    })
+
+    insert(2000);
+
+    setInterval(() => {
+      let count = Math.ceil(Math.random() * 20);
+      insert(count);
+    }, 2000);
+
+
+  </script>
+</body>
+
+</html>

@@ -162,6 +162,7 @@ _get_aggspecs(val j_aggs)
         std::vector<val> agg_row = vecFromJSArray<val>(aggs[idx]);
         std::string name = agg_row[0].as<std::string>();
         t_aggtype aggtype = agg_row[1].as<t_aggtype>();
+        auto& kernel = agg_row[3];
 
         t_depvec dependencies;
         std::vector<val> deps = vecFromJSArray<val>(agg_row[2]);
@@ -174,18 +175,30 @@ _get_aggspecs(val j_aggs)
             std::string dep = deps[didx].as<std::string>();
             dependencies.push_back(t_dep(dep, DEPTYPE_COLUMN));
         }
-        if (aggtype == AGGTYPE_FIRST || aggtype == AGGTYPE_LAST)
+
+        switch (aggtype)
         {
-            if (dependencies.size() == 1)
+            case AGGTYPE_FIRST:
+            case AGGTYPE_LAST:
             {
-                dependencies.push_back(t_dep("psp_pkey", DEPTYPE_COLUMN));
+                if (dependencies.size() == 1)
+                {
+                    dependencies.push_back(t_dep("psp_pkey", DEPTYPE_COLUMN));
+                }
+                aggspecs.push_back(t_aggspec(
+                    name, name, aggtype, dependencies, SORTTYPE_ASCENDING));
             }
-            aggspecs.push_back(t_aggspec(
-                name, name, aggtype, dependencies, SORTTYPE_ASCENDING));
-        }
-        else
-        {
-            aggspecs.push_back(t_aggspec(name, aggtype, dependencies));
+            break;
+            case AGGTYPE_UDF_JS_REDUCE_FLOAT64:
+            {
+                aggspecs.push_back(
+                    t_aggspec(name, aggtype, dependencies, kernel));
+            }
+            break;
+            default:
+            {
+                aggspecs.push_back(t_aggspec(name, aggtype, dependencies));
+            }
         }
     }
     return aggspecs;
@@ -684,7 +697,9 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
     tbl->init();
     tbl->extend(size);
 
-    _fill_data(tbl, colnames, j_data, dtypes, offset, is_arrow);
+    if (size > 0) {
+        _fill_data(tbl, colnames, j_data, dtypes, offset, is_arrow);
+    }
 
     // Set up pkey and op columns
     if (is_delete)
@@ -1505,7 +1520,8 @@ EMSCRIPTEN_BINDINGS(perspective)
         .value("AGGTYPE_DISTINCT_COUNT", AGGTYPE_DISTINCT_COUNT)
         .value("AGGTYPE_DISTINCT_LEAF", AGGTYPE_DISTINCT_LEAF)
         .value("AGGTYPE_PCT_SUM_PARENT", AGGTYPE_PCT_SUM_PARENT)
-        .value("AGGTYPE_PCT_SUM_GRAND_TOTAL", AGGTYPE_PCT_SUM_GRAND_TOTAL);
+        .value("AGGTYPE_PCT_SUM_GRAND_TOTAL", AGGTYPE_PCT_SUM_GRAND_TOTAL)
+        .value("AGGTYPE_UDF_JS_REDUCE_FLOAT64", AGGTYPE_UDF_JS_REDUCE_FLOAT64);
 
     enum_<t_totals>("t_totals")
         .value("TOTALS_BEFORE", TOTALS_BEFORE)

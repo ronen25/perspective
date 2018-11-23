@@ -13,6 +13,7 @@
 #include <perspective/exports.h>
 #include <perspective/schema.h>
 #include <perspective/schema_column.h>
+#include <perspective/kernel_engine.h>
 #include <vector>
 
 namespace perspective
@@ -94,6 +95,14 @@ public:
 
     t_aggspec_recipe get_recipe() const;
 
+    t_aggspec(const t_str& aggname, t_aggtype agg, const t_depvec& dependencies,
+        t_kernel& kernel);
+    const t_kernel&
+    get_kernel() const
+    {
+        return *m_kernel;
+    }
+
 private:
     t_str m_name;
     t_str m_disp_name;
@@ -106,7 +115,7 @@ private:
     t_float64 m_agg_one_weight;
     t_float64 m_agg_two_weight;
     t_invmode m_invmode;
-    t_uindex m_kernel;
+    std::shared_ptr<t_kernel> m_kernel;
 };
 
 typedef std::vector<t_aggspec> t_aggspecvec;

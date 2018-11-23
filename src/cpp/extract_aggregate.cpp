@@ -22,7 +22,9 @@ extract_aggregate(const t_aggspec& aggspec, const t_column* aggcol,
 {
     static t_str non_unique("-");
 
-    auto maybe_nan = [](t_float64 v) { return std::isnan(v) ? std::numeric_limits<double>::quiet_NaN() : v; };
+    auto maybe_nan = [](t_float64 v) {
+        return std::isnan(v) ? std::numeric_limits<double>::quiet_NaN() : v;
+    };
 
     switch (aggspec.agg())
     {
@@ -72,6 +74,7 @@ extract_aggregate(const t_aggspec& aggspec, const t_column* aggcol,
         case AGGTYPE_IDENTITY:
         case AGGTYPE_DISTINCT_COUNT:
         case AGGTYPE_DISTINCT_LEAF:
+        case AGGTYPE_UDF_JS_REDUCE_FLOAT64:
         {
             t_tscalar rval = aggcol->get_scalar(ridx);
             return rval;
