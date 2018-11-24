@@ -77,7 +77,7 @@ def main():
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
 	compile_command_list = ['cmake', '-G', 'Ninja', '-DCMAKE_BUILD_TYPE=', build_type,
-	'-DCMAKE_CXX_FLAGS=', flags, '-DCMAKE_C_COMPILER=', cc, '-DCMAKE_CXX_COMPILER=', cxx]
+	'-DCMAKE_CXX_FLAGS="', flags, '" -DCMAKE_C_COMPILER=', cc, '-DCMAKE_CXX_COMPILER=', cxx, '..']
 	print(' '.join(compile_command_list))
 	exec(compile_command_list)
 
