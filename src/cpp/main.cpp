@@ -30,6 +30,8 @@ using namespace emscripten;
 typedef std::codecvt_utf8<wchar_t> utf8convert_type;
 typedef std::codecvt_utf8_utf16<wchar_t> utf16convert_type;
 
+t_date jsdate_to_t_date(val date);
+
 /******************************************************************************
  *
  * Data Loading
@@ -121,7 +123,7 @@ _get_fterms(t_schema schema, val j_filters)
                         term = mktscalar(filter[2].as<bool>());
                         break;
                     case DTYPE_DATE:
-                        term = mktscalar(t_date(filter[2].as<t_int32>()));
+                        term = mktscalar(jsdate_to_t_date(filter[2]));
                         break;
                     case DTYPE_TIME:
                         term = mktscalar(t_time(static_cast<t_int64>(
@@ -421,24 +423,28 @@ _fill_col<t_date>(val dcol, t_col_sptr col, t_bool is_arrow)
 
     if (is_arrow)
     {
-        // val data = dcol["values"];
-        // // arrow packs 64 bit into two 32 bit ints
-        // arrow::vecFromTypedArray(data, col->get_nth<t_time>(0), nrows * 2);
+        val data = dcol["values"];
 
-        // t_int8 unit = dcol["type"]["unit"].as<t_int8>();
-        // if (unit != /* Arrow.enum_.TimeUnit.MILLISECOND */ 1) {
-        //     // Slow path - need to convert each value
-        //     t_int64 factor = 1;
-        //     if (unit == /* Arrow.enum_.TimeUnit.NANOSECOND */ 3) {
-        //         factor = 1e6;
-        //     } else if (unit == /* Arrow.enum_.TimeUnit.MICROSECOND */ 2) {
-        //         factor = 1e3;
-        //     }
-        //     for (auto i = 0; i < nrows; ++i) {
-        //         col->set_nth<t_int32>(i, *(col->get_nth<t_int32>(i)) /
-        //         factor);
-        //     }
-        // }
+        // Arrow uses one of 2 formats for date values
+        t_int8 unit = dcol["type"]["unit"].as<t_int8>();
+        tm time;
+        if (unit == /* Arrow.enum_.DateUnit.DAY */ 0) {  // Stored as 32bit int
+            std::vector<t_int32> vec(nrows);
+            arrow::vecFromTypedArray(data, vec.data(), nrows);
+            for (auto i = 0; i < nrows; ++i) {
+                t_int32 val = vec[i];
+                t_time(val * (3600 * 24 * 1000000LL)).as_tm(time);
+                col->set_nth<t_date>(i, t_date(time.tm_year+1900, time.tm_mon, time.tm_mday));
+            }
+        } else if (unit == /* Arrow.enum_.DateUnit.MILLISECOND */ 1) { // Stored as 64bit int
+            std::vector<t_int64> vec(nrows);
+            arrow::vecFromTypedArray(data, vec.data(), nrows*2);
+            for (auto i = 0; i < nrows; ++i) {
+                t_int64 val = vec[i];
+                t_time(val * (3600 * 24 * 1000LL)).as_tm(time);
+                col->set_nth<t_date>(i, t_date(time.tm_year+1900, time.tm_mon, time.tm_mday));
+            }
+        }
     }
     else
     {
