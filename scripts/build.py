@@ -63,11 +63,11 @@ compiler_cpp_map = {
 }
 
 
-
 def main():
-	exec(['mkdir -p build'])
+	build_dir = 'build_' + os.environ['BuildType'] + os.environ['Compiler']
+	exec(['mkdir -p ' + build_dir])
 
-	os.chdir('build')
+	os.chdir(build_dir)
 
 	build_type = build_type_map[os.environ['BuildType']]
 	flags = release_flag_map[os.environ['BuildType']]
