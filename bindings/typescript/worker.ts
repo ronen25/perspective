@@ -1,3 +1,8 @@
+
+import {
+  Table, Vector, visitor, type, enum_
+} from "apache-arrow";
+
 import {
   loadPerspective
 } from "./psp.async";
@@ -107,20 +112,28 @@ class WorkerHost {
         let cdata: Array<any>;
         let types = Private.mapTypes(cfg.types);
 
-        // Convert records to arrays of arrays
-        cdata = [];
-        for (let i = 0; i < names.length; ++i) {
-          cdata.push([]);
-        }
-        for (let i = 0; i < records.length; ++i) {
-          let record = records[i] as { [key: string]: any };
-          for (let j = 0; j < names.length; ++j) {
-            let name = names[j] as string;
-            cdata[j].push(record[name]);
+        if (records instanceof ArrayBuffer) {
+          let pdata = Arrow.loadArrowBuffer(records);
+          nrecords = pdata.nrecords;
+          names = pdata.names;
+          types = pdata.types;
+          cdata = pdata.cdata;
+          isArrow = true;
+        } else {
+          // Convert records to arrays of arrays
+          cdata = [];
+          for (let i = 0; i < names.length; ++i) {
+            cdata.push([]);
           }
+          for (let i = 0; i < records.length; ++i) {
+            let record = records[i] as { [key: string]: any};
+            for (let j = 0; j < names.length; ++j) {
+              let name = names[j] as string;
+              cdata[j].push(record[name]);
+            }
+          }
+          nrecords = records.length;
         }
-        nrecords = records.length;
-
 
         let offset = 0;
         let limit = 1e9;
@@ -272,7 +285,7 @@ namespace Private {
     let dtypes = types.map((type: string): any => {
       switch (type) {
         case "integer":
-          return Module.t_dtype.DTYPE_INT32;
+          return Module.t_dtype.DTYPE_INT64;
         case "float":
           return Module.t_dtype.DTYPE_FLOAT64;
         case "boolean":
@@ -590,5 +603,138 @@ namespace Private {
     }
 
     return { header: header, row_spans: row_spans, col_spans: col_spans, data: data, schema: schema };
+  }
+}
+
+namespace Arrow {
+  /**
+   * Converts arrow data into a canonical representation for
+   * interfacing with perspective.
+   *
+   * @private
+   * @param {object} data Array buffer
+   * @returns An object with 3 properties:
+   **/
+  export
+  function loadArrowBuffer(data: ArrayBuffer)
+    : {nrecords: number, names: Array<any>, types: Array<any>, cdata: Array<Array<any>>} {
+    // TODO Need to validate that the names/types passed in match those in the buffer
+    let arrow = Table.from([new Uint8Array(data)]);
+    let loader = arrow.schema.fields.reduce((loader: any, field: any, colIdx: any) => {
+      return loader.loadColumn(field, arrow.getColumnAt(colIdx));
+    }, new ArrowColumnLoader());
+
+    return {
+      nrecords: arrow.length,
+      names: loader.names,
+      types: loader.types,
+      cdata: loader.cdata
+    };
+
+    /*if (typeof loader.cdata[0].values === "undefined") {
+      let nchunks = loader.cdata[0].data.chunkVectors.length;
+      let chunks = [];
+      for (let x = 0; x < nchunks; x++) {
+        chunks.push({
+          row_count: loader.cdata[0].data.chunkVectors[x].length,
+          is_arrow: true,
+          names: loader.names,
+          types: loader.types,
+          cdata: loader.cdata.map(y => y.data.chunkVectors[x])
+        });
+      }
+      return chunks;
+    } else {
+      return [
+        {
+          row_count: arrow.length,
+          is_arrow: true,
+          names: loader.names,
+          types: loader.types,
+          cdata: loader.cdata
+        }
+      ];
+    }*/
+  }
+
+  class ArrowColumnLoader extends visitor.TypeVisitor {
+
+    cdata: Array<any>;
+    names: Array<any>;
+    types: Array<any>;
+
+    constructor() {
+      super();
+      this.cdata = [];
+      this.names = [];
+      this.types = [];
+    }
+
+    loadColumn(field: type.Field, column: Vector) {
+      if (this.visit(field.type)) {
+        this.cdata.push(column);
+        this.names.push(field.name);
+      }
+      return this;
+    }
+    visitNull(type: type.Null) {}
+    visitBool(type: type.Bool) {
+      this.types.push(Module.t_dtype.DTYPE_BOOL);
+      return true;
+    }
+    visitInt(type: type.Int) {
+      const bitWidth = type.bitWidth;
+      if (bitWidth === 64) {
+        this.types.push(Module.t_dtype.DTYPE_INT64);
+      } else if (bitWidth === 32) {
+        this.types.push(Module.t_dtype.DTYPE_INT32);
+      } else if (bitWidth === 16) {
+        this.types.push(Module.t_dtype.DTYPE_INT16);
+      } else if (bitWidth === 8) {
+        this.types.push(Module.t_dtype.DTYPE_INT8);
+      }
+      return true;
+    }
+    visitFloat(type: type.Float) {
+      const precision = type.precision;
+      if (precision === enum_.Precision.DOUBLE) {
+        this.types.push(Module.t_dtype.DTYPE_FLOAT64);
+      } else if (precision === enum_.Precision.SINGLE) {
+        this.types.push(Module.t_dtype.DTYPE_FLOAT32);
+      }
+      // todo?
+      // else if (type.precision === Arrow.enum_.Precision.HALF) {
+      //     this.types.push(Module.t_dtype.DTYPE_FLOAT16);
+      // }
+      return true;
+    }
+    visitUtf8(type: type.Utf8) {
+      this.types.push(Module.t_dtype.DTYPE_STR);
+      return true;
+    }
+    visitBinary(type: type.Binary) {
+      this.types.push(Module.t_dtype.DTYPE_STR);
+      return true;
+    }
+    visitFixedSizeBinary(type: type.FixedSizeBinary) {}
+    visitDate(type: type.Date_) {
+      this.types.push(Module.t_dtype.DTYPE_DATE);
+      return true;
+    }
+    visitTimestamp(type: type.Timestamp) {
+      this.types.push(Module.t_dtype.DTYPE_TIME);
+      return true;
+    }
+    visitTime(type: type.Time) {}
+    visitDecimal(type: type.Decimal) {}
+    visitList(type: type.List) {}
+    visitStruct(type: type.Struct) {}
+    visitUnion(type: type.Union<any>) {}
+    visitDictionary(type : type.Dictionary) {
+      return this.visit(type.dictionary);
+    }
+    visitInterval(type: type.Interval) {}
+    visitFixedSizeList(type: type.FixedSizeList) {}
+    visitMap(type: type.Map_) {}
   }
 }
