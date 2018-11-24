@@ -65,8 +65,7 @@ compiler_cpp_map = {
 
 
 def main():
-
-	exec(['mkdir', 'build'])
+	exec(['mkdir -p build'])
 
 	os.chdir('build')
 
