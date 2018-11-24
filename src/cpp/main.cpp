@@ -337,8 +337,20 @@ _fill_col<t_int64>(val dcol, t_col_sptr col, t_bool is_arrow)
     }
     else
     {
-        throw std::logic_error(
-            "Unreachable - can't have DTYPE_INT64 column from non-arrow data");
+        for (auto i = 0; i < nrows; ++i)
+        {
+            if (dcol[i].isUndefined())
+                continue;
+
+            if (dcol[i].isNull())
+            {
+                col->unset(i);
+                continue;
+            }
+
+            t_int64 elem = static_cast<t_int64>(dcol[i].as<t_int32>());
+            col->set_nth(i, elem);
+        }
     }
 }
 
