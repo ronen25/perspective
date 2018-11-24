@@ -420,7 +420,7 @@ t_lstore::reserve_impl(t_uindex capacity, bool allow_shrink)
                         std::max(sizeof(void*), size_t(m_alignment)),
                         size_t(capacity));
                     PSP_VERBOSE_ASSERT(result == 0, "posix_memalign failed");
-
+                    PSP_UNUSED(result);
                     memcpy(aligned_base, base, ocapacity);
                     free(base);
                     base = aligned_base;

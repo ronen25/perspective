@@ -22,6 +22,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 #include <stdio.h>
+#include <cstring>
 
 namespace perspective
 {
@@ -82,6 +83,7 @@ map_file_internal_(const t_str& fname, t_fflag fflag, t_fflag fmode,
     {
         t_index rcode = ftruncate(fh.value(), size);
         PSP_VERBOSE_ASSERT(rcode >= 0, "ftruncate failed.");
+        PSP_UNUSED(rcode);
     }
 
     void* ptr = mmap(0, size, mprot, mflag, fh.value(), 0);
@@ -119,6 +121,7 @@ psp_curtime()
     struct timespec t;
     t_int32 rcode = clock_gettime(CLOCK_MONOTONIC, &t);
     PSP_VERBOSE_ASSERT(rcode == 0, "Failure in clock_gettime");
+    PSP_UNUSED(rcode);
     t_int64 ns = t.tv_nsec + t.tv_sec * 1000000000;
     return ns;
 }
@@ -141,6 +144,7 @@ psp_curmem()
     };
 
     t_statm result;
+    memset(&result, 0, sizeof(t_statm));
 
     const char* statm_path = "/proc/self/statm";
 

@@ -747,9 +747,10 @@ t_table::verify() const
     }
 
     auto sz = size();
-
+    PSP_UNUSED(sz);
     for (auto& c : m_columns)
     {
+        PSP_UNUSED(c);
         PSP_VERBOSE_ASSERT(sz == c->size(), "Ragged table encountered");
     }
 }

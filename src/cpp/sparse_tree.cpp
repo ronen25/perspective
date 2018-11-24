@@ -915,6 +915,7 @@ t_stree::update_shape_from_static(const t_dtree_ctx& ctx)
 
             t_bool replaced
                 = m_p->m_nodes->get<by_pidx_hash>().replace(iter, node);
+            PSP_UNUSED(replaced);
             PSP_VERBOSE_ASSERT(replaced, "Failed to replace");
         }
 

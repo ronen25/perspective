@@ -25,6 +25,7 @@ t_file_handle::~t_file_handle()
     {
         t_rcode rcode = close(m_value);
         PSP_VERBOSE_ASSERT(rcode == 0, "Error closing file.");
+        PSP_UNUSED(rcode);
     }
 }
 
@@ -46,6 +47,7 @@ t_mmap_handle::~t_mmap_handle()
     {
         t_rcode rcode = munmap(m_value, m_len);
         PSP_VERBOSE_ASSERT(rcode == 0, "munmap failed.");
+        PSP_UNUSED(rcode);
     }
 }
 
