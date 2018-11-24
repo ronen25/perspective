@@ -9,7 +9,7 @@ def get_status_output(*args, **kwargs):
     stdout, stderr = p.communicate()
     return p.returncode, stdout, stderr
 
-def exec(rc, op):
+def exec(*args, **kwargs):
 	rc, stdout, stderr = get_status_output(*args, **kwargs)
 	if rc:
 		print('== STDOUT ==')
