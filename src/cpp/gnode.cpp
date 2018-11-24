@@ -24,6 +24,7 @@ namespace perspective
 
 t_gnode::t_gnode(const t_gnode_recipe& recipe)
     : m_mode(recipe.m_mode)
+    , m_gnode_type(recipe.m_gnode_type)
     , m_tblschema(recipe.m_tblschema)
     , m_init(false)
     , m_id(0)
@@ -64,35 +65,47 @@ t_gnode::t_gnode(const t_gnode_recipe& recipe)
     }
 }
 
-t_gnode::t_gnode(const t_schema& portschema)
+t_gnode::t_gnode(const t_gnode_options& options)
     : m_mode(NODE_PROCESSING_SIMPLE_DATAFLOW)
-    , m_tblschema(portschema.drop({"psp_op", "psp_pkey"}))
-    , m_ischemas(t_schemavec{portschema})
+    , m_gnode_type(options.m_gnode_type)
+    , m_tblschema(options.m_port_schema.drop({"psp_op", "psp_pkey"}))
     , m_init(false)
     , m_id(0)
     , m_pool_cleanup([]() {})
 {
     PSP_TRACE_SENTINEL();
     LOG_CONSTRUCTOR("t_gnode");
+
     std::vector<t_dtype> trans_types(m_tblschema.size());
     for (t_uindex idx = 0; idx < trans_types.size(); ++idx)
     {
         trans_types[idx] = DTYPE_UINT8;
     }
 
+    t_schema port_schema(options.m_port_schema);
+    if (m_gnode_type == GNODE_TYPE_IMPLICIT_PKEYED) {
+
+        // Make sure that gnode type is consistent with input schema
+        if (port_schema.has_column("psp_pkey")) {
+            PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input schema has psp_pkey column");
+        }
+        port_schema = t_schema{{"psp_op", "psp_pkey"}, {DTYPE_UINT8, DTYPE_INT64}} + port_schema;
+    }
+
     t_schema trans_schema(m_tblschema.columns(), trans_types);
     t_schema existed_schema(
         std::vector<t_str>{"psp_existed"}, std::vector<t_dtype>{DTYPE_BOOL});
 
-    m_oschemas = t_schemavec{portschema, m_tblschema, m_tblschema, m_tblschema,
+    m_ischemas = t_schemavec{port_schema};
+    m_oschemas = t_schemavec{port_schema, m_tblschema, m_tblschema, m_tblschema,
         trans_schema, existed_schema};
     m_epoch = std::chrono::high_resolution_clock::now();
 }
 
 t_gnode_sptr
-t_gnode::build(const t_schema& portschema)
+t_gnode::build(const t_gnode_options& options)
 {
-    auto rv = std::make_shared<t_gnode>(portschema);
+    auto rv = std::make_shared<t_gnode>(options);
     rv->init();
     return rv;
 }
@@ -229,6 +242,23 @@ t_gnode::_process()
     }
 
     m_was_updated = true;
+
+    if (m_gnode_type == GNODE_TYPE_IMPLICIT_PKEYED) {
+        // Add implicit pkey
+        auto tbl = iport->get_table();
+
+        auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
+        op_col->raw_fill<t_uint8>(OP_INSERT);
+
+        auto key_col = tbl->add_column("psp_pkey", DTYPE_INT64, true);
+
+        t_int64 start = get_table()->size();
+
+        for (auto ridx = 0; ridx < tbl->size(); ++ridx)
+        {
+            key_col->set_nth<t_int64>(ridx, start + ridx);
+        }
+    }
 
     t_table_sptr flattened(iport->get_table()->flatten());
     PSP_GNODE_VERIFY_TABLE(flattened);
