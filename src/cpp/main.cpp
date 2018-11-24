@@ -710,7 +710,6 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
     std::vector<t_dtype> dtypes = vecFromJSArray<t_dtype>(j_dtypes);
 
     // Create the table
-    // TODO assert size > 0
     auto tbl = std::make_shared<t_table>(t_schema(colnames, dtypes));
     tbl->init();
     tbl->extend(size);
@@ -736,18 +735,15 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
         // If user doesn't specify an column to use as the pkey index, just use
         // row number
         auto key_col = tbl->add_column("psp_pkey", DTYPE_INT32, true);
-        // auto okey_col = tbl->add_column("psp_okey", DTYPE_INT32, true);
 
         for (auto ridx = 0; ridx < tbl->size(); ++ridx)
         {
             key_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
-            //    okey_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
         }
     }
     else
     {
         tbl->clone_column(index, "psp_pkey");
-        // tbl->clone_column(index, "psp_okey");
     }
 
     return tbl;

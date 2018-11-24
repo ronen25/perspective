@@ -285,7 +285,7 @@ namespace Private {
     let dtypes = types.map((type: string): any => {
       switch (type) {
         case "integer":
-          return Module.t_dtype.DTYPE_INT32;
+          return Module.t_dtype.DTYPE_INT64;
         case "float":
           return Module.t_dtype.DTYPE_FLOAT64;
         case "boolean":
