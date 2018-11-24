@@ -18,7 +18,11 @@ t_config_recipe::t_config_recipe()
 {
 }
 
-t_config::t_config() {}
+t_config::t_config()
+{
+    PSP_UNUSED(m_row_expand_depth);
+    PSP_UNUSED(m_col_expand_depth);
+}
 
 t_config::t_config(const t_config_recipe& r)
     : m_detail_columns(r.m_detail_columns)

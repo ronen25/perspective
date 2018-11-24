@@ -34,6 +34,7 @@ const t_float64 PSP_TABLE_GROW_RATIO = 1.3;
 #define PSP_THR_LOCAL __thread
 #endif
 
+#define PSP_UNUSED(x) ((void)(x))
 #define PSP_PFOR tbb::parallel_for
 
 const t_index INVALID_INDEX = -1;

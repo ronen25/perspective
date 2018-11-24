@@ -51,13 +51,13 @@ compiler_definitions_map = {
 }
 
 compiler_c_map = {
-	'clang': 'clang',
+	'clang': '/usr/bin/clang',
 	'gcc': 'gcc',
 	'emscripten': 'emcc'
 }
 
 compiler_cpp_map = {
-	'clang': 'clang++',
+	'clang': '/usr/bin/clang++',
 	'gcc': 'g++',
 	'emscripten': 'g++'
 }
