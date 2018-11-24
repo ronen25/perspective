@@ -64,13 +64,12 @@ compiler_cpp_map = {
 
 
 def main():
-	build_dir = 'build_' + os.environ['Compiler'] + '_' + os.environ['BuildType']
-	exec(['mkdir -p ' + build_dir])
+	exec(['mkdir -p build'])
 
 	if os.environ['Compiler'] == 'gcc' and os.environ['BuildType'] == 'Msan':
 		sys.exit(0)
 
-	os.chdir(build_dir)
+	os.chdir('build')
 
 	build_type = build_type_map[os.environ['BuildType']]
 	flags = release_flag_map[os.environ['BuildType']]
