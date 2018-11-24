@@ -59,7 +59,7 @@ compiler_c_map = {
 compiler_cpp_map = {
 	'clang': 'clang++',
 	'gcc': 'g++',
-	'emscripten': 'em++'
+	'emscripten': 'g++'
 }
 
 
@@ -76,11 +76,9 @@ def main():
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
-	compile_command_list = ['cmake', '-G', 'Ninja', '-DCMAKE_BUILD_TYPE=', build_type,
-	'-DCMAKE_CXX_FLAGS="', flags, '" -DCMAKE_C_COMPILER=', cc, '-DCMAKE_CXX_COMPILER=', cxx, '..']
-	print(' '.join(compile_command_list))
-	exec(compile_command_list)
-
+	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
+	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s' % (cc, cxx)
+	exec([cmd1 + cmd2])
 	exec(['ninja'])
 
 	if os.environ['Compiler'] == 'emscripten':
