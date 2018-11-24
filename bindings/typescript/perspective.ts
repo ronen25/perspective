@@ -44,17 +44,48 @@ type FlatResult = {
 
 export
 type AggregateConfig = {
+  /**
+   * The list of table columns to use for this aggregate.
+   */
   column: string | Array<string>;
+
+  /**
+   * The aggregate operation to perform.
+   */
   op: string;
+
+  /**
+   * The optional name to give the aggregate. If not given this is determined
+   * from the aggregate operation and list of dependent columns.
+   */
   name?: string;
 }
 
 export
 interface ViewConfig {
+  /**
+   * The list of columns for row pivoting.
+   */
   row_pivot?: Array<string>;
+
+  /**
+   * The list of columns for column pivoting.
+   */
   column_pivot?: Array<string>;
+
+  /**
+   * The list of aggregates.
+   */
   aggregate?: Array<AggregateConfig>;
+
+  /**
+   * The sort specification.
+   */
   sort?: Array<[number, SortOrders]>;
+
+  /**
+   * The filter specification.
+   */
   filter?: Array<[string, string, any]>;
 }
 
