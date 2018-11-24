@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-source /home/dman/programs/emsdk/emsdk_env.sh
+source ${HOME}/programs/emsdk/emsdk_env.sh
 python3 scripts/build.py
 
 
