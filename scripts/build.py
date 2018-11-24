@@ -4,7 +4,7 @@ import sys
 import os
 import subprocess
 
-def get_status_output(*args, *kwargs):
+def get_status_output(*args, **kwargs):
     p = subprocess.Popen(*args, **kwargs, shell=True)
     stdout, stderr = p.communicate()
     return p.returncode, stdout, stderr
