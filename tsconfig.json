@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+        "declaration": true,
+        "noImplicitAny": true,
+        "noEmitOnError": true,
+        "noUnusedLocals": true,
+        "strictNullChecks": true,
+        "sourceMap": true,
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "target": "es6",
+        "outDir": "./lib",
+        "lib": [
+            "es6",
+            "webworker",
+            "dom"
+        ],
+        "types": []
+    },
+    "include": [
+        "bindings/typescript/*"
+    ]
+}
