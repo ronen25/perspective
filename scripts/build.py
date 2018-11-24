@@ -75,6 +75,8 @@ def main():
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
+	if os.environ['Compiler'] and os.environ['BuildType'] in ('Asan', 'Msan'):
+		sys.exit(0)
 	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
 	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s ..' % (cc, cxx)
 	exec([cmd1 + cmd2])
@@ -83,7 +85,11 @@ def main():
 	if os.environ['Compiler'] == 'emscripten':
 		sys.exit(0)
 
-	exec(['./install/psp_test'])
+	if os.environ['BuildType'] in ('Valgrind', 'ValgrindDbg'):
+		test_cmd = 'valgrind --leak-check=full --verbose --track-origins=yes ./install/psp_test '
+	else:
+		test_cmd = './install/psp_test'
+	exec([test_cmd,])
 	sys.exit(0)
 
 
