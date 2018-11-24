@@ -25,23 +25,23 @@ def exec(*args, **kwargs):
 # build_type (release, debug, asan, msan, tsan)
 
 build_type_map = {
-	'release': 'Release',
-	'debug': 'Debug',
-	'asan': 'Release',
-	'msan': 'Release',
-	'tsan': 'Release',
-	'valgrind': 'Release',
-	'valgrind_dbg': 'Debug'
+	'Release': 'Release',
+	'Debug': 'Debug',
+	'Asan': 'Release',
+	'Msan': 'Release',
+	'Tsan': 'Release',
+	'Valgrind': 'Release',
+	'ValgrindDbg': 'Debug'
 }
 
 release_flag_map = {
-	'release': '-O3',
-	'debug': '-ggdb3',
-	'asan': '-O1 -g -fsanitize=address -fno-omit-frame-pointer',
-	'msan': '-fsanitize=memory -fno-omit-frame-pointer -g -O2',
-	'tsan': '-fsanitize=thread -g -O1',
-	'valgrind': '',
-	'valgrind_dbg': ''
+	'Release': '-O3',
+	'Debug': '-ggdb3',
+	'Asan': '-O1 -g -fsanitize=address -fno-omit-frame-pointer',
+	'Msan': '-fsanitize=memory -fno-omit-frame-pointer -g -O2',
+	'Tsan': '-fsanitize=thread -g -O1',
+	'Valgrind': '',
+	'ValgrindDbg': ''
 }
 
 compiler_definitions_map = {
