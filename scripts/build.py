@@ -69,9 +69,6 @@ def main():
 
 	os.chdir(build_dir)
 
-	if os.environ['Compiler'] != 'emscripten':
-		sys.exit(0)
-
 	build_type = build_type_map[os.environ['BuildType']]
 	flags = release_flag_map[os.environ['BuildType']]
 	definitions = compiler_definitions_map[os.environ['Compiler']]
