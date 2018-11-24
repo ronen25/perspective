@@ -369,7 +369,7 @@ function (psp_build_dep name cmake_file)
 	include_directories(${CMAKE_BINARY_DIR}/${name}-src)
 endfunction()
 
-if (DEFINED PSP_BOOST_INCLUDE)
+if (DEFINED PSP_BOOST_INCLUDE AND NOT "$ENV{Compiler}" STREQUAL "emscripten")
 	include_directories(${PSP_BOOST_INCLUDE})
 else()
 	psp_build_dep("boost" "cmake/boost.txt.in")
