@@ -53,13 +53,13 @@ compiler_definitions_map = {
 compiler_c_map = {
 	'clang': '/usr/bin/clang',
 	'gcc': 'gcc',
-	'emscripten': 'emcc'
+	'emscripten': 'clang'
 }
 
 compiler_cpp_map = {
 	'clang': '/usr/bin/clang++',
 	'gcc': 'g++',
-	'emscripten': 'g++'
+	'emscripten': 'clang++'
 }
 
 
@@ -69,14 +69,15 @@ def main():
 
 	os.chdir(build_dir)
 
+	if os.environ['Compiler'] != 'emscripten':
+		sys.exit(0)
+
 	build_type = build_type_map[os.environ['BuildType']]
 	flags = release_flag_map[os.environ['BuildType']]
 	definitions = compiler_definitions_map[os.environ['Compiler']]
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
-	if os.environ['Compiler'] and os.environ['BuildType'] in ('Asan', 'Msan'):
-		sys.exit(0)
 	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
 	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s ..' % (cc, cxx)
 	exec([cmd1 + cmd2])

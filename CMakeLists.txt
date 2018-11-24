@@ -17,11 +17,11 @@ set (CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake")
 
 if (PSP_WASM_BUILD)
 	add_definitions(-DPSP_ENABLE_WASM)
-	set(CMAKE_C_COMPILER emcc)
-	set(CMAKE_CXX_COMPILER em++)
-	set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSCRIPTEN_ROOT}/cmake/Modules/Platform/Emscripten.cmake")
-	set(CMAKE_AR emar)
-	set(CMAKE_RANLIB emranlib)
+	set(CMAKE_C_COMPILER "$ENV{EMSCRIPTEN}/emcc")
+	set(CMAKE_CXX_COMPILER "$ENV{EMSCRIPTEN}/em++")
+	set(CMAKE_TOOLCHAIN_FILE "$ENV{EMSCRIPTEN}/cmake/Modules/Platform/Emscripten.cmake")
+	set(CMAKE_AR $ENV{EMSCRIPTEN}/emar)
+	set(CMAKE_RANLIB $ENV{EMSCRIPTEN}emranlib)
 	set(CMAKE_EXECUTABLE_SUFFIX ".js")
 
 	set(CMAKE_CXX_FLAGS " \
