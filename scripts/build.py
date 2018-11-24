@@ -76,8 +76,10 @@ def main():
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
-	exec(['cmake', '-G', 'Ninja', '-DCMAKE_BUILD_TYPE', build_type, '-DCMAKE_CXX_FLAGS', flags,
-	'-DCMAKE_C_COMPILER', cc, '-DCMAKE_CXX_COMPILER', cxx])
+	compile_command_list = ['cmake', '-G', 'Ninja', '-DCMAKE_BUILD_TYPE=', build_type,
+	'-DCMAKE_CXX_FLAGS=', flags, '-DCMAKE_C_COMPILER=', cc, '-DCMAKE_CXX_COMPILER=', cxx]
+	print(' '.join(compile_command_list))
+	exec(compile_command_list)
 
 	exec(['ninja'])
 
