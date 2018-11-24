@@ -43,7 +43,7 @@ script:
      - mkdir -p build
      - cp -r /usr/include/boost src/include
      - cd build
-     - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Debug .. 
+     - cmake ${CMAKE_OPTIONS} -DPSP_BOOST_INCLUDE="/usr/include" -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Debug .. 
      - make -j 2
      - valgrind ./install/psp_test
 
