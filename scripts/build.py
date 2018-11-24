@@ -78,6 +78,7 @@ def main():
 
 	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
 	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s' % (cc, cxx)
+	print(cmd1+cmd2)
 	exec([cmd1 + cmd2])
 	exec(['ninja'])
 
