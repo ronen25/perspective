@@ -2,7 +2,23 @@
 
 import sys
 import os
-import commands
+import subprocess
+
+def get_status_output(*args, **kwargs):
+    p = subprocess.Popen(*args, **kwargs)
+    stdout, stderr = p.communicate()
+    return p.returncode, stdout, stderr
+
+def exec(rc, op):
+	rc, stdout, stderr = get_status_output(*args, **kwargs)
+	if rc:
+		print('== STDOUT ==')
+		print(stdout)
+
+		print('== STDERR ==')
+		print(stderr)
+
+		sys.exit(rc)
 
 # Following environment variables will be passed in 
 # compiler in (clang, gcc, emscripten)
@@ -50,33 +66,26 @@ compiler_cpp_map = {
 
 def main():
 
-	def handle_exit(rc, op):
-		if rc:
-			print(op)
-			sys.exit(rc)
-
-	rc, op = commands.getstatusoutput('mkdir build')
-	handle_exit(rc, op)
+	exec(['mkdir', 'build'])
 
 	os.chdir('build')
 
-	release = build_type_map[os.environ['BuildType']]
+	build_type = build_type_map[os.environ['BuildType']]
 	flags = release_flag_map[os.environ['BuildType']]
 	definitions = compiler_definitions_map[os.environ['Compiler']]
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
-	rc, op = commands.getstatusoutput('cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" %s -DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s ..' % (release, flags, definitions, cc, cxx))
-	handle_exit(rc, op)
+	exec(['cmake', '-G', 'Ninja', '-DCMAKE_BUILD_TYPE', build_type, '-DCMAKE_CXX_FLAGS', flags,
+	'-DCMAKE_C_COMPILER', cc, '-DCMAKE_CXX_COMPILER', cxx])
 
-	rc, op = commands.getstatusoutput('ninja')
-	handle_exit(rc, op)
+	exec(['ninja'])
 
 	if os.environ['Compiler'] == 'emscripten':
 		sys.exit(0)
 
-	rc, op = commands.getstatusoutput('./install/psp_test')
-	sys.exit(rc)
+	exec(['./install/psp_test'])
+	sys.exit(0)
 
 
 if __name__ == '__main__':
