@@ -47,24 +47,24 @@ release_flag_map = {
 compiler_definitions_map = {
 	'clang': '',
 	'gcc': '',
-	'emscripten': '-DPSP_WASM_BUILD'
+	'emscripten': '-DPSP_WASM_BUILD=ON'
 }
 
 compiler_c_map = {
 	'clang': '/usr/bin/clang',
 	'gcc': 'gcc',
-	'emscripten': 'clang'
+	'emscripten': '/usr/bin/clang'
 }
 
 compiler_cpp_map = {
 	'clang': '/usr/bin/clang++',
 	'gcc': 'g++',
-	'emscripten': 'clang++'
+	'emscripten': '/usr/bin/clang++'
 }
 
 
 def main():
-	build_dir = 'build_' + os.environ['BuildType'] + os.environ['Compiler']
+	build_dir = 'build_' + os.environ['Compiler'] + '_' + os.environ['BuildType']
 	exec(['mkdir -p ' + build_dir])
 
 	os.chdir(build_dir)
@@ -79,7 +79,8 @@ def main():
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
 	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
-	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s ..' % (cc, cxx)
+	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s %s ..' % (cc, cxx, definitions)
+	print('compile_command: ' + cmd1 + cmd2)
 	exec([cmd1 + cmd2])
 	exec(['ninja'])
 
