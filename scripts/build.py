@@ -4,8 +4,8 @@ import sys
 import os
 import subprocess
 
-def get_status_output(*args, **kwargs):
-    p = subprocess.Popen(*args, **kwargs)
+def get_status_output(*args, *kwargs):
+    p = subprocess.Popen(*args, **kwargs, shell=True)
     stdout, stderr = p.communicate()
     return p.returncode, stdout, stderr
 
@@ -76,10 +76,9 @@ def main():
 	cc = compiler_c_map[os.environ['Compiler']]
 	cxx = compiler_cpp_map[os.environ['Compiler']]
 
-	cmd1 = '-G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
+	cmd1 = 'cmake -G Ninja -DCMAKE_BUILD_TYPE=%s -DCMAKE_CXX_FLAGS="%s" ' % (build_type, flags)
 	cmd2 = '-DCMAKE_C_COMPILER=%s -DCMAKE_CXX_COMPILER=%s ..' % (cc, cxx)
-	print(cmd1+cmd2)
-	exec(['cmake', cmd1 + cmd2])
+	exec([cmd1 + cmd2])
 	exec(['ninja'])
 
 	if os.environ['Compiler'] == 'emscripten':
