@@ -197,8 +197,8 @@ TEST(GNODE, explicit_pkey)
     t_gnode_options options;
     options.m_gnode_type = GNODE_TYPE_PKEYED;
     options.m_port_schema = t_schema{{"x"}, {DTYPE_INT64}};
-    t_gnode gnode(options);
-    gnode.init();
+    //t_gnode gnode(options);
+    //gnode.init();
 }
 
 
@@ -211,8 +211,8 @@ TEST(GNODE, implicit_pkey)
     options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
     options.m_port_schema = t_schema{
             {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
-    t_gnode gnode(options);
-    gnode.init();
+    //t_gnode gnode(options);
+    //gnode.init();
 }
 
 TEST(SCALAR, scalar_literal_test)
