@@ -136,7 +136,7 @@ endif()
 
 if (NOT PSP_WASM_BUILD)
     if (UNIX)
-        target_compile_options(psp PRIVATE -Wall -pedantic -Werror)
+        target_compile_options(psp PRIVATE -Wall -Werror)
         target_compile_options(psp PRIVATE $<$<CONFIG:DEBUG>:-fPIC -O0>)
     endif()
     target_compile_definitions(psp PRIVATE $<$<CONFIG:DEBUG>:D_GLIBCXX_DEBUG PSP_DEBUG>)
