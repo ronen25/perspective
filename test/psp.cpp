@@ -189,6 +189,32 @@ TEST(TABLE, simplest_test)
     tbl.reserve(5);
 }
 
+TEST(GNODE, explicit_pkey)
+{
+    /**
+     * TODO This test should abort
+     */
+    t_gnode_options options;
+    options.m_gnode_type = GNODE_TYPE_PKEYED;
+    options.m_port_schema = t_schema{{"x"}, {DTYPE_INT64}};
+    //t_gnode gnode(options);
+    //gnode.init();
+}
+
+
+TEST(GNODE, implicit_pkey)
+{
+    /**
+     * TODO This test should abort
+     */
+    t_gnode_options options;
+    options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
+    options.m_port_schema = t_schema{
+            {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
+    //t_gnode gnode(options);
+    //gnode.init();
+}
+
 TEST(SCALAR, scalar_literal_test)
 {
     auto s1 = 1_ts;
@@ -600,7 +626,10 @@ public:
         m_ischema = t_schema{
             {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_T}};
         m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_T}};
-        m_g = t_gnode::build(m_ischema);
+        t_gnode_options options;
+        options.m_gnode_type = GNODE_TYPE_PKEYED;
+        options.m_port_schema = m_ischema;
+        m_g = t_gnode::build(options);
         null = mknull(DTYPE_T);
         clear = mkclear(DTYPE_T);
     }
@@ -616,7 +645,29 @@ protected:
     t_tscalar clear;
 };
 
+template <t_dtype DTYPE_T>
+class GNodeTestImplicit : public BaseTest
+{
+public:
+    GNodeTestImplicit()
+    {
+        m_ischema = t_schema{{"x"}, {DTYPE_T}};
+        m_oschema = {{"psp_pkey", "x"}, {DTYPE_INT64, DTYPE_T}};
+        t_gnode_options options;
+        options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
+        options.m_port_schema = m_ischema;
+        m_g = t_gnode::build(options);
+    }
+
+    virtual t_table_sptr
+    get_step_otable()
+    {
+        return m_g->get_sorted_pkeyed_table();
+    }
+};
+
 typedef GNodeTest<DTYPE_INT64> I64GnodeTest;
+typedef GNodeTestImplicit<DTYPE_INT64> I64GnodeTestImplicit;
 
 // clang-format off
 TEST_F(I64GnodeTest, test_1) {
@@ -764,6 +815,27 @@ TEST_F(I64GnodeTest, test_9) {
     run(data);
 }
 
+
+TEST_F(I64GnodeTestImplicit, test_1) {
+
+    t_testdata data{
+        {
+            {{1_ts}},
+            {{0_ts, 1_ts}}
+        },
+        {
+            {{2_ts}},
+            {{0_ts, 1_ts}, {1_ts, 2_ts}}
+        },
+        {
+            {{3_ts}},
+            {{0_ts, 1_ts}, {1_ts, 2_ts}, {2_ts, 3_ts}}
+        }
+    };
+
+    run(data);
+}
+
 // clang-format on
 
 #define SELF static_cast<T*>(this)
@@ -779,7 +851,10 @@ public:
     CtxTest()
     {
         this->m_ischema = SELF->get_ischema();
-        this->m_g = t_gnode::build(this->m_ischema);
+        t_gnode_options options;
+        options.m_gnode_type = GNODE_TYPE_PKEYED;
+        options.m_port_schema = this->m_ischema;
+        this->m_g = t_gnode::build(options);
         m_ctx = CTX_T::build(this->m_ischema, SELF->get_config());
         this->m_g->register_context("ctx", m_ctx);
     }
@@ -2278,7 +2353,10 @@ TEST(GNODE_TEST, get_registered_contexts)
 {
     t_schema sch{{"psp_op", "psp_pkey", "s", "i"},
         {DTYPE_UINT8, DTYPE_INT64, DTYPE_STR, DTYPE_INT64}};
-    auto gn = t_gnode::build(sch);
+    t_gnode_options options;
+    options.m_gnode_type = GNODE_TYPE_PKEYED;
+    options.m_port_schema = sch;
+    auto gn = t_gnode::build(options);
 
     auto ctx0 = t_ctx0::build(sch, t_config{{"s"}});
     auto ctx1 = t_ctx1::build(sch, t_config({"s"}, {AGGTYPE_SUM, "i"}));
