@@ -46,7 +46,7 @@ script:
      - cd build
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Debug .. 
      - make -j 2
-     - valgrind ./install/psp_test
+     - ./install/psp_test
 
 after_success:
   - cd ${TRAVIS_BUILD_DIR}/build
