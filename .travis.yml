@@ -24,7 +24,9 @@ matrix:
            - cmake
            - python-pip
            - libboost-dev
-    
+    - os: osx
+      osx_image: xcode10
+      sudo: required
 before_install:
     - export CMAKE_OPTIONS=${CMAKE_OPTIONS}" "${ENV_CMAKE_OPTIONS}
     - export CXX_FLAGS=${CXX_FLAGS}" "${ENV_CXX_FLAGS}
@@ -41,7 +43,6 @@ script:
     # Build main and tests
     ############################################################################
      - mkdir -p build
-     - cp -r /usr/include/boost src/include
      - cd build
      - cmake ${CMAKE_OPTIONS} -DCMAKE_CXX_FLAGS=${CXX_FLAGS} -DCMAKE_BUILD_TYPE=Debug .. 
      - make -j 2
