@@ -86,10 +86,14 @@ t_gnode::t_gnode(const t_gnode_options& options)
     if (m_gnode_type == GNODE_TYPE_IMPLICIT_PKEYED) {
 
         // Make sure that gnode type is consistent with input schema
-        if (port_schema.has_column("psp_pkey")) {
-            PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input schema has psp_pkey column");
+        if (port_schema.is_pkey()) {
+            PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input schema has psp_pkey column.");
         }
         port_schema = t_schema{{"psp_op", "psp_pkey"}, {DTYPE_UINT8, DTYPE_INT64}} + port_schema;
+    } else {
+        if (!(port_schema.is_pkey())) {
+            PSP_COMPLAIN_AND_ABORT("gnode type specified as explicit pkey, however input schema is missing required columns.");
+        }
     }
 
     t_schema trans_schema(m_tblschema.columns(), trans_types);
@@ -246,6 +250,11 @@ t_gnode::_process()
     if (m_gnode_type == GNODE_TYPE_IMPLICIT_PKEYED) {
         // Add implicit pkey
         auto tbl = iport->get_table();
+
+        // Make sure that table doesn't already contain pkey
+        if (tbl->is_pkey_table()) {
+            PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input table has psp_pkey column.");
+        }
 
         auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
         op_col->raw_fill<t_uint8>(OP_INSERT);

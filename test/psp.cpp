@@ -189,10 +189,23 @@ TEST(TABLE, simplest_test)
     tbl.reserve(5);
 }
 
+TEST(GNODE, explicit_pkey)
+{
+    /**
+     * TODO This test should abort
+     */
+    t_gnode_options options;
+    options.m_gnode_type = GNODE_TYPE_PKEYED;
+    options.m_port_schema = t_schema{{"x"}, {DTYPE_INT64}};
+    t_gnode gnode(options);
+    gnode.init();
+}
+
+
 TEST(GNODE, implicit_pkey)
 {
     /**
-     * NOTE This test should abort
+     * TODO This test should abort
      */
     t_gnode_options options;
     options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
