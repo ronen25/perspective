@@ -191,28 +191,21 @@ TEST(TABLE, simplest_test)
 
 TEST(GNODE, explicit_pkey)
 {
-    /**
-     * TODO This test should abort
-     */
     t_gnode_options options;
     options.m_gnode_type = GNODE_TYPE_PKEYED;
     options.m_port_schema = t_schema{{"x"}, {DTYPE_INT64}};
-    //t_gnode gnode(options);
-    //gnode.init();
+    EXPECT_EXIT(t_gnode::build(options), ::testing::KilledBySignal(SIGINT), "");
 }
 
 
 TEST(GNODE, implicit_pkey)
 {
-    /**
-     * TODO This test should abort
-     */
     t_gnode_options options;
     options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
     options.m_port_schema = t_schema{
             {"psp_op", "psp_pkey", "x"}, {DTYPE_UINT8, DTYPE_INT64, DTYPE_INT64}};
-    //t_gnode gnode(options);
-    //gnode.init();
+
+    EXPECT_EXIT(t_gnode::build(options), ::testing::KilledBySignal(SIGINT), "");
 }
 
 TEST(SCALAR, scalar_literal_test)
