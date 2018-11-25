@@ -261,9 +261,9 @@ t_gnode::_process()
 
         auto key_col = tbl->add_column("psp_pkey", DTYPE_INT64, true);
 
-        t_int64 start = get_table()->size();
+        t_uindex start = get_table()->size();
 
-        for (auto ridx = 0; ridx < tbl->size(); ++ridx)
+        for (t_uindex ridx = 0; ridx < tbl->size(); ++ridx)
         {
             key_col->set_nth<t_int64>(ridx, start + ridx);
         }
