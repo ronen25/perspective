@@ -13,9 +13,10 @@ matrix:
       dist: xenial
       compiler:
         - gcc
+        - clang
       addons:
        apt:
-         packages:
+         packages: 
            - gcc
            - g++
            - clang
