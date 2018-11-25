@@ -207,6 +207,7 @@ endif()
 
 
 function (psp_build_dep name cmake_file)
+	message(STATUS "psp_build_dep: ${name} ${cmake_file}")
 	configure_file(${cmake_file} ${name}-download/CMakeLists.txt)
 	execute_process(COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" .
 			RESULT_VARIABLE result
@@ -370,6 +371,7 @@ function (psp_build_dep name cmake_file)
 endfunction()
 
 
+message(STATUS "PSP_BOOST_INCLUDE: ${PSP_BOOST_INCLUDE} Compiler: $ENV{Compiler}")
 if (DEFINED PSP_BOOST_INCLUDE AND NOT "$ENV{Compiler}" STREQUAL "emscripten")
 	include_directories(${PSP_BOOST_INCLUDE})
 else()
