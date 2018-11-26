@@ -599,7 +599,7 @@ _fill_col<std::string>(val dcol, t_col_sptr col, t_bool is_arrow)
  */
 void
 _fill_data(t_table_sptr tbl, std::vector<t_str> ocolnames, val j_data,
-    std::vector<t_dtype> odt, t_uint32 offset, t_bool is_arrow)
+    std::vector<t_dtype> odt, t_bool is_arrow)
 {
     std::vector<val> data_cols = vecFromJSArray<val>(j_data);
     for (auto cidx = 0; cidx < ocolnames.size(); ++cidx)
@@ -702,8 +702,7 @@ _fill_data(t_table_sptr tbl, std::vector<t_str> ocolnames, val j_data,
  */
 t_table_sptr
 make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
-    t_uint32 offset, t_uint32 limit, t_str index, t_bool is_arrow,
-    t_bool is_delete)
+    t_str index, t_bool is_arrow, t_bool is_delete)
 {
     // Create the input and port schemas
     std::vector<t_str> colnames = vecFromJSArray<std::string>(j_colnames);
@@ -715,35 +714,23 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
     tbl->extend(size);
 
     if (size > 0) {
-        _fill_data(tbl, colnames, j_data, dtypes, offset, is_arrow);
+        _fill_data(tbl, colnames, j_data, dtypes, is_arrow);
     }
 
-    // Set up pkey and op columns
-    if (is_delete)
+    if (index != "")
     {
-        auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
-        op_col->raw_fill<t_uint8>(OP_DELETE);
-    }
-    else
-    {
-        auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
-        op_col->raw_fill<t_uint8>(OP_INSERT);
-    }
-
-    if (index == "")
-    {
-        // If user doesn't specify an column to use as the pkey index, just use
-        // row number
-        auto key_col = tbl->add_column("psp_pkey", DTYPE_INT32, true);
-
-        for (auto ridx = 0; ridx < tbl->size(); ++ridx)
-        {
-            key_col->set_nth<t_int32>(ridx, (ridx + offset) % limit);
-        }
-    }
-    else
-    {
+        // Set up pkey and op columns
         tbl->clone_column(index, "psp_pkey");
+        if (is_delete)
+        {
+            auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
+            op_col->raw_fill<t_uint8>(OP_DELETE);
+        }
+        else
+        {
+            auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
+            op_col->raw_fill<t_uint8>(OP_INSERT);
+        }
     }
 
     return tbl;
@@ -762,38 +749,31 @@ make_table(t_uint32 size, val j_colnames, val j_dtypes, val j_data,
  * A gnode.
  */
 t_gnode_sptr
-make_gnode(t_table_sptr table)
+make_gnode(val j_colnames, val j_dtypes, t_str index)
 {
-    auto iscm = table->get_schema();
+    // Create the input and port schemas
+    std::vector<t_str> colnames = vecFromJSArray<std::string>(j_colnames);
+    std::vector<t_dtype> dtypes = vecFromJSArray<t_dtype>(j_dtypes);
 
-    std::vector<t_str> ocolnames(iscm.columns());
-    std::vector<t_dtype> odt(iscm.types());
-
-    if (iscm.has_column("psp_pkey"))
-    {
-        t_uindex idx = iscm.get_colidx("psp_pkey");
-        ocolnames.erase(ocolnames.begin() + idx);
-        odt.erase(odt.begin() + idx);
-    }
-
-    if (iscm.has_column("psp_op"))
-    {
-        t_uindex idx = iscm.get_colidx("psp_op");
-        ocolnames.erase(ocolnames.begin() + idx);
-        odt.erase(odt.begin() + idx);
-    }
-
-    t_schema oscm(ocolnames, odt);
+    t_schema port_schema(colnames, dtypes);
 
     t_gnode_options options;
-    options.m_gnode_type = GNODE_TYPE_PKEYED;
-    options.m_port_schema = iscm;
 
-    // Create a gnode
-    auto gnode = std::make_shared<t_gnode>(options);
-    gnode->init();
+    if (index != "") {
+        options.m_gnode_type = GNODE_TYPE_PKEYED;
 
-    return gnode;
+        t_dtype pkey_dtype = port_schema.get_dtype(index);
+
+        // Add pkey and op columns
+        t_schema pkey_op = t_schema{{"psp_op", "psp_pkey"}, {DTYPE_UINT8, pkey_dtype}};
+
+        options.m_port_schema = pkey_op + port_schema;
+    } else {
+        options.m_gnode_type = GNODE_TYPE_IMPLICIT_PKEYED;
+        options.m_port_schema = port_schema;
+    }
+
+    return t_gnode::build(options);
 }
 
 /**

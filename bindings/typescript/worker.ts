@@ -70,18 +70,14 @@ class WorkerHost {
         let { names, types, index } = cfg;
         let name = cfg.name as Private.TableName;
 
-        let tbl;
         try {
-          tbl = Module.make_table(0, names, Private.mapTypes(types), [], 0, 0, index, false, false);
-
-          cfg.gnode_id = this._pool.register_gnode(Module.make_gnode(tbl));
+          let gnode = Module.make_gnode(names, Private.mapTypes(types), index);
+          cfg.gnode_id = this._pool.register_gnode(gnode);
 
           this._table_map.set(name, cfg);
         } catch (e) {
           // Signal error to client
           console.error(e);
-        } finally {
-          if (tbl) tbl.delete();
         }
         break;
       }
@@ -135,18 +131,12 @@ class WorkerHost {
           nrecords = records.length;
         }
 
-        let offset = 0;
-        let limit = 1e9;
         let is_delete = false;
-        if (cfg.index === '') {
-          let gnode = this._pool.get_gnode(cfg.gnode_id);
-          offset = gnode.get_table().size(); // + gnode.get_input_table(port).size();
-        }
 
         let tbl;
         try {
           tbl = Module.make_table(nrecords, names, types,
-            cdata, offset, limit, cfg.index, isArrow, is_delete);
+            cdata, cfg.index, isArrow, is_delete);
 
           this._pool.send(cfg.gnode_id, port, tbl);
         } catch (e) {
@@ -285,7 +275,7 @@ namespace Private {
     let dtypes = types.map((type: string): any => {
       switch (type) {
         case "integer":
-          return Module.t_dtype.DTYPE_INT64;
+          return Module.t_dtype.DTYPE_INT32;
         case "float":
           return Module.t_dtype.DTYPE_FLOAT64;
         case "boolean":

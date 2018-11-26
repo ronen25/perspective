@@ -173,6 +173,11 @@ t_gnode::_send(t_uindex portid, const t_table& fragments)
     PSP_VERBOSE_ASSERT(
         portid == 0, "Only simple dataflows supported currently");
 
+    if (m_gnode_type == GNODE_TYPE_IMPLICIT_PKEYED &&
+        fragments.is_pkey_table()) {
+        PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input table has psp_pkey column.");
+    }
+
     t_port_sptr& iport = m_iports[portid];
     iport->send(fragments);
 }
@@ -251,16 +256,12 @@ t_gnode::_process()
         // Add implicit pkey
         auto tbl = iport->get_table();
 
-        // Make sure that table doesn't already contain pkey
-        if (tbl->is_pkey_table()) {
-            PSP_COMPLAIN_AND_ABORT("gnode type specified as implicit pkey, however input table has psp_pkey column.");
-        }
-
-        auto op_col = tbl->add_column("psp_op", DTYPE_UINT8, false);
+        auto op_col = tbl->get_column("psp_op");
         op_col->raw_fill<t_uint8>(OP_INSERT);
 
-        auto key_col = tbl->add_column("psp_pkey", DTYPE_INT64, true);
+        auto key_col = tbl->get_column("psp_pkey");
 
+        // Get current table size as starting index
         t_uindex start = get_table()->size();
 
         for (t_uindex ridx = 0; ridx < tbl->size(); ++ridx)
