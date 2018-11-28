@@ -90,6 +90,29 @@ interface ViewConfig {
 }
 
 export
+interface ComputedColumnConfig {
+  /**
+   * The name of the computed column.
+   */
+  name: string;
+
+  /**
+   * The type of the computed column.
+   */
+  type: TypeNames;
+
+  /**
+   * The input columns to compute the value.
+   */
+  inputs: Array<string>;
+
+  /**
+   * The function to compute the calculated column.
+   */
+   func: (...args: Array<any>) => any;
+}
+
+export
 class Table {
   constructor(schema: Schema, options: {index: string}, engine: Engine) {
     this._name = UUID.uuid4();
@@ -149,8 +172,24 @@ class Table {
     return new View(this._name, config, this._engine);
   }
 
-  add_computed(computed: any): Table {
-    return this;
+  addComputed(computed: Array<ComputedColumnConfig>): void {
+    // convert function definitions to strings
+    let _computed: Array<any> = [];
+    for (let { name, type, inputs, func } of computed) {
+      _computed.push({
+        name: name,
+        type: type,
+        inputs: inputs,
+        func: func.toString()
+      });
+    }
+    this._engine.postMessage({
+      cmd: "add-computed",
+      data: {
+        name: this._name,
+        computed: _computed
+      }
+    });
   }
 
   private _name: Private.TableName;
