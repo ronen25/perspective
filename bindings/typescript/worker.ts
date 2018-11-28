@@ -71,7 +71,7 @@ class WorkerHost {
         let name = cfg.name as Private.TableName;
 
         try {
-          let gnode = Module.make_gnode(names, Private.mapTypes(types), index);
+          let gnode = Module.make_gnode(names, types.map(Private.mapType), index);
           cfg.gnode_id = this._pool.register_gnode(gnode);
 
           this._table_map.set(name, cfg);
@@ -92,6 +92,18 @@ class WorkerHost {
         gnode.delete();
         break;
       }
+      case 'add-computed': {
+        let config= msg.data as any;
+        let name = config.name as Private.TableName;
+        let table = this._table_map.get(name) as any;
+        let computed = config.computed as Array<any>;
+        // rehydrate computed column functions
+        for (let column of computed) {
+          eval("column.func = " + column.func);
+        }
+        table.computed = computed;
+        break;
+      }
       case 'update': {
         let { name, records } = msg.data as any;
         let cfg = this._table_map.get(name) as any;
@@ -106,7 +118,7 @@ class WorkerHost {
         let isArrow = false;
         let names = cfg.names;
         let cdata: Array<any>;
-        let types = Private.mapTypes(cfg.types);
+        let types = cfg.types.map(Private.mapType);
 
         if (records instanceof ArrayBuffer) {
           let pdata = Arrow.loadArrowBuffer(records);
@@ -137,6 +149,13 @@ class WorkerHost {
         try {
           tbl = Module.make_table(nrecords, names, types,
             cdata, cfg.index, isArrow, is_delete);
+
+          if (cfg.computed) {
+            for (let { name, type, inputs, func } of cfg.computed) {
+              let dtype = Private.mapType(type);
+              Module.table_add_computed_column(tbl, name, dtype, func, inputs);
+            }
+          }
 
           this._pool.send(cfg.gnode_id, port, tbl);
         } catch (e) {
@@ -271,25 +290,22 @@ namespace Private {
   export type PerspectiveContext = any;
 
   export
-    function mapTypes(types: string[]): any[] {
-    let dtypes = types.map((type: string): any => {
-      switch (type) {
-        case "integer":
-          return Module.t_dtype.DTYPE_INT32;
-        case "float":
-          return Module.t_dtype.DTYPE_FLOAT64;
-        case "boolean":
-          return Module.t_dtype.DTYPE_BOOL;
-        case "date":
-          return Module.t_dtype.DTYPE_DATE;
-        case "datetime":
-          return Module.t_dtype.DTYPE_TIME;
-        case "string":
-        default:
-          return Module.t_dtype.DTYPE_STR;
-      }
-    });
-    return dtypes;
+  function mapType(type: string): any {
+    switch (type) {
+      case "integer":
+        return Module.t_dtype.DTYPE_INT32;
+      case "float":
+        return Module.t_dtype.DTYPE_FLOAT64;
+      case "boolean":
+        return Module.t_dtype.DTYPE_BOOL;
+      case "date":
+        return Module.t_dtype.DTYPE_DATE;
+      case "datetime":
+        return Module.t_dtype.DTYPE_TIME;
+      case "string":
+      default:
+        return Module.t_dtype.DTYPE_STR;
+    }
   }
 
   const sortOrders = ["asc", "desc", "none", "asc abs", "desc abs"];

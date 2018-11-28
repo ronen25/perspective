@@ -27,6 +27,7 @@ declare namespace Perspective {
     make_context_two: Function;
     scalar_vec_to_val: Function;
     scalar_to_val: Function;
+    table_add_computed_column: Function;
     sort: Function;
     fill: Function;
   }
