@@ -1,0 +1,114 @@
+' Attribution: This schema is adapted from http://www.databaseanswers.org/data_models/customers_and_orders/index.htm
+' We are grateful to Barry Williams for creating this helpful resource and sharing it with the world
+
+@startuml
+' uncomment the line below if you're using computer with a retina display
+' skinparam dpi 300
+' examples of how to specify
+' not_null(unique(supplier_name)) VARCHAR[32]
+' not_null(address) VARCHAR[64]
+
+!define Table(name,desc) class name as "desc" << (T,#FFAAAA) >>
+!define primary_key(x) <b>x</b>
+!define unique(x) <color:green>x</color>
+!define not_null(x) <u>x</u>
+hide methods
+hide stereotypes
+
+' entities
+
+Table(suppliers, "suppliers") {
+primary_key(id) i64
+name str
+address str
+}
+
+Table(products, "products") {
+primary_key(id) i64
+parent_product_id i64
+code i64
+name star 
+' weight is in milligrams
+weight i64 
+}
+
+Table(prices, "prices") {
+    'product_id is fkey to product
+    primary_key(product_id) i64
+    primary_key(date_from) dt
+    price f64
+}
+
+Table(customers, "customers") {
+    primary_key(id) i64
+    first_name str
+    last_name str
+    phone_number str
+    email_address str
+}
+
+Table(orders, "orders") {
+    primary_key(id) i64
+    customer_id i64
+    customer_payment_method_id i64
+    order_status_code i64
+    order_placed_date dt
+    order_paid_date dt
+    total_order_price f64
+}
+
+Table(customer_orders_products, "customer_orders_products") {
+    primary_key(order_id) i64
+    primary_key(product_id) i64
+    quantity i64
+    comments str
+}
+
+Table(customer_addresses, "customer_addresses") {
+    primary_key(customer_id) i64
+    primary_key(address_id) i64
+    primary_key(date_from) dt
+    date_to dt
+}
+
+Table(addresses, "addresses") {
+    primary_key(id) i64
+    line_1 str
+    line_2 str
+    line_3 str
+    city str
+    zip str
+    province str
+    country str
+}
+
+Table(customer_payment_methods, "customer_payment_methods") {
+    primary_key(id) i64
+    customer_id i64
+    card_number str
+    date_from dt
+    date_to dt
+}
+
+Table(customer_order_delivery, "customer_orders_delivery") {
+    primary_key(id) i64
+    customer_id i64
+    card_number str
+    date_from dt
+    date_to dt
+}
+
+
+prices -- products
+products -- suppliers
+customer_orders_products -- products
+customer_orders_products -- orders
+customer_order_delivery -- orders
+orders -- customers
+orders -- customer_payment_methods
+customer_payment_methods -- customers
+customer_addresses -- addresses
+customer_addresses  -- customers
+products -- products
+
+@enduml
