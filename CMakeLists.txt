@@ -391,5 +391,6 @@ if (NOT PSP_WASM_BUILD)
    #psp_build_dep("benchmark" "cmake/benchmark.txt.in")
    add_subdirectory(test)
    #add_subdirectory(bench)
+   add_subdirectory(tools)
 endif()
 
