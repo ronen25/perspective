@@ -1969,14 +1969,1729 @@ namespace magentas {
                 });
             }
             
+            t_palette
+            red_purple_3()
+            {
+                return t_palette({
+                    {"#fde0dd"},
+                    {"#fa9fb5"},
+                    {"#c51b8a"},
+                });
+            }
+
+            t_palette
+            red_purple_4()
+            {
+                return t_palette({
+                    {"#feebe2"},
+                    {"#fbb4b9"},
+                    {"#f768a1"},
+                    {"#ae017e"},
+                });
+            }
+
+            t_palette
+            red_purple_5()
+            {
+                return t_palette({
+                    {"#feebe2"},
+                    {"#fbb4b9"},
+                    {"#f768a1"},
+                    {"#c51b8a"},
+                    {"#7a0177"},
+                });
+            }
+
+            t_palette
+            red_purple_6()
+            {
+                return t_palette({
+                    {"#feebe2"},
+                    {"#fcc5c0"},
+                    {"#fa9fb5"},
+                    {"#f768a1"},
+                    {"#c51b8a"},
+                    {"#7a0177"},
+                });
+            }
+
+            t_palette
+            red_purple_7()
+            {
+                return t_palette({
+                    {"#feebe2"},
+                    {"#fcc5c0"},
+                    {"#fa9fb5"},
+                    {"#f768a1"},
+                    {"#dd3497"},
+                    {"#ae017e"},
+                    {"#7a0177"},
+                });
+            }
+
+            t_palette
+            red_purple_8()
+            {
+                return t_palette({
+                    {"#fff7f3"},
+                    {"#fde0dd"},
+                    {"#fcc5c0"},
+                    {"#fa9fb5"},
+                    {"#f768a1"},
+                    {"#dd3497"},
+                    {"#ae017e"},
+                    {"#7a0177"},
+                });
+            }
+
+            t_palette
+            red_purple_9()
+            {
+                return t_palette({
+                    {"#fff7f3"},
+                    {"#fde0dd"},
+                    {"#fcc5c0"},
+                    {"#fa9fb5"},
+                    {"#f768a1"},
+                    {"#dd3497"},
+                    {"#ae017e"},
+                    {"#7a0177"},
+                    {"#49006a"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_3()
+            {
+                return t_palette({
+                    {"#edf8b1"},
+                    {"#7fcdbb"},
+                    {"#2c7fb8"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_4()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#a1dab4"},
+                    {"#41b6c4"},
+                    {"#225ea8"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_5()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#a1dab4"},
+                    {"#41b6c4"},
+                    {"#2c7fb8"},
+                    {"#253494"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_6()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#c7e9b4"},
+                    {"#7fcdbb"},
+                    {"#41b6c4"},
+                    {"#2c7fb8"},
+                    {"#253494"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_7()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#c7e9b4"},
+                    {"#7fcdbb"},
+                    {"#41b6c4"},
+                    {"#1d91c0"},
+                    {"#225ea8"},
+                    {"#0c2c84"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_8()
+            {
+                return t_palette({
+                    {"#ffffd9"},
+                    {"#edf8b1"},
+                    {"#c7e9b4"},
+                    {"#7fcdbb"},
+                    {"#41b6c4"},
+                    {"#1d91c0"},
+                    {"#225ea8"},
+                    {"#0c2c84"},
+                });
+            }
+
+            t_palette
+            yellow_green_blue_9()
+            {
+                return t_palette({
+                    {"#ffffd9"},
+                    {"#edf8b1"},
+                    {"#c7e9b4"},
+                    {"#7fcdbb"},
+                    {"#41b6c4"},
+                    {"#1d91c0"},
+                    {"#225ea8"},
+                    {"#253494"},
+                    {"#081d58"},
+                });
+            }
+
+            t_palette
+            yellow_green_3()
+            {
+                return t_palette({
+                    {"#f7fcb9"},
+                    {"#addd8e"},
+                    {"#31a354"},
+                });
+            }
+
+            t_palette
+            yellow_green_4()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#c2e699"},
+                    {"#78c679"},
+                    {"#238443"},
+                });
+            }
+
+            t_palette
+            yellow_green_5()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#c2e699"},
+                    {"#78c679"},
+                    {"#31a354"},
+                    {"#006837"},
+                });
+            }
+
+            t_palette
+            yellow_green_6()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#d9f0a3"},
+                    {"#addd8e"},
+                    {"#78c679"},
+                    {"#31a354"},
+                    {"#006837"},
+                });
+            }
+
+            t_palette
+            yellow_green_7()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#d9f0a3"},
+                    {"#addd8e"},
+                    {"#78c679"},
+                    {"#41ab5d"},
+                    {"#238443"},
+                    {"#005a32"},
+                });
+            }
+
+            t_palette
+            yellow_green_8()
+            {
+                return t_palette({
+                    {"#ffffe5"},
+                    {"#f7fcb9"},
+                    {"#d9f0a3"},
+                    {"#addd8e"},
+                    {"#78c679"},
+                    {"#41ab5d"},
+                    {"#238443"},
+                    {"#005a32"},
+                });
+            }
+
+            t_palette
+            yellow_green_9()
+            {
+                return t_palette({
+                    {"#ffffe5"},
+                    {"#f7fcb9"},
+                    {"#d9f0a3"},
+                    {"#addd8e"},
+                    {"#78c679"},
+                    {"#41ab5d"},
+                    {"#238443"},
+                    {"#006837"},
+                    {"#004529"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_3()
+            {
+                return t_palette({
+                    {"#fff7bc"},
+                    {"#fec44f"},
+                    {"#d95f0e"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_4()
+            {
+                return t_palette({
+                    {"#ffffd4"},
+                    {"#fed98e"},
+                    {"#fe9929"},
+                    {"#cc4c02"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_5()
+            {
+                return t_palette({
+                    {"#ffffd4"},
+                    {"#fed98e"},
+                    {"#fe9929"},
+                    {"#d95f0e"},
+                    {"#993404"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_6()
+            {
+                return t_palette({
+                    {"#ffffd4"},
+                    {"#fee391"},
+                    {"#fec44f"},
+                    {"#fe9929"},
+                    {"#d95f0e"},
+                    {"#993404"},
+                    
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_7()
+            {
+                return t_palette({
+                    {"#ffffd4"},
+                    {"#fee391"},
+                    {"#fec44f"},
+                    {"#fe9929"},
+                    {"#ec7014"},
+                    {"#cc4c02"},
+                    {"#8c2d04"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_8()
+            {
+                return t_palette({
+                    {"#ffffe5"},
+                    {"#fff7bc"},
+                    {"#fee391"},
+                    {"#fec44f"},
+                    {"#fe9929"},
+                    {"#ec7014"},
+                    {"#cc4c02"},
+                    {"#8c2d04"},
+                });
+            }
+
+            t_palette
+            yellow_orange_brown_9()
+            {
+                return t_palette({
+                    {"#ffffe5"},
+                    {"#fff7bc"},
+                    {"#fee391"},
+                    {"#fec44f"},
+                    {"#fe9929"},
+                    {"#ec7014"},
+                    {"#cc4c02"},
+                    {"#993404"},
+                    {"#662506"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_3()
+            {
+                return t_palette({
+                    {"#ffeda0"},
+                    {"#feb24c"},
+                    {"#f03b20"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_4()
+            {
+                return t_palette({
+                    {"#ffffb2"},
+                    {"#fecc5c"},
+                    {"#fd8d3c"},
+                    {"#e31a1c"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_5()
+            {
+                return t_palette({
+                    {"#ffffb2"},
+                    {"#fecc5c"},
+                    {"#fd8d3c"},
+                    {"#f03b20"},
+                    {"#bd0026"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_6()
+            {
+                return t_palette({
+                    {"#ffffb2"},
+                    {"#fed976"},
+                    {"#feb24c"},
+                    {"#fd8d3c"},
+                    {"#f03b20"},
+                    {"#bd0026"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_7()
+            {
+                return t_palette({
+                    {"#ffffb2"},
+                    {"#fed976"},
+                    {"#feb24c"},
+                    {"#fd8d3c"},
+                    {"#fc4e2a"},
+                    {"#e31a1c"},
+                    {"#b10026"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_8()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#ffeda0"},
+                    {"#fed976"},
+                    {"#feb24c"},
+                    {"#fd8d3c"},
+                    {"#fc4e2a"},
+                    {"#e31a1c"},
+                    {"#b10026"},
+                });
+            }
+
+            t_palette
+            yellow_orange_red_9()
+            {
+                return t_palette({
+                    {"#ffffcc"},
+                    {"#ffeda0"},
+                    {"#fed976"},
+                    {"#feb24c"},
+                    {"#fd8d3c"},
+                    {"#fc4e2a"},
+                    {"#e31a1c"},
+                    {"#bd0026"},
+                    {"#800026"},
+                });
+            }
             
             } // namespace multi_hue
-            // clang-format on
+            
         } // namespace sequential
 
         namespace diverging
         {
+            t_palette
+            blue_orange_3()
+            {
+                return t_palette({
+                    {"#67a9cf"},
+                    {"#f7f7f7"},
+                    {"#f1a340"},
+                });
+            }
 
+            t_palette
+            blue_orange_4()
+            {
+                return t_palette({
+                    {"#0571b0"},
+                    {"#92c5de"},
+                    {"#fdb863"},
+                    {"#e66101"},
+                });
+            }
+
+            t_palette
+            blue_orange_5()
+            {
+                return t_palette({
+                    {"#0571b0"},
+                    {"#92c5de"},
+                    {"#f7f7f7"},
+                    {"#fdb863"},
+                    {"#e66101"},
+                });
+            }
+
+            t_palette
+            blue_orange_6()
+            {
+                return t_palette({
+                    {"#2166ac"},
+                    {"#67a9cf"},
+                    {"#d1e5f0"},
+                    {"#fee0b6"},
+                    {"#f1a340"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            blue_orange_7()
+            {
+                return t_palette({
+                    {"#2166ac"},
+                    {"#67a9cf"},
+                    {"#d1e5f0"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#f1a340"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            blue_orange_8()
+            {
+                return t_palette({
+                    {"#2166ac"},
+                    {"#4393c3"},
+                    {"#92c5de"},
+                    {"#d1e5f0"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            blue_orange_9()
+            {
+                return t_palette({
+                    {"#2166ac"},
+                    {"#4393c3"},
+                    {"#92c5de"},
+                    {"#d1e5f0"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            blue_orange_10()
+            {
+                return t_palette({
+                    {"#053061"},
+                    {"#2166ac"},
+                    {"#4393c3"},
+                    {"#92c5de"},
+                    {"#d1e5f0"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                    {"#7f3b08"},
+                });
+            }
+
+            t_palette
+            blue_orange_11()
+            {
+                return t_palette({
+                    {"#053061"},
+                    {"#2166ac"},
+                    {"#4393c3"},
+                    {"#92c5de"},
+                    {"#d1e5f0"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                    {"#7f3b08"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_3()
+            {
+                return t_palette({
+                    {"#d8b365"},
+                    {"#f5f5f5"},
+                    {"#5ab4ac"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_4()
+            {
+                return t_palette({
+                    {"#a6611a"},
+                    {"#dfc27d"},
+                    {"#80cdc1"},
+                    {"#018571"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_5()
+            {
+                return t_palette({
+                    {"#a6611a"},
+                    {"#dfc27d"},
+                    {"#f5f5f5"},
+                    {"#80cdc1"},
+                    {"#018571"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_6()
+            {
+                return t_palette({
+                    {"#8c510a"},
+                    {"#d8b365"},
+                    {"#f6e8c3"},
+                    {"#c7eae5"},
+                    {"#5ab4ac"},
+                    {"#01665e"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_7()
+            {
+                return t_palette({
+                    {"#8c510a"},
+                    {"#d8b365"},
+                    {"#f6e8c3"},
+                    {"#f5f5f5"},
+                    {"#c7eae5"},
+                    {"#5ab4ac"},
+                    {"#01665e"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_8()
+            {
+                return t_palette({
+                    {"#8c510a"},
+                    {"#bf812d"},
+                    {"#dfc27d"},
+                    {"#f6e8c3"},
+                    {"#c7eae5"},
+                    {"#80cdc1"},
+                    {"#35978f"},
+                    {"#01665e"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_9()
+            {
+                return t_palette({
+                    {"#8c510a"},
+                    {"#bf812d"},
+                    {"#dfc27d"},
+                    {"#f6e8c3"},
+                    {"#f5f5f5"},
+                    {"#c7eae5"},
+                    {"#80cdc1"},
+                    {"#35978f"},
+                    {"#01665e"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_10()
+            {
+                return t_palette({
+                    {"#543005"},
+                    {"#8c510a"},
+                    {"#bf812d"},
+                    {"#dfc27d"},
+                    {"#f6e8c3"},
+                    {"#c7eae5"},
+                    {"#80cdc1"},
+                    {"#35978f"},
+                    {"#01665e"},
+                    {"#003c30"},
+                });
+            }
+
+            t_palette
+            brown_blue_green_11()
+            {
+                return t_palette({
+                    {"#543005"},
+                    {"#8c510a"},
+                    {"#bf812d"},
+                    {"#dfc27d"},
+                    {"#f6e8c3"},
+                    {"#f5f5f5"},
+                    {"#c7eae5"},
+                    {"#80cdc1"},
+                    {"#35978f"},
+                    {"#01665e"},
+                    {"#003c30"},
+                });
+            }
+
+            t_palette
+            purple_green_3()
+            {
+                return t_palette({
+                    {"#af8dc3"},
+                    {"#f7f7f7"},
+                    {"#7fbf7b"},
+                });
+            }
+
+            t_palette
+            purple_green_4()
+            {
+                return t_palette({
+                    {"#7b3294"},
+                    {"#c2a5cf"},
+                    {"#a6dba0"},
+                    {"#008837"},
+                });
+            }
+
+            t_palette
+            purple_green_5()
+            {
+                return t_palette({
+                    {"#7b3294"},
+                    {"#c2a5cf"},
+                    {"#f7f7f7"},
+                    {"#a6dba0"},
+                    {"#008837"},
+                });
+            }
+
+            t_palette
+            purple_green_6()
+            {
+                return t_palette({
+                    {"#762a83"},
+                    {"#af8dc3"},
+                    {"#e7d4e8"},
+                    {"#d9f0d3"},
+                    {"#7fbf7b"},
+                    {"#1b7837"},
+                });
+            }
+
+            t_palette
+            purple_green_7()
+            {
+                return t_palette({
+                    {"#762a83"},
+                    {"#af8dc3"},
+                    {"#e7d4e8"},
+                    {"#f7f7f7"},
+                    {"#d9f0d3"},
+                    {"#7fbf7b"},
+                    {"#1b7837"},
+                });
+            }
+
+            t_palette
+            purple_green_8()
+            {
+                return t_palette({
+                    {"#762a83"},
+                    {"#9970ab"},
+                    {"#c2a5cf"},
+                    {"#e7d4e8"},
+                    {"#d9f0d3"},
+                    {"#a6dba0"},
+                    {"#5aae61"},
+                    {"#1b7837"},
+                });
+            }
+
+            t_palette
+            purple_green_9()
+            {
+                return t_palette({
+                    {"#762a83"},
+                    {"#9970ab"},
+                    {"#c2a5cf"},
+                    {"#e7d4e8"},
+                    {"#f7f7f7"},
+                    {"#d9f0d3"},
+                    {"#a6dba0"},
+                    {"#5aae61"},
+                    {"#1b7837"},
+                });
+            }
+
+            t_palette
+            purple_green_10()
+            {
+                return t_palette({
+                    {"#40004b"},
+                    {"#762a83"},
+                    {"#9970ab"},
+                    {"#c2a5cf"},
+                    {"#e7d4e8"},
+                    {"#d9f0d3"},
+                    {"#a6dba0"},
+                    {"#5aae61"},
+                    {"#1b7837"},
+                    {"#00441b"},
+                });
+            }
+
+            t_palette
+            purple_green_11()
+            {
+                return t_palette({
+                    {"#40004b"},
+                    {"#762a83"},
+                    {"#9970ab"},
+                    {"#c2a5cf"},
+                    {"#e7d4e8"},
+                    {"#f7f7f7"},
+                    {"#d9f0d3"},
+                    {"#a6dba0"},
+                    {"#5aae61"},
+                    {"#1b7837"},
+                    {"#00441b"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_3()
+            {
+                return t_palette({
+                    {"#e9a3c9"},
+                    {"#f7f7f7"},
+                    {"#a1d76a"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_4()
+            {
+                return t_palette({
+                    {"#d01c8b"},
+                    {"#f1b6da"},
+                    {"#b8e186"},
+                    {"#4dac26"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_5()
+            {
+                return t_palette({
+                    {"#d01c8b"},
+                    {"#f1b6da"},
+                    {"#f7f7f7"},
+                    {"#b8e186"},
+                    {"#4dac26"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_6()
+            {
+                return t_palette({
+                    {"#c51b7d"},
+                    {"#e9a3c9"},
+                    {"#fde0ef"},
+                    {"#e6f5d0"},
+                    {"#a1d76a"},
+                    {"#4d9221"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_7()
+            {
+                return t_palette({
+                    {"#c51b7d"},
+                    {"#e9a3c9"},
+                    {"#fde0ef"},
+                    {"#f7f7f7"},
+                    {"#e6f5d0"},
+                    {"#a1d76a"},
+                    {"#4d9221"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_8()
+            {
+                return t_palette({
+                    {"#c51b7d"},
+                    {"#de77ae"},
+                    {"#f1b6da"},
+                    {"#fde0ef"},
+                    {"#e6f5d0"},
+                    {"#b8e186"},
+                    {"#7fbc41"},
+                    {"#4d9221"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_9()
+            {
+                return t_palette({
+                    {"#c51b7d"},
+                    {"#de77ae"},
+                    {"#f1b6da"},
+                    {"#fde0ef"},
+                    {"#f7f7f7"},
+                    {"#e6f5d0"},
+                    {"#b8e186"},
+                    {"#7fbc41"},
+                    {"#4d9221"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_10()
+            {
+                return t_palette({
+                    {"#8e0152"},
+                    {"#c51b7d"},
+                    {"#de77ae"},
+                    {"#f1b6da"},
+                    {"#fde0ef"},
+                    {"#e6f5d0"},
+                    {"#b8e186"},
+                    {"#7fbc41"},
+                    {"#4d9221"},
+                    {"#276419"},
+                });
+            }
+
+            t_palette
+            pink_yellow_green_11()
+            {
+                return t_palette({
+                    {"#8e0152"},
+                    {"#c51b7d"},
+                    {"#de77ae"},
+                    {"#f1b6da"},
+                    {"#fde0ef"},
+                    {"#f7f7f7"},
+                    {"#e6f5d0"},
+                    {"#b8e186"},
+                    {"#7fbc41"},
+                    {"#4d9221"},
+                    {"#276419"},
+                });
+            }
+
+            t_palette
+            purple_orange_3()
+            {
+                return t_palette({
+                    {"#998ec3"},
+                    {"#f7f7f7"},
+                    {"#f1a340"},
+                });
+            }
+
+            t_palette
+            purple_orange_4()
+            {
+                return t_palette({
+                    {"#5e3c99"},
+                    {"#b2abd2"},
+                    {"#fdb863"},
+                    {"#e66101"},
+                });
+            }
+
+            t_palette
+            purple_orange_5()
+            {
+                return t_palette({
+                    {"#5e3c99"},
+                    {"#b2abd2"},
+                    {"#f7f7f7"},
+                    {"#fdb863"},
+                    {"#e66101"},
+                });
+            }
+
+            t_palette
+            purple_orange_6()
+            {
+                return t_palette({
+                    {"#542788"},
+                    {"#998ec3"},
+                    {"#d8daeb"},
+                    {"#fee0b6"},
+                    {"#f1a340"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            purple_orange_7()
+            {
+                return t_palette({
+                    {"#542788"},
+                    {"#998ec3"},
+                    {"#d8daeb"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#f1a340"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            purple_orange_8()
+            {
+                return t_palette({
+                    {"#542788"},
+                    {"#8073ac"},
+                    {"#b2abd2"},
+                    {"#d8daeb"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            purple_orange_9()
+            {
+                return t_palette({
+                    {"#542788"},
+                    {"#8073ac"},
+                    {"#b2abd2"},
+                    {"#d8daeb"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                });
+            }
+
+            t_palette
+            purple_orange_10()
+            {
+                return t_palette({
+                    {"#2d004b"},
+                    {"#542788"},
+                    {"#8073ac"},
+                    {"#b2abd2"},
+                    {"#d8daeb"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                    {"#7f3b08"},
+                });
+            }
+
+            t_palette
+            purple_orange_11()
+            {
+                return t_palette({
+                    {"#2d004b"},
+                    {"#542788"},
+                    {"#8073ac"},
+                    {"#b2abd2"},
+                    {"#d8daeb"},
+                    {"#f7f7f7"},
+                    {"#fee0b6"},
+                    {"#fdb863"},
+                    {"#e08214"},
+                    {"#b35806"},
+                    {"#7f3b08"},
+                });
+            }
+
+            t_palette
+            red_blue_3()
+            {
+                return t_palette({
+                    {"#ef8a62"},
+                    {"#f7f7f7"},
+                    {"#67a9cf"},
+                });
+            }
+
+            t_palette
+            red_blue_4()
+            {
+                return t_palette({
+                    {"#ca0020"},
+                    {"#f4a582"},
+                    {"#92c5de"},
+                    {"#0571b0"},
+                });
+            }
+
+            t_palette
+            red_blue_5()
+            {
+                return t_palette({
+                    {"#ca0020"},
+                    {"#f4a582"},
+                    {"#f7f7f7"},
+                    {"#92c5de"},
+                    {"#0571b0"},
+                });
+            }
+
+            t_palette
+            red_blue_6()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#ef8a62"},
+                    {"#fddbc7"},
+                    {"#d1e5f0"},
+                    {"#67a9cf"},
+                    {"#2166ac"},
+                });
+            }
+
+            t_palette
+            red_blue_7()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#ef8a62"},
+                    {"#fddbc7"},
+                    {"#f7f7f7"},
+                    {"#d1e5f0"},
+                    {"#67a9cf"},
+                    {"#2166ac"},
+                });
+            }
+
+            t_palette
+            red_blue_8()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#d1e5f0"},
+                    {"#92c5de"},
+                    {"#4393c3"},
+                    {"#2166ac"},
+                });
+            }
+
+            t_palette
+            red_blue_9()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#f7f7f7"},
+                    {"#d1e5f0"},
+                    {"#92c5de"},
+                    {"#4393c3"},
+                    {"#2166ac"},
+                });
+            }
+
+            t_palette
+            red_blue_10()
+            {
+                return t_palette({
+                    {"#67001f"},
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#d1e5f0"},
+                    {"#92c5de"},
+                    {"#4393c3"},
+                    {"#2166ac"},
+                    {"#053061"},
+                });
+            }
+
+            t_palette
+            red_blue_11()
+            {
+                return t_palette({
+                    {"#67001f"},
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#f7f7f7"},
+                    {"#d1e5f0"},
+                    {"#92c5de"},
+                    {"#4393c3"},
+                    {"#2166ac"},
+                    {"#053061"},
+                });
+            }
+
+            t_palette
+            red_grey_3()
+            {
+                return t_palette({
+                    {"#ef8a62"},
+                    {"#ffffff"},
+                    {"#999999"},
+                });
+            }
+
+            t_palette
+            red_grey_4()
+            {
+                return t_palette({
+                    {"#ca0020"},
+                    {"#f4a582"},
+                    {"#bababa"},
+                    {"#404040"},
+                });
+            }
+
+            t_palette
+            red_grey_5()
+            {
+                return t_palette({
+                    {"#ca0020"},
+                    {"#f4a582"},
+                    {"#ffffff"},
+                    {"#bababa"},
+                    {"#404040"},
+                });
+            }
+
+            t_palette
+            red_grey_6()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#ef8a62"},
+                    {"#fddbc7"},
+                    {"#e0e0e0"},
+                    {"#999999"},
+                    {"#4d4d4d"},
+                });
+            }
+
+            t_palette
+            red_grey_7()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#ef8a62"},
+                    {"#fddbc7"},
+                    {"#ffffff"},
+                    {"#e0e0e0"},
+                    {"#999999"},
+                    {"#4d4d4d"},
+                });
+            }
+
+            t_palette
+            red_grey_8()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#e0e0e0"},
+                    {"#bababa"},
+                    {"#878787"},
+                    {"#4d4d4d"},
+                });
+            }
+
+            t_palette
+            red_grey_9()
+            {
+                return t_palette({
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#ffffff"},
+                    {"#e0e0e0"},
+                    {"#bababa"},
+                    {"#878787"},
+                    {"#4d4d4d"},
+                });
+            }
+
+            t_palette
+            red_grey_10()
+            {
+                return t_palette({
+                    {"#67001f"},
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#e0e0e0"},
+                    {"#bababa"},
+                    {"#878787"},
+                    {"#4d4d4d"},
+                    {"#1a1a1a"},
+                });
+            }
+
+            t_palette
+            red_grey_11()
+            {
+                return t_palette({
+                    {"#67001f"},
+                    {"#b2182b"},
+                    {"#d6604d"},
+                    {"#f4a582"},
+                    {"#fddbc7"},
+                    {"#ffffff"},
+                    {"#e0e0e0"},
+                    {"#bababa"},
+                    {"#878787"},
+                    {"#4d4d4d"},
+                    {"#1a1a1a"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_3()
+            {
+                return t_palette({
+                    {"#fc8d59"},
+                    {"#ffffbf"},
+                    {"#91bfdb"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_4()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#abd9e9"},
+                    {"#2c7bb6"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_5()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#ffffbf"},
+                    {"#abd9e9"},
+                    {"#2c7bb6"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_6()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#fc8d59"},
+                    {"#fee090"},
+                    {"#e0f3f8"},
+                    {"#91bfdb"},
+                    {"#4575b4"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_7()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#fc8d59"},
+                    {"#fee090"},
+                    {"#ffffbf"},
+                    {"#e0f3f8"},
+                    {"#91bfdb"},
+                    {"#4575b4"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_8()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee090"},
+                    {"#e0f3f8"},
+                    {"#abd9e9"},
+                    {"#74add1"},
+                    {"#4575b4"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_9()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee090"},
+                    {"#ffffbf"},
+                    {"#e0f3f8"},
+                    {"#abd9e9"},
+                    {"#74add1"},
+                    {"#4575b4"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_10()
+            {
+                return t_palette({
+                    {"#a50026"},
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee090"},
+                    {"#e0f3f8"},
+                    {"#abd9e9"},
+                    {"#74add1"},
+                    {"#4575b4"},
+                    {"#313695"},
+                });
+            }
+
+            t_palette
+            red_yellow_blue_11()
+            {
+                return t_palette({
+                    {"#a50026"},
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee090"},
+                    {"#ffffbf"},
+                    {"#e0f3f8"},
+                    {"#abd9e9"},
+                    {"#74add1"},
+                    {"#4575b4"},
+                    {"#313695"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_3()
+            {
+                return t_palette({
+                    {"#fc8d59"},
+                    {"#ffffbf"},
+                    {"#91cf60"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_4()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#a6d96a"},
+                    {"#1a9641"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_5()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#ffffbf"},
+                    {"#a6d96a"},
+                    {"#1a9641"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_6()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#fc8d59"},
+                    {"#fee08b"},
+                    {"#d9ef8b"},
+                    {"#91cf60"},
+                    {"#1a9850"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_7()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#fc8d59"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#d9ef8b"},
+                    {"#91cf60"},
+                    {"#1a9850"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_8()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#d9ef8b"},
+                    {"#a6d96a"},
+                    {"#66bd63"},
+                    {"#1a9850"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_9()
+            {
+                return t_palette({
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#d9ef8b"},
+                    {"#a6d96a"},
+                    {"#66bd63"},
+                    {"#1a9850"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_10()
+            {
+                return t_palette({
+                    {"#a50026"},
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#d9ef8b"},
+                    {"#a6d96a"},
+                    {"#66bd63"},
+                    {"#1a9850"},
+                    {"#006837"},
+                });
+            }
+
+            t_palette
+            red_yellow_green_11()
+            {
+                return t_palette({
+                    {"#a50026"},
+                    {"#d73027"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#d9ef8b"},
+                    {"#a6d96a"},
+                    {"#66bd63"},
+                    {"#1a9850"},
+                    {"#006837"},
+                });
+            }
+
+            t_palette
+            spectral_3()
+            {
+                return t_palette({
+                    {"#fc8d59"},
+                    {"#ffffbf"},
+                    {"#99d594"},
+                });
+            }
+
+            t_palette
+            spectral_4()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#abdda4"},
+                    {"#2b83ba"},
+                });
+            }
+
+            t_palette
+            spectral_5()
+            {
+                return t_palette({
+                    {"#d7191c"},
+                    {"#fdae61"},
+                    {"#ffffbf"},
+                    {"#abdda4"},
+                    {"#2b83ba"},
+                });
+            }
+
+            t_palette
+            spectral_6()
+            {
+                return t_palette({
+                    {"#d53e4f"},
+                    {"#fc8d59"},
+                    {"#fee08b"},
+                    {"#e6f598"},
+                    {"#99d594"},
+                    {"#3288bd"},
+                });
+            }
+
+            t_palette
+            spectral_7()
+            {
+                return t_palette({
+                    {"#d53e4f"},
+                    {"#fc8d59"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#e6f598"},
+                    {"#99d594"},
+                    {"#3288bd"},
+                });
+            }
+
+            t_palette
+            spectral_8()
+            {
+                return t_palette({
+                    {"#d53e4f"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#e6f598"},
+                    {"#abdda4"},
+                    {"#66c2a5"},
+                    {"#3288bd"},
+                });
+            }
+
+            t_palette
+            spectral_9()
+            {
+                return t_palette({
+                    {"#d53e4f"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#e6f598"},
+                    {"#abdda4"},
+                    {"#66c2a5"},
+                    {"#3288bd"},
+                });
+            }
+
+            t_palette
+            spectral_10()
+            {
+                return t_palette({
+                    {"#9e0142"},
+                    {"#d53e4f"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#e6f598"},
+                    {"#abdda4"},
+                    {"#66c2a5"},
+                    {"#3288bd"},
+                    {"#5e4fa2"},
+                });
+            }
+
+            t_palette
+            spectral_11()
+            {
+                return t_palette({
+                    {"#9e0142"},
+                    {"#d53e4f"},
+                    {"#f46d43"},
+                    {"#fdae61"},
+                    {"#fee08b"},
+                    {"#ffffbf"},
+                    {"#e6f598"},
+                    {"#abdda4"},
+                    {"#66c2a5"},
+                    {"#3288bd"},
+                    {"#5e4fa2"},
+                });
+            }
+
+            // clang-format on
         } // namespace diverging
     }     // namespace palettes
 
