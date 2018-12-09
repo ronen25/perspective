@@ -27,6 +27,14 @@
 namespace perspective
 {
 
+t_ctx_grouped_pkey::t_ctx_grouped_pkey(
+    const t_schema& schema, const t_config& pivot_config)
+    : t_ctxbase<t_ctx_grouped_pkey>(schema, pivot_config)
+    , m_depth(0)
+    , m_depth_set(false)
+{
+}
+
 t_ctx_grouped_pkey::t_ctx_grouped_pkey()
     : m_depth(0)
     , m_depth_set(false)

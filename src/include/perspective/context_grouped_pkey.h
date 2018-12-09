@@ -22,6 +22,8 @@ class PERSPECTIVE_EXPORT t_ctx_grouped_pkey
 {
 public:
     t_ctx_grouped_pkey();
+    t_ctx_grouped_pkey(
+        const t_schema& schema, const t_config& pivot_config);
 
     ~t_ctx_grouped_pkey();
 

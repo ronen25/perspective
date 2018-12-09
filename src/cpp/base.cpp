@@ -15,6 +15,8 @@
 #include <boost/functional/hash.hpp>
 #include <csignal>
 #include <iostream>
+#include <sstream>
+
 
 namespace perspective
 {

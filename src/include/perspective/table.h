@@ -168,7 +168,7 @@ private:
     t_bool m_from_recipe;
 };
 
-bool operator==(const t_table& lhs, const t_table& rhs);
+PERSPECTIVE_EXPORT bool operator==(const t_table& lhs, const t_table& rhs);
 
 template <typename FLATTENED_T>
 void

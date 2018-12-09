@@ -16,6 +16,7 @@
 #include <perspective/utils.h>
 #include <cstdio>
 //#include <psapi.h>
+#include <cassert>
 
 namespace perspective
 {
@@ -138,9 +139,11 @@ psp_curtime()
 t_int64
 psp_curmem()
 {
-    PROCESS_MEMORY_COUNTERS mem;
-    GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
-    return mem.WorkingSetSize / 1024;
+    //PROCESS_MEMORY_COUNTERS mem;
+    //GetProcessMemoryInfo(GetCurrentProcess(), &mem, sizeof(mem));
+    //return mem.WorkingSetSize / 1024;
+    PSP_COMPLAIN_AND_ABORT("Not implemented");
+	return 0;
 }
 
 #pragma pack(push, 8)

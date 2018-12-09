@@ -97,48 +97,6 @@ struct test_traits
     }
 };
 
-
-// String specializations
-template <>
-const perspective::t_tscalar test_traits<perspective::t_str>::zero;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_str>::v1;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_str>::v2;
-// Date specializations
-template <>
-const perspective::t_tscalar test_traits<perspective::t_date>::zero;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_date>::v1;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_date>::v2;
-// Time specializations
-template <>
-const perspective::t_tscalar test_traits<perspective::t_time>::zero;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_time>::v1;
-template <>
-const perspective::t_tscalar test_traits<perspective::t_time>::v2;
-
-template <typename DATA_T>
-const perspective::t_dtype test_traits<DATA_T>::dtype = type_to_dtype<DATA_T>();
-
-template <typename DATA_T>
-const perspective::t_tscalar test_traits<DATA_T>::null = perspective::mknull(test_traits<DATA_T>::dtype);
-
-template <typename DATA_T>
-const perspective::t_tscalar test_traits<DATA_T>::clear = perspective::mkclear(test_traits<DATA_T>::dtype);
-
-template <typename DATA_T>
-const perspective::t_tscalar test_traits<DATA_T>::zero
-    = perspective::mktscalar<DATA_T>(0);
-template <typename DATA_T>
-const perspective::t_tscalar test_traits<DATA_T>::v1
-    = perspective::mktscalar<DATA_T>(1);
-template <typename DATA_T>
-const perspective::t_tscalar test_traits<DATA_T>::v2
-    = perspective::mktscalar<DATA_T>(2);
-
 // String specializations
 template <>
 const t_tscalar test_traits<t_str>::zero = mktscalar<const char*>("");
@@ -162,6 +120,25 @@ template <>
 const t_tscalar test_traits<t_time>::v1 = mktscalar(t_time(100000));
 template <>
 const t_tscalar test_traits<t_time>::v2 = mktscalar(t_time(200000));
+
+template <typename DATA_T>
+const perspective::t_dtype test_traits<DATA_T>::dtype = type_to_dtype<DATA_T>();
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::null = perspective::mknull(test_traits<DATA_T>::dtype);
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::clear = perspective::mkclear(test_traits<DATA_T>::dtype);
+
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::zero
+    = perspective::mktscalar<DATA_T>(0);
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::v1
+    = perspective::mktscalar<DATA_T>(1);
+template <typename DATA_T>
+const perspective::t_tscalar test_traits<DATA_T>::v2
+    = perspective::mktscalar<DATA_T>(2);
 
 typedef test_traits<t_int64> tr_i64;
 typedef test_traits<t_int32> tr_i32;
@@ -189,6 +166,7 @@ TEST(TABLE, simplest_test)
     tbl.reserve(5);
 }
 
+#ifndef WIN32
 TEST(GNODE, explicit_pkey)
 {
     t_gnode_options options;
@@ -207,6 +185,7 @@ TEST(GNODE, implicit_pkey)
 
     EXPECT_EXIT(t_gnode::build(options), ::testing::KilledBySignal(SIGINT), "");
 }
+#endif
 
 TEST(SCALAR, scalar_literal_test)
 {

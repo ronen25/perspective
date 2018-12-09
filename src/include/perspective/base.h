@@ -52,8 +52,9 @@ const t_index INVALID_INDEX = -1;
 #define CHAR_BIT 8
 #endif
 
-void psp_log(const char* file, t_uint64 line_no, const char* msg);
-void psp_abort();
+PERSPECTIVE_EXPORT void psp_log(
+    const char* file, t_uint64 line_no, const char* msg);
+PERSPECTIVE_EXPORT void psp_abort();
 
 //#define PSP_TRACE_SENTINEL() t_trace _psp_trace_sentinel;
 #define PSP_TRACE_SENTINEL()
@@ -462,49 +463,49 @@ type_to_dtype()
 }
 
 template <>
-t_dtype type_to_dtype<t_int64>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_int64>();
 
 template <>
-t_dtype type_to_dtype<t_int32>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_int32>();
 
 template <>
-t_dtype type_to_dtype<t_int16>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_int16>();
 
 template <>
-t_dtype type_to_dtype<t_int8>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_int8>();
 
 template <>
-t_dtype type_to_dtype<t_uint64>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_uint64>();
 
 template <>
-t_dtype type_to_dtype<t_uint32>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_uint32>();
 
 template <>
-t_dtype type_to_dtype<t_uint16>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_uint16>();
 
 template <>
-t_dtype type_to_dtype<t_uint8>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_uint8>();
 
 template <>
-t_dtype type_to_dtype<t_float64>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_float64>();
 
 template <>
-t_dtype type_to_dtype<t_float32>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_float32>();
 
 template <>
-t_dtype type_to_dtype<t_bool>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_bool>();
 
 class t_date;
 class t_time;
 
 template <>
-t_dtype type_to_dtype<t_time>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_time>();
 
 template <>
-t_dtype type_to_dtype<t_date>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_date>();
 
 template <>
-t_dtype type_to_dtype<t_str>();
+PERSPECTIVE_EXPORT t_dtype type_to_dtype<t_str>();
 
 } // end namespace perspective
 

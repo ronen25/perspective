@@ -307,6 +307,7 @@ function (psp_build_dep name cmake_file)
 				${BOOST_BASE}/multi_index/include
 				${BOOST_BASE}/multiprecision/include
 				${BOOST_BASE}/numeric/include
+				${BOOST_BASE}/numeric/conversion/include
 				${BOOST_BASE}/optional/include
 				${BOOST_BASE}/parameter/include
 				${BOOST_BASE}/parameter_python/include

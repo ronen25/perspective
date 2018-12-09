@@ -91,8 +91,6 @@ public:
     static t_col_sptr build(t_dtype dtype, const t_tscalvec& vec);
     ~t_column();
 
-    void column_copy_helper(const t_column& other);
-
     void init();
 
     template <typename DATA_T>
@@ -106,10 +104,10 @@ public:
     // Increases size by one and returns reference
     // to new element
     template <typename T>
-    T* extend();
+    void extend();
 
     template <typename T>
-    T* extend(t_uindex idx);
+    void extend(t_uindex idx);
 
     void extend_dtype(t_uindex idx);
 
@@ -317,19 +315,18 @@ t_column::get_nth(t_uindex idx) const
 }
 
 template <typename T>
-T*
+void
 t_column::extend()
 {
-    return extend<T>(1);
+    extend<T>(1);
 }
 
 template <typename T>
-T*
+void
 t_column::extend(t_uindex idx)
 {
-    T* rv = m_data->extend<T>(idx);
+    m_data->extend<T>(idx);
     m_size += idx;
-    return rv;
 }
 
 template <typename DATA_T>
