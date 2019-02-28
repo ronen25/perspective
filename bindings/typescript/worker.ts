@@ -9,7 +9,28 @@ import {
 
 const Module = loadPerspective({
   wasmJSMethod: "native-wasm",
-  PSP_LOG_PROGRESS: false,
+  LOGGING: {
+  /*  PSP_LOG_TIME: true,
+    PSP_LOG_STORAGE_RESIZE: true,
+    PSP_LOG_SCHEMA_GNODE_FLATTENED: true,
+    PSP_LOG_DATA_POOL_SEND: true,
+    PSP_LOG_TIME_GNODE_PROCESS: true,
+    PSP_LOG_TIME_CTX_NOTIFY: true,
+    PSP_LOG_DATA_GNODE_FLATTENED: true,
+    PSP_LOG_DATA_GNODE_FLATTENED_MASK: true,
+    PSP_LOG_DATA_GNODE_DELTA: true,
+    PSP_LOG_DATA_GNODE_PREV: true,
+    PSP_LOG_DATA_GNODE_CURRENT: true,
+    PSP_LOG_DATA_GNODE_TRANSITIONS: true,
+    PSP_LOG_DATA_GNODE_EXISTED: true,
+    PSP_LOG_PROGRESS: true,
+    PSP_LOG_DATA_NSPARSE_STRANDS: true,
+    PSP_LOG_DATA_NSPARSE_STRAND_DELTAS: true,
+    PSP_LOG_DATA_NSPARSE_DTREE: true,
+    PSP_LOG_DATA_NSPARSE_DCTX: true,
+    PSP_LOG_DATA_NSPARSE_STREE_PREV: true,
+    PSP_LOG_DATA_NSPARSE_STREE_AFTER: true, */
+  },
   printErr: (x: any) => console.error(x),
   print: (x: any) => console.log(x)
 });

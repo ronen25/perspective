@@ -1,3 +1,10 @@
 var window = window || {};
 
 exports.loadPerspective = function(Module) {
+
+Module.preRun = [];
+Module.preRun.push(function() {
+  if (Module.LOGGING) {
+    Object.assign(ENV, Module.LOGGING);
+  }
+});
