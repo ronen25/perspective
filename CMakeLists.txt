@@ -1,9 +1,7 @@
 cmake_minimum_required (VERSION 3.0)
 project (psp)
 
-if (NOT DEFINED PSP_WASM_BUILD)
-    set(PSP_WASM_BUILD OFF)
-endif()
+set(PSP_WASM_BUILD ON)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -222,163 +220,149 @@ function (psp_build_dep name cmake_file)
 	if(result)
 		message(FATAL_ERROR "Build step for ${name} failed: ${result}")
 	endif()
-	if (name STREQUAL "boost")
-		if (DEFINED PSP_BOOST_INCLUDE AND NOT "$ENV{Compiler}" STREQUAL "emscripten")
-			include_directories(${PSP_BOOST_INCLUDE})
-		else()
-			set(BOOST_BASE ${CMAKE_BINARY_DIR}/${name}-src/libs)
-			include_directories(
-				${BOOST_BASE}/accumulators/include
-				${BOOST_BASE}/algorithm/include
-				${BOOST_BASE}/align/include
-				${BOOST_BASE}/any/include
-				${BOOST_BASE}/array/include
-				${BOOST_BASE}/asio/include
-				${BOOST_BASE}/assert/include
-				${BOOST_BASE}/assign/include
-				${BOOST_BASE}/atomic/include
-				${BOOST_BASE}/beast/include
-				${BOOST_BASE}/bimap/include
-				${BOOST_BASE}/bind/include
-				${BOOST_BASE}/callable_traits/include
-				${BOOST_BASE}/chrono/include
-				${BOOST_BASE}/circular_buffer/include
-				${BOOST_BASE}/compatibility/include
-				${BOOST_BASE}/compute/include
-				${BOOST_BASE}/concept_check/include
-				${BOOST_BASE}/config/include
-				${BOOST_BASE}/container/include
-				${BOOST_BASE}/container_hash/include
-				${BOOST_BASE}/context/include
-				${BOOST_BASE}/contract/include
-				${BOOST_BASE}/conversion/include
-				${BOOST_BASE}/convert/include
-				${BOOST_BASE}/core/include
-				${BOOST_BASE}/coroutine/include
-				${BOOST_BASE}/coroutine2/include
-				${BOOST_BASE}/crc/include
-				${BOOST_BASE}/date_time/include
-				${BOOST_BASE}/detail/include
-				${BOOST_BASE}/disjoint_sets/include
-				${BOOST_BASE}/dll/include
-				${BOOST_BASE}/dynamic_bitset/include
-				${BOOST_BASE}/endian/include
-				${BOOST_BASE}/exception/include
-				${BOOST_BASE}/fiber/include
-				${BOOST_BASE}/filesystem/include
-				${BOOST_BASE}/flyweight/include
-				${BOOST_BASE}/foreach/include
-				${BOOST_BASE}/format/include
-				${BOOST_BASE}/function/include
-				${BOOST_BASE}/functional/include
-				${BOOST_BASE}/function_types/include
-				${BOOST_BASE}/fusion/include
-				${BOOST_BASE}/geometry/include
-				${BOOST_BASE}/gil/include
-				${BOOST_BASE}/graph/include
-				${BOOST_BASE}/graph_parallel/include
-				${BOOST_BASE}/hana/include
-				${BOOST_BASE}/heap/include
-				${BOOST_BASE}/hof/include
-				${BOOST_BASE}/icl/include
-				${BOOST_BASE}/integer/include
-				${BOOST_BASE}/interprocess/include
-				${BOOST_BASE}/intrusive/include
-				${BOOST_BASE}/io/include
-				${BOOST_BASE}/iostreams/include
-				${BOOST_BASE}/iterator/include
-				${BOOST_BASE}/lambda/include
-				${BOOST_BASE}/lexical_cast/include
-				${BOOST_BASE}/locale/include
-				${BOOST_BASE}/local_function/include
-				${BOOST_BASE}/lockfree/include
-				${BOOST_BASE}/log/include
-				${BOOST_BASE}/logic/include
-				${BOOST_BASE}/math/include
-				${BOOST_BASE}/metaparse/include
-				${BOOST_BASE}/move/include
-				${BOOST_BASE}/mp11/include
-				${BOOST_BASE}/mpi/include
-				${BOOST_BASE}/mpl/include
-				${BOOST_BASE}/msm/include
-				${BOOST_BASE}/multi_array/include
-				${BOOST_BASE}/multi_index/include
-				${BOOST_BASE}/multiprecision/include
-				${BOOST_BASE}/numeric/include
-				${BOOST_BASE}/numeric/conversion/include
-				${BOOST_BASE}/optional/include
-				${BOOST_BASE}/parameter/include
-				${BOOST_BASE}/parameter_python/include
-				${BOOST_BASE}/phoenix/include
-				${BOOST_BASE}/poly_collection/include
-				${BOOST_BASE}/polygon/include
-				${BOOST_BASE}/pool/include
-				${BOOST_BASE}/predef/include
-				${BOOST_BASE}/preprocessor/include
-				${BOOST_BASE}/process/include
-				${BOOST_BASE}/program_options/include
-				${BOOST_BASE}/property_map/include
-				${BOOST_BASE}/property_tree/include
-				${BOOST_BASE}/proto/include
-				${BOOST_BASE}/ptr_container/include
-				${BOOST_BASE}/python/include
-				${BOOST_BASE}/qvm/include
-				${BOOST_BASE}/random/include
-				${BOOST_BASE}/range/include
-				${BOOST_BASE}/ratio/include
-				${BOOST_BASE}/rational/include
-				${BOOST_BASE}/regex/include
-				${BOOST_BASE}/safe_numerics/include
-				${BOOST_BASE}/scope_exit/include
-				${BOOST_BASE}/serialization/include
-				${BOOST_BASE}/signals2/include
-				${BOOST_BASE}/smart_ptr/include
-				${BOOST_BASE}/sort/include
-				${BOOST_BASE}/spirit/include
-				${BOOST_BASE}/stacktrace/include
-				${BOOST_BASE}/statechart/include
-				${BOOST_BASE}/static_assert/include
-				${BOOST_BASE}/system/include
-				${BOOST_BASE}/test/include
-				${BOOST_BASE}/thread/include
-				${BOOST_BASE}/throw_exception/include
-				${BOOST_BASE}/timer/include
-				${BOOST_BASE}/tokenizer/include
-				${BOOST_BASE}/tti/include
-				${BOOST_BASE}/tuple/include
-				${BOOST_BASE}/type_erasure/include
-				${BOOST_BASE}/type_index/include
-				${BOOST_BASE}/typeof/include
-				${BOOST_BASE}/type_traits/include
-				${BOOST_BASE}/units/include
-				${BOOST_BASE}/unordered/include
-				${BOOST_BASE}/utility/include
-				${BOOST_BASE}/uuid/include
-				${BOOST_BASE}/variant/include
-				${BOOST_BASE}/vmd/include
-				${BOOST_BASE}/wave/include
-				${BOOST_BASE}/winapi/include
-				${BOOST_BASE}/xpressive/include
-				${BOOST_BASE}/yap/include
-			)
-		endif()
-	else()
-		add_subdirectory(${CMAKE_BINARY_DIR}/${name}-src
+	add_subdirectory(${CMAKE_BINARY_DIR}/${name}-src
 			${CMAKE_BINARY_DIR}/${name}-build
 			EXCLUDE_FROM_ALL)
-	endif()
 	include_directories(${CMAKE_BINARY_DIR}/${name}-src/extras/gtest/include)
     include_directories(${CMAKE_BINARY_DIR}/${name}-src/include)
 	include_directories(${CMAKE_BINARY_DIR}/${name}-src)
 endfunction()
 
-
-message(STATUS "PSP_BOOST_INCLUDE: ${PSP_BOOST_INCLUDE} Compiler: $ENV{Compiler}")
-if (DEFINED PSP_BOOST_INCLUDE AND NOT "$ENV{Compiler}" STREQUAL "emscripten")
-	include_directories(${PSP_BOOST_INCLUDE})
-else()
-	psp_build_dep("boost" "cmake/boost.txt.in")
-endif()
+set(BOOST_BASE ${CMAKE_CURRENT_SOURCE_DIR}/third_party/boost-src/libs)
+include_directories(
+		${BOOST_BASE}/accumulators/include
+		${BOOST_BASE}/algorithm/include
+		${BOOST_BASE}/align/include
+		${BOOST_BASE}/any/include
+		${BOOST_BASE}/array/include
+		${BOOST_BASE}/asio/include
+		${BOOST_BASE}/assert/include
+		${BOOST_BASE}/assign/include
+		${BOOST_BASE}/atomic/include
+		${BOOST_BASE}/beast/include
+		${BOOST_BASE}/bimap/include
+		${BOOST_BASE}/bind/include
+		${BOOST_BASE}/callable_traits/include
+		${BOOST_BASE}/chrono/include
+		${BOOST_BASE}/circular_buffer/include
+		${BOOST_BASE}/compatibility/include
+		${BOOST_BASE}/compute/include
+		${BOOST_BASE}/concept_check/include
+		${BOOST_BASE}/config/include
+		${BOOST_BASE}/container/include
+		${BOOST_BASE}/container_hash/include
+		${BOOST_BASE}/context/include
+		${BOOST_BASE}/contract/include
+		${BOOST_BASE}/conversion/include
+		${BOOST_BASE}/convert/include
+		${BOOST_BASE}/core/include
+		${BOOST_BASE}/coroutine/include
+		${BOOST_BASE}/coroutine2/include
+		${BOOST_BASE}/crc/include
+		${BOOST_BASE}/date_time/include
+		${BOOST_BASE}/detail/include
+		${BOOST_BASE}/disjoint_sets/include
+		${BOOST_BASE}/dll/include
+		${BOOST_BASE}/dynamic_bitset/include
+		${BOOST_BASE}/endian/include
+		${BOOST_BASE}/exception/include
+		${BOOST_BASE}/fiber/include
+		${BOOST_BASE}/filesystem/include
+		${BOOST_BASE}/flyweight/include
+		${BOOST_BASE}/foreach/include
+		${BOOST_BASE}/format/include
+		${BOOST_BASE}/function/include
+		${BOOST_BASE}/functional/include
+		${BOOST_BASE}/function_types/include
+		${BOOST_BASE}/fusion/include
+		${BOOST_BASE}/geometry/include
+		${BOOST_BASE}/gil/include
+		${BOOST_BASE}/graph/include
+		${BOOST_BASE}/graph_parallel/include
+		${BOOST_BASE}/hana/include
+		${BOOST_BASE}/heap/include
+		${BOOST_BASE}/hof/include
+		${BOOST_BASE}/icl/include
+		${BOOST_BASE}/integer/include
+		${BOOST_BASE}/interprocess/include
+		${BOOST_BASE}/intrusive/include
+		${BOOST_BASE}/io/include
+		${BOOST_BASE}/iostreams/include
+		${BOOST_BASE}/iterator/include
+		${BOOST_BASE}/lambda/include
+		${BOOST_BASE}/lexical_cast/include
+		${BOOST_BASE}/locale/include
+		${BOOST_BASE}/local_function/include
+		${BOOST_BASE}/lockfree/include
+		${BOOST_BASE}/log/include
+		${BOOST_BASE}/logic/include
+		${BOOST_BASE}/math/include
+		${BOOST_BASE}/metaparse/include
+		${BOOST_BASE}/move/include
+		${BOOST_BASE}/mp11/include
+		${BOOST_BASE}/mpi/include
+		${BOOST_BASE}/mpl/include
+		${BOOST_BASE}/msm/include
+		${BOOST_BASE}/multi_array/include
+		${BOOST_BASE}/multi_index/include
+		${BOOST_BASE}/multiprecision/include
+		${BOOST_BASE}/numeric/include
+		${BOOST_BASE}/numeric/conversion/include
+		${BOOST_BASE}/optional/include
+		${BOOST_BASE}/parameter/include
+		${BOOST_BASE}/parameter_python/include
+		${BOOST_BASE}/phoenix/include
+		${BOOST_BASE}/poly_collection/include
+		${BOOST_BASE}/polygon/include
+		${BOOST_BASE}/pool/include
+		${BOOST_BASE}/predef/include
+		${BOOST_BASE}/preprocessor/include
+		${BOOST_BASE}/process/include
+		${BOOST_BASE}/program_options/include
+		${BOOST_BASE}/property_map/include
+		${BOOST_BASE}/property_tree/include
+		${BOOST_BASE}/proto/include
+		${BOOST_BASE}/ptr_container/include
+		${BOOST_BASE}/python/include
+		${BOOST_BASE}/qvm/include
+		${BOOST_BASE}/random/include
+		${BOOST_BASE}/range/include
+		${BOOST_BASE}/ratio/include
+		${BOOST_BASE}/rational/include
+		${BOOST_BASE}/regex/include
+		${BOOST_BASE}/safe_numerics/include
+		${BOOST_BASE}/scope_exit/include
+		${BOOST_BASE}/serialization/include
+		${BOOST_BASE}/signals2/include
+		${BOOST_BASE}/smart_ptr/include
+		${BOOST_BASE}/sort/include
+		${BOOST_BASE}/spirit/include
+		${BOOST_BASE}/stacktrace/include
+		${BOOST_BASE}/statechart/include
+		${BOOST_BASE}/static_assert/include
+		${BOOST_BASE}/system/include
+		${BOOST_BASE}/test/include
+		${BOOST_BASE}/thread/include
+		${BOOST_BASE}/throw_exception/include
+		${BOOST_BASE}/timer/include
+		${BOOST_BASE}/tokenizer/include
+		${BOOST_BASE}/tti/include
+		${BOOST_BASE}/tuple/include
+		${BOOST_BASE}/type_erasure/include
+		${BOOST_BASE}/type_index/include
+		${BOOST_BASE}/typeof/include
+		${BOOST_BASE}/type_traits/include
+		${BOOST_BASE}/units/include
+		${BOOST_BASE}/unordered/include
+		${BOOST_BASE}/utility/include
+		${BOOST_BASE}/uuid/include
+		${BOOST_BASE}/variant/include
+		${BOOST_BASE}/vmd/include
+		${BOOST_BASE}/wave/include
+		${BOOST_BASE}/winapi/include
+		${BOOST_BASE}/xpressive/include
+		${BOOST_BASE}/yap/include
+)
 
 if (NOT PSP_WASM_BUILD)
    if (WIN32)

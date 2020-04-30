@@ -35,8 +35,6 @@ public:
     void sort_by();
     t_sortsvec get_sort_by() const;
 
-    using t_ctxbase<t_ctx0>::get_data;
-
 protected:
     t_tscalvec get_all_pkeys(const std::vector<t_uidxpair>& cells) const;
 

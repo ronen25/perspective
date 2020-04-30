@@ -1258,8 +1258,6 @@ EMSCRIPTEN_BINDINGS(perspective)
         .function(
             "get_column_names", &t_ctx0::get_column_names)
         .function("get_column_dtype", &t_ctx0::get_column_dtype)
-        // .function("get_min_max", &t_ctx0::get_min_max)
-        // .function("set_minmax_enabled", &t_ctx0::set_minmax_enabled)
         .function("unity_get_row_data", &t_ctx0::unity_get_row_data)
         .function(
             "unity_get_column_data", &t_ctx0::unity_get_column_data)

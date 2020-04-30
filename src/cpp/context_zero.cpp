@@ -110,7 +110,6 @@ t_tscalvec
 t_ctx0::get_data(t_tvidx start_row, t_tvidx end_row, t_tvidx start_col,
     t_tvidx end_col) const
 {
-
     auto ext = sanitize_get_data_extents(
         *this, start_row, end_row, start_col, end_col);
 

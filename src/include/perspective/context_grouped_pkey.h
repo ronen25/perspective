@@ -55,8 +55,6 @@ public:
         const std::vector<t_index>& agg_indices, t_tscalvec& aggregates,
         void*) const;
 
-    using t_ctxbase<t_ctx_grouped_pkey>::get_data;
-
 private:
     void rebuild();
 

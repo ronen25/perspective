@@ -47,8 +47,6 @@ public:
 
     t_depth get_trav_depth(t_tvidx idx) const;
 
-    using t_ctxbase<t_ctx1>::get_data;
-
     t_uindex get_leaf_count() const;
     t_tscalvec get_leaf_data(t_uindex start_row, t_uindex end_row,
         t_uindex start_col, t_uindex end_col) const;
