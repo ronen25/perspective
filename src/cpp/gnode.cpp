@@ -278,13 +278,13 @@ t_gnode::_process()
 
     if (t_env::log_data_gnode_flattened())
     {
-        std::cout << repr() << "gnode_process_flattened" << std::endl;
+        std::cout << std::endl << repr() << "gnode_process_flattened" << std::endl;
         flattened->pprint();
     }
 
     if (t_env::log_schema_gnode_flattened())
     {
-        std::cout << repr() << "gnode_schema_flattened" << std::endl;
+        std::cout << std::endl << repr() << "gnode_schema_flattened" << std::endl;
         std::cout << flattened->get_schema();
     }
 
@@ -620,49 +620,49 @@ t_gnode::_process()
 
         if (t_env::log_data_gnode_flattened_mask())
         {
-            std::cout << repr() << "gnode_process_flattened_mask" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_flattened_mask" << std::endl;
             flattened_masked->pprint();
         }
 
         if (t_env::log_data_gnode_delta())
         {
-            std::cout << repr() << "gnode_process_delta" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_delta" << std::endl;
             delta->pprint();
         }
 
         if (t_env::log_data_gnode_prev())
         {
-            std::cout << repr() << "gnode_process_prev" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_prev" << std::endl;
             prev->pprint();
         }
 
         if (t_env::log_data_gnode_current())
         {
-            std::cout << repr() << "gnode_process_current" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_current" << std::endl;
             current->pprint();
         }
 
         if (t_env::log_data_gnode_transitions())
         {
-            std::cout << repr() << "gnode_process_transitions" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_transitions" << std::endl;
             transitions->pprint();
         }
 
         if (t_env::log_data_gnode_existed())
         {
-            std::cout << repr() << "gnode_process_existed" << std::endl;
+            std::cout << std::endl << repr() << "gnode_process_existed" << std::endl;
             existed->pprint();
         }
 
         if (t_env::log_time_gnode_process())
         {
             auto t2 = std::chrono::high_resolution_clock::now();
-            std::cout << repr() << " gnode_process_time "
+            std::cout << std::endl << repr() << " gnode_process_time "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(
                              t2 - t1)
                              .count()
                       << std::endl;
-            std::cout << repr() << "gnode_process_time since begin=> "
+            std::cout << std::endl << repr() << "gnode_process_time since begin=> "
                       << std::chrono::duration_cast<std::chrono::milliseconds>(
                              t2 - m_epoch)
                              .count()

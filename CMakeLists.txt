@@ -195,12 +195,10 @@ if (PSP_WASM_BUILD)
            COMMAND echo "=================== JSBUILD ===================="
 		   COMMAND cp build/install/psp.sync.wasm dist/js/
 		   COMMAND cp build/install/psp.async.wasm dist/js/
-		   COMMAND cp build/install/psp.async.js dist/js/staging
-		   COMMAND cp build/install/psp.sync.js dist/js/staging
-		   COMMAND cat dist/js/staging/pre dist/js/staging/psp.async.js dist/js/staging/post > bindings/typescript/psp.async.js
-		   COMMAND cat dist/js/staging/pre dist/js/staging/psp.sync.js dist/js/staging/post > bindings/typescript/psp.sync.js
-		   COMMAND rm dist/js/staging/psp.async.js
-		   COMMAND rm dist/js/staging/psp.sync.js
+		   COMMAND cat dist/js/staging/pre build/install/psp.async.js dist/js/staging/post > dist/js/psp.async.js
+		   COMMAND cat dist/js/staging/pre build/install/psp.sync.js dist/js/staging/post > dist/js/psp.sync.js
+		   COMMAND cp dist/js/psp.async.js bindings/typescript/psp.async.js
+		   COMMAND cp dist/js/psp.sync.js bindings/typescript/psp.sync.js
 		   COMMAND yarn build
 		   WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
