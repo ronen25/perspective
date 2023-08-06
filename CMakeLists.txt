@@ -260,6 +260,7 @@ include_directories(
 		${BOOST_BASE}/coroutine2/include
 		${BOOST_BASE}/crc/include
 		${BOOST_BASE}/date_time/include
+		${BOOST_BASE}/describe/include
 		${BOOST_BASE}/detail/include
 		${BOOST_BASE}/disjoint_sets/include
 		${BOOST_BASE}/dll/include
