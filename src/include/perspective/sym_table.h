@@ -11,6 +11,7 @@
 #include <perspective/first.h>
 #include <perspective/scalar.h>
 #include <unordered_map>
+#include <functional>
 
 namespace perspective
 {
@@ -18,8 +19,7 @@ namespace perspective
 class t_symtable
 {
     typedef std::unordered_map<const char*, const char*, t_cchar_umap_hash,
-        t_cchar_umap_cmp>
-        t_mapping;
+    std::function<bool(const char*, const char*)>> t_mapping;
 
 public:
     t_symtable();

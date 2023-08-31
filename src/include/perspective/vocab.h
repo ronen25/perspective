@@ -21,8 +21,7 @@ namespace perspective
 class PERSPECTIVE_EXPORT t_vocab
 {
     typedef std::unordered_map<const char*, t_uindex, t_cchar_umap_hash,
-        t_cchar_umap_cmp>
-        t_sidxmap;
+    std::function<bool(const char*, const char* )>> t_sidxmap;
 
 public:
     t_vocab();

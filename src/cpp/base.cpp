@@ -410,9 +410,7 @@ t_cmp_charptr::operator()(const char* a, const char* b) const
     return std::strcmp(a, b) < 0;
 }
 
-bool
-t_cchar_umap_cmp::operator()(const char* x, const char* y) const
-{
+bool t_cchar_umap_cmp(const char *x, const char *y) {
     return strcmp(x, y) == 0;
 }
 
