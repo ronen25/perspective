@@ -442,7 +442,10 @@ struct PERSPECTIVE_EXPORT t_cmp_charptr
     bool operator()(const char* a, const char* b) const;
 };
 
-bool t_cchar_umap_cmp(const char *x, const char *y);
+struct t_cchar_umap_cmp
+{
+    bool operator()(const char* x, const char* y) const;
+};
 
 struct t_cchar_umap_hash
 {
