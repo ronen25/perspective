@@ -146,7 +146,7 @@ struct PERSPECTIVE_EXPORT t_tscalar
     t_bool m_inplace;
 };
 
-inline t_tscalar operator"" _ts(long double v)
+inline t_tscalar operator""_ts(long double v)
 {
     t_tscalar rv;
     t_float64 tmp = v;
@@ -154,7 +154,7 @@ inline t_tscalar operator"" _ts(long double v)
     return rv;
 }
 
-inline t_tscalar operator"" _ts(unsigned long long int v)
+inline t_tscalar operator""_ts(unsigned long long int v)
 {
     t_tscalar rv;
     t_int64 tmp = v;
@@ -162,14 +162,14 @@ inline t_tscalar operator"" _ts(unsigned long long int v)
     return rv;
 }
 
-inline t_tscalar operator"" _ts(const char* v, std::size_t len)
+inline t_tscalar operator""_ts(const char* v, std::size_t len)
 {
     t_tscalar rv;
     rv.set(v);
     return rv;
 }
 
-inline t_tscalar operator"" _ns(long double v)
+inline t_tscalar operator""_ns(long double v)
 {
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
@@ -178,7 +178,7 @@ inline t_tscalar operator"" _ns(long double v)
     return rv;
 }
 
-inline t_tscalar operator"" _ns(unsigned long long int v)
+inline t_tscalar operator""_ns(unsigned long long int v)
 {
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
@@ -187,7 +187,7 @@ inline t_tscalar operator"" _ns(unsigned long long int v)
     return rv;
 }
 
-inline t_tscalar operator"" _ns(const char* v, std::size_t len)
+inline t_tscalar operator""_ns(const char* v, std::size_t len)
 {
     t_tscalar rv;
     rv.m_data.m_uint64 = 0;
